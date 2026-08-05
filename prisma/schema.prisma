@@ -1,0 +1,46 @@
+// Bumim Studio — Prisma schema (Neon / Postgres)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Single-row global pricing config.
+// The site multiplies basePrice by each plan's multiplier to compute Toman prices.
+model PricingConfig {
+  id          Int                  @id @default(1)
+  basePrice   Int                  @default(180000)
+  multipliers Json                 @default("{}") // e.g. { "shorteco": 6, "motionadvanced": 90, ... }
+  updatedAt   DateTime             @updatedAt
+
+  @@map("pricing_config")
+}
+
+// A portfolio project / media item. `src` and `poster` can point to local
+// /media files or to Supabase Storage URLs managed from the admin panel.
+model Project {
+  id             Int      @id @default(autoincrement())
+  slug           String   @unique
+  title          String
+  category       String
+  type           String // "video" | "image" | "audio"
+  src            String
+  poster         String   @default("")
+  orientation    String   @default("landscape")
+  hasDescription Boolean  @default(false)
+  description    String   @default("")
+  detailAutoplay Boolean  @default(false)
+  planId         String   @default("")
+  planLabel      String   @default("")
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category])
+  @@index([slug])
+  @@map("projects")
+}
