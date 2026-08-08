@@ -1,0 +1,10 @@
+{
+  "app": {
+    "name": "bumimstudio",
+    "framework": "nextjs",
+    "httpPort": 3000,
+    "build": {
+      "command": "pnpm run build"
+    }
+  }
+}
