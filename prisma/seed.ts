@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import {
   DEFAULT_BASE_PRICE,
@@ -10,7 +11,7 @@ const prisma = new PrismaClient();
 async function main() {
   if (!process.env.DATABASE_URL) {
     throw new Error(
-      "DATABASE_URL is not set. Copy .env.example to .env and fill in your Neon connection string, then run `pnpm db:seed`."
+      "DATABASE_URL is not set. Copy .env.example to .env and fill in your Prisma Postgres connection string, then run `pnpm db:seed`."
     );
   }
 
