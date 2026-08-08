@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { categoryMap } from "@/lib/data/projects";
 import type { Project } from "@/lib/types";
 
 const container = `mx-auto px-4 py-10 max-w-6xl`;
@@ -33,9 +32,11 @@ const similarLink = `inline-flex mt-3 text-[length:var(--font-size-small)] text-
 export default function ProjectDetails({
   projects,
   slug,
+  categoryMap = {},
 }: {
   projects: Project[];
   slug: string;
+  categoryMap?: Record<string, string>;
 }) {
   const project = projects.find((item) => item.slug === slug);
 

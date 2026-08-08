@@ -1,4 +1,5 @@
 import ProjectDetails from "@/components/sections/ProjectDetails";
+import { getCategoryMap } from "@/lib/content";
 import { getProjects } from "@/lib/projects-data";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,6 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
-  const projects = await getProjects();
-  return <ProjectDetails projects={projects} slug={slug} />;
+  const [projects, categoryMap] = await Promise.all([getProjects(), getCategoryMap()]);
+  return <ProjectDetails projects={projects} slug={slug} categoryMap={categoryMap} />;
 }

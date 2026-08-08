@@ -12,9 +12,26 @@ async function main() {
 
   await prisma.$queryRaw`SELECT 1`;
 
-  const [projectCount, pricingConfig] = await Promise.all([
+  const [
+    projectCount,
+    pricingConfig,
+    categoryCount,
+    serviceCount,
+    planCount,
+    teamCount,
+    termCount,
+    siteContentCount,
+    contactSubmissionCount,
+  ] = await Promise.all([
     prisma.project.count(),
     prisma.pricingConfig.findUnique({ where: { id: 1 } }),
+    prisma.projectCategory.count(),
+    prisma.serviceDefinition.count(),
+    prisma.servicePlan.count(),
+    prisma.teamMember.count(),
+    prisma.termItem.count(),
+    prisma.siteContent.count(),
+    prisma.contactSubmission.count(),
   ]);
 
   console.log("Database connection OK ✔");
@@ -24,6 +41,12 @@ async function main() {
       ? `Pricing config OK ✔ (basePrice=${pricingConfig.basePrice})`
       : "Pricing config missing ⚠ Run `pnpm db:seed` to insert the default row."
   );
+  console.log(`Project categories OK ✔ (${categoryCount} rows)`);
+  console.log(`Services/plans OK ✔ (${serviceCount} services, ${planCount} plans)`);
+  console.log(`Team members OK ✔ (${teamCount} rows)`);
+  console.log(`Terms OK ✔ (${termCount} rows)`);
+  console.log(`Site content/settings OK ✔ (${siteContentCount} records)`);
+  console.log(`Contact submissions table OK ✔ (${contactSubmissionCount} rows)`);
 }
 
 main()

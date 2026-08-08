@@ -3,14 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const links = [
-  { label: "تعرفه", to: "/pricing" },
-  { label: "نمونه کار", to: "/portfolio" },
-  { label: "شرایط همکاری", to: "/terms" },
-  { label: "سفارش پروژه", to: "/contact" },
-  { label: "درباره ما", to: "/about" },
-];
+import { defaultNavLinks, type NavLinkData } from "@/lib/data/site";
 
 const container = `relative flex flex-row items-center`;
 const menuButton = `flex flex-col justify-center gap-1 lg:hidden`;
@@ -24,7 +17,7 @@ const mobileClosed = `opacity-0 -translate-y-3 pointer-events-none`;
 const mobileLink = `flex items-center justify-between rounded-xl px-4 py-3 text-[length:var(--font-size-xsmall)] text-[var(--font-color-primary)] transition-all duration-200 hover:bg-white/8`;
 const mobileLinkActive = `bg-white/10 text-[var(--font-color-third)]`;
 
-export default function Navbar() {
+export default function Navbar({ links = defaultNavLinks }: { links?: NavLinkData[] }) {
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
   const pathname = usePathname();

@@ -19,6 +19,27 @@ export interface Project {
   updatedAt?: string;
 }
 
+export interface ProjectCategory {
+  key: string;
+  label: string;
+  sortOrder?: number;
+}
+
+export interface TeamSocial {
+  icon: string;
+  link: string;
+  text: string;
+}
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  description: string;
+  image: string;
+  socials: Record<string, TeamSocial>;
+}
+
 export interface PricingData {
   basePrice: number;
   multipliers: Record<string, number>;

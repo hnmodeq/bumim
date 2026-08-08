@@ -1,4 +1,4 @@
-// Bumim Studio — Prisma schema (Neon / Postgres)
+// Bumim Studio — Prisma schema (Prisma Postgres / PostgreSQL)
 
 generator client {
   provider = "prisma-client-js"
@@ -43,4 +43,97 @@ model Project {
   @@index([category])
   @@index([slug])
   @@map("projects")
+}
+
+// Portfolio/category tabs are database-backed so labels/order can change
+// without touching code.
+model ProjectCategory {
+  key       String   @id
+  label     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("project_categories")
+}
+
+// Pricing service cards and plans. Pricing numbers are still stored in
+// PricingConfig; these tables store the editable service/plan structure.
+model ServiceDefinition {
+  id           String        @id
+  label        String
+  categoryKey  String
+  portfolioTab String
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  plans        ServicePlan[]
+
+  @@map("services")
+}
+
+model ServicePlan {
+  id        String            @id
+  serviceId String
+  service   ServiceDefinition @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name      String
+  limit     String
+  features  Json              @default("[]")
+  sortOrder Int               @default(0)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([serviceId])
+  @@map("service_plans")
+}
+
+// About/team section.
+model TeamMember {
+  id          Int      @id
+  name        String
+  role        String
+  description String   @default("")
+  image       String   @default("")
+  socials     Json     @default("{}")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("team_members")
+}
+
+// Terms page list items.
+model TermItem {
+  id        Int      @id
+  text      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("term_items")
+}
+
+// Generic site copy/settings: hero, nav, footer, page intro text,
+// contact text/link, SEO defaults, etc.
+model SiteContent {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_content")
+}
+
+// Contact form submissions are now persisted instead of only opening Bale.
+model ContactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String   @default("")
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+  @@map("contact_submissions")
 }

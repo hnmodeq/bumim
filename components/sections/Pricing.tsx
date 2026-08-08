@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/lib/data/services";
+import { services as fallbackServices, type Service } from "@/lib/data/services";
 import { priceFor } from "@/lib/pricing";
 import type { Project, PricingData } from "@/lib/types";
 
@@ -53,8 +53,16 @@ const CloseIcon = () => (
   </svg>
 );
 
-export default function Pricing({ pricing, projects = [] }: { pricing: PricingData; projects?: Project[] }) {
-  const [activeService, setActiveService] = useState("short");
+export default function Pricing({
+  pricing,
+  projects = [],
+  services = fallbackServices,
+}: {
+  pricing: PricingData;
+  projects?: Project[];
+  services?: Service[];
+}) {
+  const [activeService, setActiveService] = useState(services[0]?.id ?? "");
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
   const currentService = services.find((s) => s.id === activeService) || services[0];

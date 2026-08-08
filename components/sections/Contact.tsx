@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { defaultContactContent, type ContactContent } from "@/lib/data/site";
 
 const container = `w-full flex flex-col gap-5 items-center justify-center px-5 mt-10 lg:flex-row lg:items-start`;
 const button = `w-25 h-10 justify-center bg-[var(--bg-color-primary)] rounded-[var(--rounded-small)] border-[var(--border-main)] backdrop-blur-[var(--blur-small)] text-[length:var(--font-size-xsmall)] text-[var(--font-color-third)] transition-all duration-200 hover:-translate-y-1`;
@@ -31,14 +32,12 @@ interface FormData {
 
 const emptyForm: FormData = { name: "", phone: "", subject: "", message: "", website: "" };
 
-export default function Contact() {
+export default function Contact({ content = defaultContactContent }: { content?: ContactContent }) {
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState({ show: false, type: "success", message: "" });
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const BALE_URL = "https://ble.ir/hnmodeq";
 
   useEffect(() => {
     return () => {
@@ -156,14 +155,31 @@ ${message}
     }
 
     const text = buildBaleMessage();
+    let saved = false;
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        }),
+      });
+      saved = res.ok;
+    } catch {
+      saved = false;
+    }
 
     try {
       const copied = await copyMessage(text);
-      window.open(BALE_URL, "_blank", "noopener,noreferrer");
-      showToast("به بله منتقل شدید.", copied ? "success" : "info");
+      window.open(content.baleUrl, "_blank", "noopener,noreferrer");
+      showToast(saved ? content.savedMessage : content.errorMessage, copied ? "success" : "info");
     } catch {
-      window.open(BALE_URL, "_blank", "noopener,noreferrer");
-      showToast("به بله منتقل شدید.", "info");
+      window.open(content.baleUrl, "_blank", "noopener,noreferrer");
+      showToast(saved ? content.savedMessage : content.errorMessage, saved ? "info" : "error");
     }
 
     resetForm();
@@ -172,12 +188,8 @@ ${message}
   return (
     <div className={container}>
       <div className={headerWrapper}>
-        <h1 className={h1}>سفارش پروژه</h1>
-        <p className={paragraph}>
-          برای شروع همکاری، لطفاً فرم زیر را تکمیل کنید و روی دکمه «ارسال» کلیک کنید.
-          پس از ارسال فرم، پیام‌رسان «بله» به‌صورت خودکار برای شما باز می‌شود. اطلاعات واردشده از قبل کپی شده و شما کافی است تنها آن‌ها را Paste کرده و ارسال کنید.
-          تیم ما در کوتاه‌ترین زمان ممکن درخواست شما را بررسی میکند و با شما برای ادامه روند همکاری تماس خواهد گرفت.
-        </p>
+        <h1 className={h1}>{content.title}</h1>
+        <p className={paragraph}>{content.description}</p>
       </div>
 
       <form onSubmit={handleSubmit} className={form} noValidate>
@@ -234,7 +246,7 @@ ${message}
 
           <div className={buttonWrapper}>
             <button type="submit" disabled={!agreedToTerms} className={button}>
-              ارسال
+              {content.submitLabel}
             </button>
           </div>
         </section>

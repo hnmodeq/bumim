@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { projectCategories as defaultCategories } from "@/lib/data/projects";
-import type { Project } from "@/lib/types";
+import { projectCategories as fallbackProjectCategories } from "@/lib/data/projects";
+import type { Project, ProjectCategory } from "@/lib/types";
 
 const INITIAL_VISIBLE_ROWS = 3;
 const LOAD_MORE_ROWS = 3;
@@ -56,21 +56,13 @@ const loadMoreWrap = `mt-6 px-5 flex justify-center w-full`;
 const loadMoreButton = `px-5 py-2 mt-5 inline-flex items-center justify-center rounded-[var(--rounded-small)] border-[var(--border-main)] backdrop-blur-[var(--blur-small)] bg-[var(--bg-color-primary)] text-[length:var(--font-size-xsmall)] text-[var(--font-color-third)] transition hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0`;
 const loadMoreInfo = `mt-5 px-5 text-center text-[length:var(--font-size-xsmall)] text-[var(--font-color-secondary)]`;
 
-const categoryPriority: Record<string, number> = {
-  "short-video-edit": 0,
-  "long-video-edit": 1,
-  "motion-graphic-design": 2,
-  "graphic-design": 3,
-  "narration-voice": 4,
-};
-
 const orientationPriority: Record<string, number> = {
   portrait: 0,
   landscape: 1,
   square: 2,
 };
 
-const sortProjectsByPriority = (items: Project[]) => {
+const sortProjectsByPriority = (items: Project[], categoryPriority: Record<string, number>) => {
   return [...items].sort((a, b) => {
     const aCategory = categoryPriority[a.category] ?? 9;
     const bCategory = categoryPriority[b.category] ?? 9;
@@ -126,7 +118,7 @@ const audioIcon = (
 
 interface PortfolioProps {
   projects: Project[];
-  projectCategories?: Array<{ key: string; label: string }>;
+  projectCategories?: ProjectCategory[];
   titleText?: string;
   descriptionText?: string;
   limit?: number;
@@ -135,7 +127,7 @@ interface PortfolioProps {
 
 export default function Portfolio({
   projects,
-  projectCategories = defaultCategories,
+  projectCategories = fallbackProjectCategories,
   titleText = "نمونه کار",
   descriptionText = "برخی از پروژه‌های اخیر در حوزه ادیت، گرافیک، موشن و نریشن.",
   limit,
@@ -160,13 +152,18 @@ export default function Portfolio({
     };
   }, [modalItem]);
 
+  const categoryPriority = useMemo(
+    () => Object.fromEntries(projectCategories.map((category, index) => [category.key, index])),
+    [projectCategories]
+  );
+
   const sortedProjects = useMemo(() => {
     const base = activeCategory
       ? projects.filter((project) => project.category === activeCategory)
       : projects;
-    const sorted = sortProjectsByPriority(base);
+    const sorted = sortProjectsByPriority(base, categoryPriority);
     return limit ? sorted.slice(0, limit) : sorted;
-  }, [activeCategory, limit, projects]);
+  }, [activeCategory, categoryPriority, limit, projects]);
 
   const visibleProjects = useMemo(
     () => getVisibleProjectsByRows(sortedProjects, visibleRows),

@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { services, formatToman } from "@/lib/data/services";
+import { services as fallbackServices, formatToman, type Service } from "@/lib/data/services";
 import type { PricingData } from "@/lib/types";
 
-export default function PricingEditor({ initial }: { initial: PricingData }) {
+export default function PricingEditor({
+  initial,
+  services = fallbackServices,
+}: {
+  initial: PricingData;
+  services?: Service[];
+}) {
   const [basePrice, setBasePrice] = useState(initial.basePrice);
   const [multipliers, setMultipliers] = useState<Record<string, number>>(
     initial.multipliers

@@ -1,4 +1,6 @@
-import { teamMembers } from "@/lib/data/aboutus";
+import { defaultAboutContent, type AboutContent } from "@/lib/data/site";
+import type { TeamMember } from "@/lib/types";
+import { teamMembers as fallbackTeamMembers } from "@/lib/data/aboutus";
 
 const section = `flex flex-col items-center w-full px-5 pt-10 pb-25`;
 const container = `flex flex-col w-full`;
@@ -9,34 +11,30 @@ const grid = `grid grid-cols-2 gap-3 items-start auto-rows-fr w-full md:grid-col
 const card = `flex flex-col rounded-[var(--rounded-small)] border-[var(--border-main)] bg-[var(--bg-color-primary)] backdrop-blur-[var(--blur-small)] shadow-[var(--shadow-small)] overflow-hidden`;
 const imageWrapper = `w-full overflow-hidden rounded-[var(--rounded-small)] border-[var(--border-main)]`;
 const image = `w-full h-50 object-cover object-[50%_20%] md:h-70 lg:h-50 xl:h-70 2xl:h-80 saturate-100 hover:saturate-75 transition-all duration-500`;
-const content = `flex flex-col justify-end p-1`;
+const contentCls = `flex flex-col justify-end p-1`;
 const memberName = `text-[length:var(--font-size-xsmall)] text-[var(--font-color-third)]`;
 const role = `text-[length:var(--font-size-xsmall)] text-[var(--font-color-primary)]`;
 const alignBottom = `flex flex-row justify-between p-5`;
 const socialButton = `flex items-center justify-center border-[var(--border-main)] saturate-100 opacity-100 transition-all duration-300 hover:scale-105 hover:opacity-100 hover:saturate-50 rounded-[var(--rounded-big)] text-[length:var(--font-size-xsmall)]`;
 
-export default function About() {
+export default function About({
+  content = defaultAboutContent,
+  teamMembers = fallbackTeamMembers,
+}: {
+  content?: AboutContent;
+  teamMembers?: TeamMember[];
+}) {
   return (
     <section className={section}>
       <div className={container}>
         <section className={aboutParagraph}>
           <div className={paragraphInside}>
-            <h2 className={title}>درباره ما</h2>
-            <p>
-              تیم بومیم از سال ۱۴۰۴ فعالیت خود را در زمینه تولید محتوای دیجیتال برای شبکه‌های اجتماعی آغاز کرد.
-            </p>
-            <br />
-            <p>
-              این تیم حاصل همکاری افرادی است که در کنار یکدیگر تلاش می‌کنند نتایجی خلاقانه و قابل توجه خلق کنند.
-            </p>
-            <br />
-            <p>
-              نگاه ما به محتوا همواره جدی و دقیق بوده است؛ تلاشی برای ساخت آثاری که پیش از شکل‌گیری ایده و اجرای ما وجود نداشته‌اند.
-            </p>
-            <br />
-            <p>
-              ما در هر پروژه تلاش می‌کنیم بهترین کیفیت و معنا را در کنار هم ارائه دهیم، با این امید که سهمی در بیشتر دیده شدن و رشد کسب‌وکار شما داشته باشیم.
-            </p>
+            <h2 className={title}>{content.title}</h2>
+            {content.paragraphs.map((paragraph, index) => (
+              <p key={index} className={index > 0 ? "mt-4" : undefined}>
+                {paragraph}
+              </p>
+            ))}
           </div>
 
           <div className={grid}>
@@ -47,7 +45,7 @@ export default function About() {
                 </div>
 
                 <div className={alignBottom}>
-                  <div className={content}>
+                  <div className={contentCls}>
                     <h3 className={memberName}>{member.name}</h3>
                     <span className={role}>{member.role}</span>
                   </div>
