@@ -4,14 +4,14 @@ const SITE = 'https://www.bumims.ir';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: 'Bumim® — Treatment Design, Pitch Decks & AI Film',
+  title: 'بومیم | تولید محتوای دیجیتال',
   description:
     'Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows. The ghost behind winning pitches — 150+ production houses, Germany & worldwide.',
   alternates: { canonical: SITE + '/' },
   openGraph: {
     type: 'website',
     siteName: 'Bumim',
-    title: 'Bumim® — Treatment Design, Pitch Decks & AI Film',
+    title: 'بومیم | تولید محتوای دیجیتال',
     description:
       'Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows.',
     url: SITE + '/',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bumim® — Treatment Design, Pitch Decks & AI Film',
+    title: 'بومیم | تولید محتوای دیجیتال',
     description:
       'Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows.',
     images: [SITE + '/assets/og-image.jpg'],
