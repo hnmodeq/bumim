@@ -1,0 +1,16 @@
+# dependencies
+/node_modules
+/.pnpm-debug.log
+
+# testing
+/coverage
+
+# production
+/build
+/.next
+/out
+
+# misc
+.DS_Store
+*.pem
+.env*.local
