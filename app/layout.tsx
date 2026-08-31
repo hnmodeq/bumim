@@ -556,7 +556,7 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 }
 ` }} />
       </head>
-      <body className="locked">{children}</body>
+      <body className="locked" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

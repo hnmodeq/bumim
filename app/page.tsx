@@ -1,6 +1,6 @@
 export default function Page() {
   return (
-    <div dangerouslySetInnerHTML={{ __html: `
+    <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `
 <div class="grain"></div>
 <div class="focus-pull"></div>
 
@@ -665,6 +665,285 @@ requestAnimationFrame(loop);
   }, 3200);
 })();
 </script>
+
+<!-- LIVE CONTROL PANEL OVERLAY -->
+<div id="admin-panel" style="position:fixed;top:0;left:0;bottom:0;width:340px;background:#0d110f;color:#edf1ec;font-family:'Space Grotesk',sans-serif;z-index:99999;box-shadow:5px 0 30px rgba(0,0,0,0.8);transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;border-right:1px solid rgba(237,241,236,0.15);direction:ltr;text-align:left;">
+  <div style="padding:20px;border-bottom:1px solid rgba(237,241,236,0.1);display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="panel-dot" style="width:10px;height:10px;border-radius:50%;background:var(--mint, #02df82);"></div>
+      <span style="font-weight:700;font-size:15px;letter-spacing:0.05em;">LIVE CONTROL PANEL</span>
+    </div>
+    <button id="panel-close" style="background:none;border:none;color:#edf1ec;font-size:18px;cursor:pointer;padding:4px 8px;">✕</button>
+  </div>
+  
+  <div style="display:flex;border-bottom:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.2);">
+    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #02df82);">Colors</button>
+    <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Fonts</button>
+    <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Sections</button>
+    <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Type</button>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;padding:20px;">
+    <!-- TAB 1: COLORS -->
+    <div id="tab-colors" class="panel-content" style="display:block;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Accent & Mint Token</h3>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;margin-bottom:6px;">Accent Color (--mint)</label>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="color" id="accent-color-picker" value="#02df82" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;" />
+          <input type="text" id="accent-color-text" value="#02df82" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;" />
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;margin-bottom:6px;">Quick Presets</label>
+        <div style="display:flex;gap:8px;">
+          <button class="palette-btn" data-color="#02df82" style="width:32px;height:32px;border-radius:50%;background:#02df82;border:none;cursor:pointer;" title="Mint"></button>
+          <button class="palette-btn" data-color="#facc15" style="width:32px;height:32px;border-radius:50%;background:#facc15;border:none;cursor:pointer;" title="Bumim Yellow"></button>
+          <button class="palette-btn" data-color="#3b82f6" style="width:32px;height:32px;border-radius:50%;background:#3b82f6;border:none;cursor:pointer;" title="Blue"></button>
+          <button class="palette-btn" data-color="#ec4899" style="width:32px;height:32px;border-radius:50%;background:#ec4899;border:none;cursor:pointer;" title="Pink"></button>
+          <button class="palette-btn" data-color="#f97316" style="width:32px;height:32px;border-radius:50%;background:#f97316;border:none;cursor:pointer;" title="Orange"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: FONTS -->
+    <div id="tab-fonts" class="panel-content" style="display:none;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Primary Font Family</h3>
+      <div style="margin-bottom:16px;">
+        <select id="font-family-select" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 12px;border-radius:8px;font-size:13px;cursor:pointer;">
+          <option value="'Space Grotesk', sans-serif">Space Grotesk (Default)</option>
+          <option value="'Vazirmatn', sans-serif">Vazirmatn (Persian)</option>
+          <option value="'Inter', sans-serif">Inter (Sans)</option>
+          <option value="system-ui, sans-serif">System UI</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TAB 3: SECTIONS -->
+    <div id="tab-sections" class="panel-content" style="display:none;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Hide / Show Sections</h3>
+      <div id="sections-toggles" style="display:flex;flex-direction:column;gap:12px;">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #02df82);" /> Hero Section</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #02df82);" /> Manifesto (The Unseen Author)</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #02df82);" /> Selected Treatments</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #02df82);" /> Campaigns</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="ai" checked style="accent-color:var(--mint, #02df82);" /> AI in the Pipeline</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #02df82);" /> Apparitions</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #02df82);" /> Credits & Logos</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #02df82);" /> Brief / Contact</label>
+      </div>
+    </div>
+
+    <!-- TAB 4: TYPOGRAPHY TOKENS -->
+    <div id="tab-typography" class="panel-content" style="display:none;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Typography Tokens</h3>
+      <div style="margin-bottom:14px;">
+        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Hero Title Size</span><span id="val-hero-size">72px</span></label>
+        <input type="range" id="token-hero-size" min="40" max="120" value="72" style="width:100%;accent-color:var(--mint, #02df82);" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Section Title Size</span><span id="val-sec-size">48px</span></label>
+        <input type="range" id="token-sec-size" min="24" max="80" value="48" style="width:100%;accent-color:var(--mint, #02df82);" />
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:16px 20px;border-top:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.3);display:flex;gap:10px;">
+    <button id="panel-apply" style="flex:1;background:var(--mint, #02df82);color:#050706;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Apply & Save</button>
+    <button id="panel-reset" style="background:rgba(255,255,255,0.08);color:#edf1ec;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Reset</button>
+    <button id="panel-logout" style="background:rgba(255,120,120,0.12);color:#ff9c9c;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Log out</button>
+  </div>
+</div>
+
+<button id="panel-toggle" style="position:fixed;top:50%;left:0;transform:translateY(-50%);width:36px;height:48px;background:#0d110f;color:var(--mint, #02df82);border:1px solid rgba(237,241,236,0.2);border-left:none;border-radius:0 8px 8px 0;z-index:9998;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;box-shadow:4px 0 15px rgba(0,0,0,0.5);" title="Open Live Control Panel">⚙️</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const panel = document.getElementById('admin-panel');
+  const toggleBtn = document.getElementById('panel-toggle');
+  const closeBtn = document.getElementById('panel-close');
+  const applyBtn = document.getElementById('panel-apply');
+  const resetBtn = document.getElementById('panel-reset');
+  const logoutBtn = document.getElementById('panel-logout');
+  const colorPicker = document.getElementById('accent-color-picker');
+  const colorText = document.getElementById('accent-color-text');
+  const fontSelect = document.getElementById('font-family-select');
+  const heroSizeRange = document.getElementById('token-hero-size');
+  const heroSizeVal = document.getElementById('val-hero-size');
+  const secSizeRange = document.getElementById('token-sec-size');
+  const secSizeVal = document.getElementById('val-sec-size');
+  const panelDot = document.getElementById('panel-dot');
+  // --- Admin session gate: the panel only appears for authenticated admins ---
+  if (localStorage.getItem('bumim_admin') !== 'granted') {
+    if (toggleBtn) toggleBtn.style.display = 'none';
+    if (panel) panel.remove();
+    return;
+  }
+  if (toggleBtn) toggleBtn.style.display = 'flex';
+
+
+  // Load saved settings
+  const saved = JSON.parse(localStorage.getItem('bumim_admin_settings') || '{}');
+  if (saved.mint) {
+    document.documentElement.style.setProperty('--mint', saved.mint);
+    colorPicker.value = saved.mint;
+    colorText.value = saved.mint;
+    panelDot.style.background = saved.mint;
+  }
+  if (saved.font) {
+    document.body.style.fontFamily = saved.font;
+    fontSelect.value = saved.font;
+  }
+
+  // Toggle Panel
+  toggleBtn.addEventListener('click', () => {
+    panel.style.transform = 'translateX(0)';
+    toggleBtn.style.display = 'none';
+  });
+  closeBtn.addEventListener('click', () => {
+    panel.style.transform = 'translateX(-100%)';
+    toggleBtn.style.display = 'flex';
+  });
+
+  // Tabs
+  document.querySelectorAll('.panel-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.panel-tab').forEach(t => {
+        t.style.borderBottom = 'none';
+        t.style.color = '#a1a1aa';
+        t.classList.remove('active');
+      });
+      document.querySelectorAll('.panel-content').forEach(c => c.style.display = 'none');
+      tab.classList.add('active');
+      tab.style.borderBottom = '2px solid var(--mint, #02df82)';
+      tab.style.color = '#edf1ec';
+      document.getElementById(tab.getAttribute('data-tab')).style.display = 'block';
+    });
+  });
+
+  // Color change live (universal mint token binding)
+  const applyAccentColor = (hex) => {
+    document.documentElement.style.setProperty('--mint', hex);
+    colorPicker.value = hex;
+    colorText.value = hex;
+    if (panelDot) panelDot.style.background = hex;
+    if (toggleBtn) toggleBtn.style.color = hex;
+
+    let styleTag = document.getElementById('comprehensive-accent-patch');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'comprehensive-accent-patch';
+      document.head.appendChild(styleTag);
+    }
+    const cleanHex = hex.replace('#','');
+    const enc = (s) => 'data:image/svg+xml,' + encodeURIComponent(s);
+    const dotSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="4" fill="' + hex + '"/></svg>';
+    const ringSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="none" stroke="' + hex + '" stroke-width="1.5"/><circle cx="14" cy="14" r="3.5" fill="' + hex + '"/></svg>';
+    const playSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="13" fill="#05070688" stroke="' + hex + '" stroke-width="1.5"/><path d="M13 10.5 L23 16 L13 21.5 Z" fill="' + hex + '"/></svg>';
+    styleTag.textContent =
+      'body.fine { cursor: url(' + enc(dotSvg) + ') 10 10, auto; }' +
+      'body.fine a, body.fine button, body.fine .seg { cursor: url(' + enc(ringSvg) + ') 14 14, pointer; }' +
+      'body.fine .rw-card { cursor: url(' + enc(playSvg) + ') 16 16, pointer; }' +
+      '::selection { background: ' + hex + ' !important; color: #050706 !important; }' +
+      '.ap-rail::-webkit-scrollbar-thumb { background: ' + hex + ' !important; }' +
+      '#tl { border-top-color: ' + hex + '33 !important; }' +
+      'body.playing .hud-tl .rec { background: ' + hex + ' !important; }' +
+      '.hud-tr button { color: ' + hex + ' !important; border-bottom-color: ' + hex + '99 !important; }' +
+      '.hud-tr button:hover { text-shadow: 0 0 14px ' + hex + ', 0 0 34px ' + hex + '88 !important; }' +
+      '#tl .seg.on { background: ' + hex + '3b !important; }' +
+      '#tl .seg.on .sg-no { color: ' + hex + ' !important; }' +
+      '#tl .playhead { background: ' + hex + ' !important; }' +
+      '#tl .playhead::before { border-top-color: ' + hex + ' !important; }' +
+      '#tl .tl-sc .no { color: ' + hex + ' !important; }' +
+      '.gh::before { color: ' + hex + ' !important; }' +
+      '.slate .sc { color: ' + hex + ' !important; }' +
+      '.studio-rot span { color: ' + hex + ' !important; }' +
+      '#hero h1 .l2 em { color: ' + hex + ' !important; }' +
+      '#hero .h-scroll .ln { background: linear-gradient(' + hex + ', transparent) !important; }' +
+      '#manifesto h2 em { color: ' + hex + ' !important; }' +
+      '.strip-end .se em { color: ' + hex + ' !important; }' +
+      '.strip-prog i { background: ' + hex + ' !important; }' +
+      '.rw-card:hover .rw-play { border-color: ' + hex + ' !important; }' +
+      '.rw-card:hover .rw-play::before { border-left-color: ' + hex + ' !important; }' +
+      '#appar .ap-head h2 em { color: ' + hex + ' !important; }' +
+      '.nda-stamp { color: ' + hex + ' !important; }' +
+      '.ap-railhint .tri { border-left-color: ' + hex + ' !important; }' +
+      '.ap-note b { color: ' + hex + ' !important; }' +
+      '.svc .s-i { color: ' + hex + ' !important; }' +
+      '#ai .ai-state h2 em { color: ' + hex + ' !important; }' +
+      '.brand:hover { color: ' + hex + ' !important; border-color: ' + hex + ' !important; }' +
+      '.cr-roll .cr .role { color: ' + hex + ' !important; }' +
+      '#end .cut em { color: ' + hex + ' !important; }' +
+      '.end-cta a:hover { border-color: ' + hex + ' !important; color: ' + hex + ' !important; }' +
+      '.legal-grid h4 { color: ' + hex + ' !important; }' +
+      '#menu a .m-sc { color: ' + hex + ' !important; }' +
+      '#menu a:hover .m-t { color: ' + hex + ' !important; }';
+
+  };
+  colorPicker.addEventListener('input', (e) => applyAccentColor(e.target.value));
+  colorText.addEventListener('input', (e) => applyAccentColor(e.target.value));
+  document.querySelectorAll('.palette-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyAccentColor(btn.getAttribute('data-color')));
+  });
+
+  // Font family live
+  fontSelect.addEventListener('change', (e) => {
+    document.body.style.fontFamily = e.target.value;
+  });
+
+  // Section visibility toggles
+  document.querySelectorAll('#sections-toggles input').forEach(chk => {
+    chk.addEventListener('change', (e) => {
+      const secId = e.target.getAttribute('data-section');
+      const el = document.getElementById(secId);
+      if (el) {
+        el.style.display = e.target.checked ? '' : 'none';
+      }
+    });
+  });
+
+  // Typography range sliders live
+  heroSizeRange.addEventListener('input', (e) => {
+    const val = e.target.value + 'px';
+    heroSizeVal.textContent = val;
+    document.querySelectorAll('h1').forEach(h => h.style.fontSize = val);
+  });
+  secSizeRange.addEventListener('input', (e) => {
+    const val = e.target.value + 'px';
+    secSizeVal.textContent = val;
+    document.querySelectorAll('h2').forEach(h => h.style.fontSize = val);
+  });
+
+  // Apply & Save
+  applyBtn.addEventListener('click', () => {
+    const settings = {
+      mint: colorPicker.value,
+      font: fontSelect.value
+    };
+    localStorage.setItem('bumim_admin_settings', JSON.stringify(settings));
+    
+    // Success toast notification
+    const toast = document.createElement('div');
+    toast.textContent = '✓ Changes applied & saved successfully!';
+    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--mint, #02df82);color:#050706;padding:12px 24px;border-radius:12px;font-weight:700;z-index:100000;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-size:14px;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    localStorage.removeItem('bumim_admin_settings');
+    location.reload();
+  });
+
+  // Log out
+  if (logoutBtn) logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('bumim_admin');
+    location.href = '/admin';
+  });
+});
+</script>
+
 ` }} />
   );
 }
