@@ -51,7 +51,10 @@ export default function Page() {
 <!-- ============ SC 00 — HERO ============ -->
 <section id="hero" data-sc="00" data-name="Opening titles">
   <div class="kicker reveal">
-    <img class="gp-logo" src="/assets/logo-bumim.svg" alt="Bumim®">
+    <div class="lockup">
+      <img class="lockup-mark" src="/assets/bumim-mark.png" alt="Bumim">
+      <span class="lockup-word" dir="rtl" lang="fa">بومیم</span>
+    </div>
     <div class="studio-line">
       <span class="studio-for">Design studio for</span>
       <span class="studio-rot" id="studio-rot">
@@ -387,7 +390,7 @@ function runLeader(ts){
   const el = ts - leadStart, per = 560;
   const n = 3 - Math.floor(el/per);
   const frac = (el%per)/per;
-  sweep.style.background = \`conic-gradient(rgba(2,223,130,.16) \${frac*360}deg, transparent \${frac*360}deg)\`;
+  sweep.style.background = \`conic-gradient(rgba(240,168,0,.16) \${frac*360}deg, transparent \${frac*360}deg)\`;
   if (n >= 1){
     if (numEl.textContent !== String(n)){
       numEl.textContent = n;
@@ -670,14 +673,14 @@ requestAnimationFrame(loop);
 <div id="admin-panel" style="position:fixed;top:0;left:0;bottom:0;width:340px;background:#0d110f;color:#edf1ec;font-family:'Space Grotesk',sans-serif;z-index:99999;box-shadow:5px 0 30px rgba(0,0,0,0.8);transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;border-right:1px solid rgba(237,241,236,0.15);direction:ltr;text-align:left;">
   <div style="padding:20px;border-bottom:1px solid rgba(237,241,236,0.1);display:flex;align-items:center;justify-content:space-between;">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div id="panel-dot" style="width:10px;height:10px;border-radius:50%;background:var(--mint, #02df82);"></div>
+      <div id="panel-dot" style="width:10px;height:10px;border-radius:50%;background:var(--mint, #f0a800);"></div>
       <span style="font-weight:700;font-size:15px;letter-spacing:0.05em;">LIVE CONTROL PANEL</span>
     </div>
     <button id="panel-close" style="background:none;border:none;color:#edf1ec;font-size:18px;cursor:pointer;padding:4px 8px;">✕</button>
   </div>
   
   <div style="display:flex;border-bottom:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.2);">
-    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #02df82);">Colors</button>
+    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #f0a800);">Colors</button>
     <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Fonts</button>
     <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Sections</button>
     <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Type</button>
@@ -690,14 +693,14 @@ requestAnimationFrame(loop);
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;margin-bottom:6px;">Accent Color (--mint)</label>
         <div style="display:flex;align-items:center;gap:10px;">
-          <input type="color" id="accent-color-picker" value="#02df82" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;" />
-          <input type="text" id="accent-color-text" value="#02df82" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;" />
+          <input type="color" id="accent-color-picker" value="#f0a800" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;" />
+          <input type="text" id="accent-color-text" value="#f0a800" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;" />
         </div>
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;margin-bottom:6px;">Quick Presets</label>
         <div style="display:flex;gap:8px;">
-          <button class="palette-btn" data-color="#02df82" style="width:32px;height:32px;border-radius:50%;background:#02df82;border:none;cursor:pointer;" title="Mint"></button>
+          <button class="palette-btn" data-color="#f0a800" style="width:32px;height:32px;border-radius:50%;background:#f0a800;border:none;cursor:pointer;" title="Gold"></button>
           <button class="palette-btn" data-color="#facc15" style="width:32px;height:32px;border-radius:50%;background:#facc15;border:none;cursor:pointer;" title="Bumim Yellow"></button>
           <button class="palette-btn" data-color="#3b82f6" style="width:32px;height:32px;border-radius:50%;background:#3b82f6;border:none;cursor:pointer;" title="Blue"></button>
           <button class="palette-btn" data-color="#ec4899" style="width:32px;height:32px;border-radius:50%;background:#ec4899;border:none;cursor:pointer;" title="Pink"></button>
@@ -723,14 +726,14 @@ requestAnimationFrame(loop);
     <div id="tab-sections" class="panel-content" style="display:none;">
       <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Hide / Show Sections</h3>
       <div id="sections-toggles" style="display:flex;flex-direction:column;gap:12px;">
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #02df82);" /> Hero Section</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #02df82);" /> Manifesto (The Unseen Author)</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #02df82);" /> Selected Treatments</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #02df82);" /> Campaigns</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="ai" checked style="accent-color:var(--mint, #02df82);" /> AI in the Pipeline</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #02df82);" /> Apparitions</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #02df82);" /> Credits & Logos</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #02df82);" /> Brief / Contact</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #f0a800);" /> Hero Section</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #f0a800);" /> Manifesto (The Unseen Author)</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #f0a800);" /> Selected Treatments</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #f0a800);" /> Campaigns</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="ai" checked style="accent-color:var(--mint, #f0a800);" /> AI in the Pipeline</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #f0a800);" /> Apparitions</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #f0a800);" /> Credits & Logos</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #f0a800);" /> Brief / Contact</label>
       </div>
     </div>
 
@@ -739,23 +742,23 @@ requestAnimationFrame(loop);
       <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Typography Tokens</h3>
       <div style="margin-bottom:14px;">
         <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Hero Title Size</span><span id="val-hero-size">72px</span></label>
-        <input type="range" id="token-hero-size" min="40" max="120" value="72" style="width:100%;accent-color:var(--mint, #02df82);" />
+        <input type="range" id="token-hero-size" min="40" max="120" value="72" style="width:100%;accent-color:var(--mint, #f0a800);" />
       </div>
       <div style="margin-bottom:14px;">
         <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Section Title Size</span><span id="val-sec-size">48px</span></label>
-        <input type="range" id="token-sec-size" min="24" max="80" value="48" style="width:100%;accent-color:var(--mint, #02df82);" />
+        <input type="range" id="token-sec-size" min="24" max="80" value="48" style="width:100%;accent-color:var(--mint, #f0a800);" />
       </div>
     </div>
   </div>
 
   <div style="padding:16px 20px;border-top:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.3);display:flex;gap:10px;">
-    <button id="panel-apply" style="flex:1;background:var(--mint, #02df82);color:#050706;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Apply & Save</button>
+    <button id="panel-apply" style="flex:1;background:var(--mint, #f0a800);color:#050706;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Apply & Save</button>
     <button id="panel-reset" style="background:rgba(255,255,255,0.08);color:#edf1ec;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Reset</button>
     <button id="panel-logout" style="background:rgba(255,120,120,0.12);color:#ff9c9c;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Log out</button>
   </div>
 </div>
 
-<button id="panel-toggle" style="position:fixed;top:50%;left:0;transform:translateY(-50%);width:36px;height:48px;background:#0d110f;color:var(--mint, #02df82);border:1px solid rgba(237,241,236,0.2);border-left:none;border-radius:0 8px 8px 0;z-index:9998;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;box-shadow:4px 0 15px rgba(0,0,0,0.5);" title="Open Live Control Panel">⚙️</button>
+<button id="panel-toggle" style="position:fixed;top:50%;left:0;transform:translateY(-50%);width:36px;height:48px;background:#0d110f;color:var(--mint, #f0a800);border:1px solid rgba(237,241,236,0.2);border-left:none;border-radius:0 8px 8px 0;z-index:9998;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;box-shadow:4px 0 15px rgba(0,0,0,0.5);" title="Open Live Control Panel">⚙️</button>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -815,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       document.querySelectorAll('.panel-content').forEach(c => c.style.display = 'none');
       tab.classList.add('active');
-      tab.style.borderBottom = '2px solid var(--mint, #02df82)';
+      tab.style.borderBottom = '2px solid var(--mint, #f0a800)';
       tab.style.color = '#edf1ec';
       document.getElementById(tab.getAttribute('data-tab')).style.display = 'block';
     });
@@ -925,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Success toast notification
     const toast = document.createElement('div');
     toast.textContent = '✓ Changes applied & saved successfully!';
-    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--mint, #02df82);color:#050706;padding:12px 24px;border-radius:12px;font-weight:700;z-index:100000;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-size:14px;';
+    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--mint, #f0a800);color:#050706;padding:12px 24px;border-radius:12px;font-weight:700;z-index:100000;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-size:14px;';
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   });

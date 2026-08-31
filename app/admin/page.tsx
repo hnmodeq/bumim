@@ -84,7 +84,7 @@ export default function AdminPage() {
           }}
         >
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.02em', color: '#02df82' }}>
+            <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.02em', color: '#f0a800' }}>
               Bumim
             </div>
             <div style={{ fontSize: 12, letterSpacing: '0.26em', textTransform: 'uppercase', color: '#76827a', marginTop: 6 }}>
@@ -103,7 +103,7 @@ export default function AdminPage() {
                   display: 'block',
                   textAlign: 'center',
                   padding: '13px 18px',
-                  background: '#02df82',
+                  background: '#f0a800',
                   color: '#050706',
                   borderRadius: '10px',
                   fontWeight: 700,
@@ -167,7 +167,7 @@ export default function AdminPage() {
                 style={{
                   width: '100%',
                   padding: '13px 18px',
-                  background: '#02df82',
+                  background: '#f0a800',
                   color: '#050706',
                   border: 'none',
                   borderRadius: '10px',
