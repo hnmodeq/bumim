@@ -1,24 +1,24 @@
 export default function Page() {
   return (
     <div dangerouslySetInnerHTML={{ __html: `TYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl" style="direction: rtl; text-align: right;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ghost Pitcher® — Treatment Design, Pitch Decks & AI Film</title>
-<meta name="description" content="Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows. The ghost behind winning pitches — 150+ production houses, Germany & worldwide.">
+<title>استودیوی بومیم (Ghost Pitcher®) — Treatment Design, Pitch Decks & AI Film</title>
+<meta name="description" content="طراحی تریتمنت, pitch decks, mood research and AI film for commercials, music videos, movies & shows. The ghost behind winning pitches — 150+ production houses, Germany & worldwide.">
 <link rel="canonical" href="https://www.ghost-pitcher.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ghost Pitcher">
-<meta property="og:title" content="Ghost Pitcher® — Treatment Design, Pitch Decks & AI Film">
-<meta property="og:description" content="Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows. The ghost behind winning pitches.">
+<meta property="og:title" content="استودیوی بومیم (Ghost Pitcher®) — Treatment Design, Pitch Decks & AI Film">
+<meta property="og:description" content="طراحی تریتمنت, pitch decks, mood research and AI film for commercials, music videos, movies & shows. The ghost behind winning pitches.">
 <meta property="og:url" content="https://www.ghost-pitcher.com/">
 <meta property="og:image" content="https://www.ghost-pitcher.com/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Ghost Pitcher® — Treatment Design, Pitch Decks & AI Film">
-<meta name="twitter:description" content="Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows.">
+<meta name="twitter:title" content="استودیوی بومیم (Ghost Pitcher®) — Treatment Design, Pitch Decks & AI Film">
+<meta name="twitter:description" content="طراحی تریتمنت, pitch decks, mood research and AI film for commercials, music videos, movies & shows.">
 <meta name="twitter:image" content="https://www.ghost-pitcher.com/assets/og-image.jpg">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
@@ -31,18 +31,18 @@ export default function Page() {
   "url": "https://www.ghost-pitcher.com/",
   "logo": "https://www.ghost-pitcher.com/assets/logo-ghost-pitcher.png",
   "image": "https://www.ghost-pitcher.com/assets/og-image.jpg",
-  "description": "Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies and shows.",
+  "description": "طراحی تریتمنت, pitch decks, mood research and AI film for commercials, music videos, movies and shows.",
   "email": "hello@dar-dan.com",
   "telephone": "+49 176 84186946",
   "founder": {
     "@type": "Person",
     "name": "Dardan Sejdija",
-    "jobTitle": "Art & Creative Director",
+    "jobTitle": "Art & Creative کارگردان",
     "url": "https://www.dar-dan.com"
   },
   "sameAs": ["https://www.dar-dan.com"],
   "areaServed": ["Germany", "Worldwide"],
-  "knowsAbout": ["Director's treatments", "Pitch decks", "Mood research", "AI film and image generation", "Key visuals and title design"]
+  "knowsAbout": ["کارگردان's treatments", "پیچ دک (Pitch Decks)", "تحقیقات مودبورد و مرجع بصری", "AI film and image generation", "Key visuals and title design"]
 }
 </script>
 <style>
@@ -555,8 +555,8 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 <span class="vf-tick t"></span><span class="vf-tick b"></span>
 <div class="hud hud-tl"><span class="rec"></span><span id="rec-label"><b>REC</b><span class="hud-sub"> — Ghost Cam · A-Roll</span></span></div>
 <div class="hud hud-tr">
-  <span class="fmt">2.39:1 · Vision3 · 24 fps</span>
-  <button id="menu-btn">Scenes</button>
+  <span class="fmt">2.39:1 · Vision3 · ۲۴ فریم</span>
+  <button id="menu-btn">سکانس‌ها</button>
 </div>
 
 <!-- timeline nav -->
@@ -577,12 +577,12 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
     <div class="leader-sweep" id="sweep"></div>
     <div id="leader-num" class="serif">3</div>
   </div>
-  <div class="leader-cap">Ghost Pitcher — Picture Start</div>
+  <div class="leader-cap">استودیوی بومیم — شروع تصویر</div>
 </div>
 
 <!-- menu -->
 <div id="menu">
-  <button class="m-close" id="menu-close">Close ✕</button>
+  <button class="m-close" id="menu-close">بستن ✕</button>
   <a href="#hero"><span class="m-sc">SC 00</span><span class="m-t">Opening titles</span></a>
   <a href="#manifesto"><span class="m-sc">SC 01</span><span class="m-t">The unseen author</span></a>
   <a href="#strip"><span class="m-sc">SC 02</span><span class="m-t">Selected treatments</span></a>
@@ -596,60 +596,60 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 <!-- ============ SC 00 — HERO ============ -->
 <section id="hero" data-sc="00" data-name="Opening titles">
   <div class="kicker reveal">
-    <img class="gp-logo" src="/assets/logo-ghost-pitcher.png" alt="Ghost Pitcher®">
+    <img class="gp-logo" src="/assets/logo-ghost-pitcher.png" alt="استودیوی بومیم (Ghost Pitcher®)">
     <div class="studio-line">
-      <span class="studio-for">Design studio for</span>
+      <span class="studio-for">استودیوی تخصصی طراحی برای</span>
       <span class="studio-rot" id="studio-rot">
-        <span>Treatment design — commercials, music videos, brand films, movies &amp; shows</span>
-        <span>Mood research</span>
+        <span>طراحی تریتمنت — commercials, music videos, brand films, movies &amp; shows</span>
+        <span>تحقیقات مودبورد و مرجع بصری</span>
         <span>AI film &amp; images for pitches and final release</span>
         <span>Key visual &amp; design work for all media</span>
       </span>
     </div>
   </div>
   <h1>
-    <div class="reveal split re"><span class="gh" data-text="You've seen us.">You've seen us.</span></div>
-    <div class="l2 reveal split re"><span class="gh" data-text="You just don't know it.">You just <em>don't know it.</em></span></div>
+    <div class="reveal split re"><span class="gh" data-text="شما've seen us.">شما've seen us.</span></div>
+    <div class="l2 reveal split re"><span class="gh" data-text="شما just don't know it.">شما just <em>don't know it.</em></span></div>
   </h1>
   <div class="h-foot">
-    <p class="h-sub reveal">Director treatments, pitch decks, mood research and AI concept frames.
-      For the directors you know — from the ghost you don't.</p>
-    <div class="h-scroll reveal"><span class="ln"></span> Roll picture — scroll</div>
+    <p class="h-sub reveal">تریتمنت‌های کارگردانی، پیچ دک‌ها، تحقیقات مود و فریم‌های مفهومی هوش مصنوعی.
+      برای کارگردانانی که می‌شناسید — از طرف روح نامرئی پشت صحنه.</p>
+    <div class="h-scroll reveal"><span class="ln"></span> شروع حرکت تصویر — اسکرول کنید</div>
   </div>
 </section>
 
 <!-- ============ SC 01 — MANIFESTO ============ -->
-<header class="slate reveal re"><span class="sc">SC 01</span><span class="nm">The unseen author</span><span class="tk">Take 01 · MOS</span></header>
+<header class="slate reveal re"><span class="sc">SC 01</span><span class="nm">The unseen author</span><span class="tk">تیک 01 · MOS</span></header>
 <section id="manifesto" data-sc="01" data-name="The unseen author">
   <div class="m-in">
-    <h2 class="reveal split re">You've seen our work on air.<br>
-      You've never <em>seen us.</em></h2>
+    <h2 class="reveal split re">شما've seen our work on air.<br>
+      شما've never <em>seen us.</em></h2>
     <p class="reveal re">Musicians, authors and screenwriters have ghostwriters. Agencies, production
       companies, producers and directors book us as their Ghost Pitcher. Ghost Pitcher is the invisible
       half of the pitch. We design the treatments and decks directors walk into the room with —
       delivered for <b>Mercedes-Benz, BMW, Ford, Audi, VW, Sony, Samsung, Nivea, Pepsi and
-      Nutella</b>, with production houses across Europe, the US and beyond.
-      The work gets famous. We stay the ghost.</p>
+      Nutella</b>, با همکاری خانه‌های تولیدی در سراسر اروپا، آمریکا و جهان.
+      کار معروف می‌شود. ما روح پشت صحنه باقی می‌مانیم.</p>
   </div>
-  <p class="eyebrow reveal re" style="margin-top:9vh">What we make</p>
+  <p class="eyebrow reveal re" style="margin-top:9vh">آنچه می‌سازیم</p>
   <div class="svc-grid" id="services">
-    <div class="svc reveal"><span class="s-i">i.</span><h3>Treatment design</h3>
-      <p>End-to-end visual treatments. Editorial layout, image research, concept frames, storyboard integration.</p></div>
-    <div class="svc reveal"><span class="s-i">ii.</span><h3>Pitch decks</h3>
-      <p>Production-house-grade pitch documents. Cinematic, tightly art-directed, without a wasted page.</p></div>
+    <div class="svc reveal"><span class="s-i">i.</span><h3>طراحی تریتمنت</h3>
+      <p>تریتمنت‌های بصری جامع. چیدمان ادیتوریال، تحقیقات تصویر، فریم‌های مفهومی، ادغام استوری‌برد.</p></div>
+    <div class="svc reveal"><span class="s-i">ii.</span><h3>پیچ دک (Pitch Decks)</h3>
+      <p>اسناد پیچ در سطح استانداردهای سینمایی و حرفه‌ای. سینمایی، کارگردانی هنری دقیق، بدون حتی یک صفحه هدررفته.</p></div>
     <div class="svc reveal"><span class="s-i">iii.</span><h3>Mood &amp; reference</h3>
-      <p>Deep reference research and mood curation. The director's visual language — refined, never stock.</p></div>
+      <p>تحقیقات عمیق مرجع و تنظیم مودبورد. زبان بصری اختصاصی کارگردان — اصیل و به دور از تصاویر استوک.</p></div>
     <div class="svc reveal"><span class="s-i">iv.</span><h3>AI film &amp; image</h3>
-      <p>Moving concept frames, cinematic stills and full spots — art directed, then generated.</p></div>
+      <p>فریم‌های متحرک مفهومی، استیل‌های سینمایی و اسپات‌های کامل — ابتدا کارگردانی هنری، سپس تولید.</p></div>
     <div class="svc reveal"><span class="s-i">v.</span><h3>Titles &amp; key art</h3>
-      <p>Main title sequences, key visuals, posters and logos for series and features. Credited work.</p></div>
+      <p>سکانس‌های تایتل اصلی، کلیدویژوال‌ها، پوسترها و لوگوها برای سریال‌ها و فیلم‌های سینمایی. آثار با ذکر نام.</p></div>
   </div>
 </section>
 
 <!-- ============ SC 02 — TREATMENTS ============ -->
 <section id="strip" data-sc="02" data-name="Selected treatments">
   <div class="pin">
-    <header class="slate reveal re" style="margin-bottom:5vh"><span class="sc">SC 02</span><span class="nm">Selected treatments</span><span class="tk">Take 01 · 05 boards</span></header>
+    <header class="slate reveal re" style="margin-bottom:5vh"><span class="sc">SC 02</span><span class="nm">Selected treatments</span><span class="tk">تیک 01 · 05 boards</span></header>
     <div class="track" id="track">
       <div class="fcard">
         <span class="f-no">№ 01</span>
@@ -671,14 +671,14 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
         <span class="f-no">№ 05</span>
         <div class="f-media"><div class="inner"><video class="ph-fill" autoplay muted loop playsinline preload="metadata" src="/assets/treatment-05-tokiovada.webm" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"></video></div></div>
       </div>
-      <div class="strip-end"><div class="se">Every board is a promise<br>the film <em>keeps.</em></div></div>
+      <div class="strip-end"><div class="se">هر بورد، قولی است<br>the film <em>keeps.</em></div></div>
     </div>
     <div class="strip-prog"><i id="strip-i"></i></div>
   </div>
 </section>
 
 <!-- ============ SC 03 — REALISED ============ -->
-<header class="slate reveal re"><span class="sc">SC 03</span><span class="nm">Pitches that became campaigns</span><span class="tk">Take 01 · Sync sound</span></header>
+<header class="slate reveal re"><span class="sc">SC 03</span><span class="nm">Pitches that became campaigns</span><span class="tk">تیک 01 · Sync sound</span></header>
 <section id="real" data-sc="03" data-name="Realised">
   <div class="real-grid reveal">
     <a class="rw-card" href="https://vimeo.com/714045362" target="_blank" rel="noopener noreferrer">
@@ -730,7 +730,7 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 </section>
 
 <!-- ============ SC 04 — AI ============ -->
-<header class="slate reveal re"><span class="sc">SC 04</span><span class="nm">AI in the pipeline</span><span class="tk">Take 02 · VFX</span></header>
+<header class="slate reveal re"><span class="sc">SC 04</span><span class="nm">AI in the pipeline</span><span class="tk">تیک 02 · VFX</span></header>
 <section id="ai" data-sc="04" data-name="AI in the pipeline">
   <div class="ai-state">
     <h2 class="reveal split re">Art directed,<br>then <em>generated.</em></h2>
@@ -758,12 +758,12 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
     </div>
   </div>
   <div class="w-marquee" id="mq-tools"><div class="mq-in">
-    <span>Nano Banana Pro — Seedance — Kling — Midjourney — Runway — Luma — Cinema Studio 4K — and many more — </span>
+    <span>Nano Banana Pro — Seedance — Kling — Midjourney — Runway — Luma — Cinema استودیو 4K — and many more — </span>
   </div></div>
 </section>
 
 <!-- ============ SC 05 — APPARITIONS ============ -->
-<header class="slate reveal re"><span class="sc">SC 05</span><span class="nm">Apparitions</span><span class="tk">Take 01 · Credited</span></header>
+<header class="slate reveal re"><span class="sc">SC 05</span><span class="nm">Apparitions</span><span class="tk">تیک 01 · Credited</span></header>
 <section id="appar" data-sc="05" data-name="Apparitions">
   <div class="ap-head">
     <h2 class="reveal split re">Except when <em>you have.</em></h2>
@@ -776,32 +776,32 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
       <div class="ap-card wide">
         <div class="ph-fill pal-am"></div>
         <div class="nda">
-          <span class="nda-stamp">Under NDA — signed</span>
-          <span class="nda-t">Main title sequence</span>
-          <span class="nda-s">To be released — the reveal follows the premiere</span>
+          <span class="nda-stamp">تحت قرارداد عدم افشا (NDA) — امضا شده</span>
+          <span class="nda-t">سکانس تایتل اصلی</span>
+          <span class="nda-s">به زودی — رونمایی پس از اکران</span>
         </div>
       </div>
       <div class="ap-card tall">
         <div class="ph-fill pal-sv"></div>
         <div class="nda">
-          <span class="nda-stamp">Under NDA — signed</span>
-          <span class="nda-t">Key visual 01</span>
+          <span class="nda-stamp">تحت قرارداد عدم افشا (NDA) — امضا شده</span>
+          <span class="nda-t">کلید آرت ۰۱</span>
           <span class="nda-s">To be released</span>
         </div>
       </div>
       <div class="ap-card tall">
         <div class="ph-fill pal-am"></div>
         <div class="nda">
-          <span class="nda-stamp">Under NDA — signed</span>
-          <span class="nda-t">Key visual 02</span>
+          <span class="nda-stamp">تحت قرارداد عدم افشا (NDA) — امضا شده</span>
+          <span class="nda-t">کلید آرت ۰۲</span>
           <span class="nda-s">To be released</span>
         </div>
       </div>
       <div class="ap-card tall">
         <div class="ph-fill pal-fr"></div>
         <div class="nda">
-          <span class="nda-stamp">Under NDA — signed</span>
-          <span class="nda-t">Key visual 03</span>
+          <span class="nda-stamp">تحت قرارداد عدم افشا (NDA) — امضا شده</span>
+          <span class="nda-t">کلید آرت ۰۳</span>
           <span class="nda-s">To be released</span>
         </div>
       </div>
@@ -815,7 +815,7 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 <!-- ============ SC 06 — CREDITS ============ -->
 <header class="slate reveal re"><span class="sc">SC 06</span><span class="nm">Credits</span><span class="tk">Roll · End titles</span></header>
 <section id="credits" data-sc="06" data-name="Credits">
-  <p class="eyebrow cr-cap reveal re">In order of appearance</p>
+  <p class="eyebrow cr-cap reveal re">به ترتیب حضور</p>
   <div class="brands reveal">
     <div class="brand"><img src="/assets/logo-mercedes.svg" alt="Mercedes-Benz" loading="lazy"></div>
     <div class="brand"><img src="/assets/logo-ford.svg" alt="Ford" loading="lazy"></div>
@@ -847,22 +847,22 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
     <div class="brand"><img src="/assets/logo-zdf.svg" alt="ZDF" loading="lazy"></div>
   </div>
   <div class="cr-roll reveal" style="margin-top:7vh">
-    <div class="cr"><span class="role">As the ghost — uncredited</span><span class="who">Pitch decks for ads, movies &amp; shows</span></div>
-    <div class="cr"><span class="role">In frame — credited</span><span class="who">Title design &amp; key art — series &amp; feature films</span></div>
-    <div class="cr"><span class="role">With production houses</span><span class="who">Worked with over 150 production houses</span></div>
-    <div class="cr"><span class="role">Territory</span><span class="who">Germany &amp; Worldwide</span></div>
+    <div class="cr"><span class="role">به عنوان روح پشت صحنه — بدون ذکر نام</span><span class="who">پیچ دک (Pitch Decks) for ads, movies &amp; shows</span></div>
+    <div class="cr"><span class="role">در داخل قاب — با ذکر نام</span><span class="who">Title design &amp; key art — series &amp; feature films</span></div>
+    <div class="cr"><span class="role">با خانه‌های تولیدی</span><span class="who">همکاری با بیش از ۱۵۰ خانه تولیدی معتبر</span></div>
+    <div class="cr"><span class="role">منطقه فعالیت</span><span class="who">Germany &amp; Worldwide</span></div>
   </div>
 </section>
 
 <!-- ============ SC 07 — END ============ -->
 <section id="end" data-sc="07" data-name="Got a brief?">
-  <div class="cut reveal split re"><span class="gh" data-text="Cut.">Cut.</span></div>
+  <div class="cut reveal split re"><span class="gh" data-text="کات.">کات.</span></div>
   <div class="end-slate reveal">
     <div class="es-stripe"></div>
-    <div class="es-row"><span>Scene</span><span>Your brief</span></div>
-    <div class="es-row"><span>Director</span><span>You</span></div>
-    <div class="es-row"><span>Studio</span><span>Ghost Pitcher®</span></div>
-    <div class="es-row"><span>Take</span><span>01</span></div>
+    <div class="es-row"><span>Scene</span><span>بریف شما</span></div>
+    <div class="es-row"><span>کارگردان</span><span>شما</span></div>
+    <div class="es-row"><span>استودیو</span><span>استودیوی بومیم (Ghost Pitcher®)</span></div>
+    <div class="es-row"><span>تیک</span><span>01</span></div>
   </div>
   <div class="end-cta reveal">
     <a href="mailto:hello@dar-dan.com">hello@dar-dan.com</a>
@@ -875,14 +875,14 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
   <p class="eyebrow lg-cap reveal">Fine print — Legal &amp; privacy</p>
   <div class="legal-grid reveal">
     <div class="lg">
-      <h4>Imprint</h4>
-      <p>Ghost Pitcher® is the treatment &amp; AI studio of Dardan Sejdija — Art &amp; Creative Director
+      <h4>شناسنامه سایت (Imprint)</h4>
+      <p>استودیوی بومیم (Ghost Pitcher®) is the treatment &amp; AI studio of Dardan Sejdija — Art &amp; Creative کارگردان
       (owner). Main portfolio: <a href="https://www.dar-dan.com" target="_blank" rel="noopener noreferrer">www.dar-dan.com</a> ·
-      Contact: <a href="mailto:hello@dar-dan.com">hello@dar-dan.com</a> · +49&nbsp;176&nbsp;84&nbsp;186&nbsp;946.</p>
+      تماس: <a href="mailto:hello@dar-dan.com">hello@dar-dan.com</a> · +49&nbsp;176&nbsp;84&nbsp;186&nbsp;946.</p>
     </div>
     <div class="lg">
-      <h4>Copyright</h4>
-      <p>© 2026 Ghost Pitcher®. All rights reserved. All treatments, pitch decks, concept frames,
+      <h4>کپی‌رایت</h4>
+      <p>© 2026 استودیوی بومیم (Ghost Pitcher®). All rights reserved. All treatments, pitch decks, concept frames,
       title designs, key art and other materials shown on this site are the intellectual property
       of Ghost Pitcher and/or the respective clients and rights holders. Reproduction, distribution
       or any public use — in whole or in part — without prior written consent is prohibited.</p>
@@ -891,23 +891,23 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
       <h4>Shown work &amp; trademarks</h4>
       <p>All brand names and logos appear exclusively as references to commissioned work and remain
       trademarks of their respective owners. Work created under non-disclosure agreements is shown
-      in approved or redacted form only. External links (Vimeo, YouTube) open on their platforms and
+      in approved or redacted form only. External links (Vimeo, شماTube) open on their platforms and
       are subject to those platforms' terms.</p>
     </div>
     <div class="lg">
-      <h4>Privacy</h4>
+      <h4>حریم خصوصی</h4>
       <p>This site sets no cookies and embeds no third-party content. All assets — including fonts
       and video — are served from this domain. For visitor statistics we use Vercel Web Analytics,
       which is cookieless: it records page views and aggregated technical data (such as referrer,
       country, browser and device type) without storing identifiers on your device and without
       building visitor profiles. No data is sold or passed to advertisers. If you contact us by
       e-mail or phone, your details are used solely to answer your enquiry and are never shared.
-      You may request deletion of your correspondence at any time:
+      شما may request deletion of your correspondence at any time:
       <a href="mailto:hello@dar-dan.com">hello@dar-dan.com</a>.</p>
     </div>
   </div>
 </section>
-<footer><span>© Ghost Pitcher® 2026 — All rights reserved</span><span>Prototype IV — The Ghost Cam</span></footer>
+<footer><span>© استودیوی بومیم (Ghost Pitcher®) 2026 — All rights reserved</span><span>Prototype IV — The Ghost Cam</span></footer>
 
 <!-- Vercel Web Analytics — cookieless page views. The script is served by
      Vercel itself at /_vercel/insights/script.js, so no third-party host. -->
@@ -1200,7 +1200,7 @@ requestAnimationFrame(loop);
     rail.scrollLeft += (e.deltaY || e.deltaX);
   }, {passive:false});
 })();
-/* hero ticker — "Design studio for": current line wipes up and out,
+/* hero ticker — "استودیوی تخصصی طراحی برای": current line wipes up and out,
    the next fades up from below, looping forever */
 (() => {
   const items = [...document.querySelectorAll('#studio-rot > span')];
@@ -1219,35 +1219,35 @@ requestAnimationFrame(loop);
 </script>
 
 <!-- LIVE CONTROL PANEL OVERLAY -->
-<div id="admin-panel" style="position:fixed;top:0;left:0;bottom:0;width:340px;background:#0d110f;color:#edf1ec;font-family:'Space Grotesk',sans-serif;z-index:99999;box-shadow:5px 0 30px rgba(0,0,0,0.8);transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;border-right:1px solid rgba(237,241,236,0.15);direction:ltr;text-align:left;">
+<div id="admin-panel" style="position:fixed;top:0;right:0;bottom:0;width:340px;background:#0d110f;color:#edf1ec;font-family:'Space Grotesk',sans-serif;z-index:99999;box-shadow:-5px 0 30px rgba(0,0,0,0.8);transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;border-left:1px solid rgba(237,241,236,0.15);direction:rtl;text-align:right;">
   <div style="padding:20px;border-bottom:1px solid rgba(237,241,236,0.1);display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div id="panel-dot" style="width:10px;height:10px;border-radius:50%;background:var(--mint, #02df82);"></div>
-      <span style="font-weight:700;font-size:15px;letter-spacing:0.05em;">LIVE CONTROL PANEL</span>
-    </div>
     <button id="panel-close" style="background:none;border:none;color:#edf1ec;font-size:18px;cursor:pointer;padding:4px 8px;">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-weight:700;font-size:15px;letter-spacing:0.05em;">پنل کنترل زنده (Bumim)</span>
+      <div id="panel-dot" style="width:10px;height:10px;border-radius:50%;background:var(--mint, #02df82);"></div>
+    </div>
   </div>
   
   <div style="display:flex;border-bottom:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.2);">
-    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #02df82);">Colors</button>
-    <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Fonts</button>
-    <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Sections</button>
-    <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Type</button>
+    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #02df82);">رنگ‌ها</button>
+    <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">فونت‌ها</button>
+    <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">بخش‌ها</button>
+    <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">تایپوگرافی</button>
   </div>
 
   <div style="flex:1;overflow-y:auto;padding:20px;">
     <!-- TAB 1: COLORS -->
     <div id="tab-colors" class="panel-content" style="display:block;">
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Accent & Mint Token</h3>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">توکن رنگ اصلی (موس، اسکرول، بردرها)</h3>
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:12px;margin-bottom:6px;">Accent Color (--mint)</label>
+        <label style="display:block;font-size:12px;margin-bottom:6px;">رنگ اصلی (--mint)</label>
         <div style="display:flex;align-items:center;gap:10px;">
+          <input type="text" id="accent-color-text" value="#02df82" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;direction:ltr;text-align:left;" />
           <input type="color" id="accent-color-picker" value="#02df82" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;" />
-          <input type="text" id="accent-color-text" value="#02df82" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;" />
         </div>
       </div>
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:12px;margin-bottom:6px;">Quick Presets</label>
+        <label style="display:block;font-size:12px;margin-bottom:6px;">پالت‌های پیشنهادی</label>
         <div style="display:flex;gap:8px;">
           <button class="palette-btn" data-color="#02df82" style="width:32px;height:32px;border-radius:50%;background:#02df82;border:none;cursor:pointer;" title="Mint"></button>
           <button class="palette-btn" data-color="#facc15" style="width:32px;height:32px;border-radius:50%;background:#facc15;border:none;cursor:pointer;" title="Bumim Yellow"></button>
@@ -1260,12 +1260,12 @@ requestAnimationFrame(loop);
 
     <!-- TAB 2: FONTS -->
     <div id="tab-fonts" class="panel-content" style="display:none;">
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Primary Font Family</h3>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">فونت اصلی سایت</h3>
       <div style="margin-bottom:16px;">
         <select id="font-family-select" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 12px;border-radius:8px;font-size:13px;cursor:pointer;">
-          <option value="'Space Grotesk', sans-serif">Space Grotesk (Default)</option>
-          <option value="'Vazirmatn', sans-serif">Vazirmatn (Persian)</option>
-          <option value="'Inter', sans-serif">Inter (Sans)</option>
+          <option value="'Space Grotesk', sans-serif">Space Grotesk (پیش‌فرض)</option>
+          <option value="'Vazirmatn', sans-serif">Vazirmatn (فارسی)</option>
+          <option value="'Inter', sans-serif">Inter</option>
           <option value="system-ui, sans-serif">System UI</option>
         </select>
       </div>
@@ -1273,40 +1273,40 @@ requestAnimationFrame(loop);
 
     <!-- TAB 3: SECTIONS -->
     <div id="tab-sections" class="panel-content" style="display:none;">
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Hide / Show Sections</h3>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">نمایش / مخفی کردن بخش‌ها</h3>
       <div id="sections-toggles" style="display:flex;flex-direction:column;gap:12px;">
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #02df82);" /> Hero Section</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #02df82);" /> Manifesto (The Unseen Author)</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #02df82);" /> Selected Treatments</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #02df82);" /> Campaigns</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="ai" checked style="accent-color:var(--mint, #02df82);" /> AI in the Pipeline</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #02df82);" /> Apparitions</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #02df82);" /> Credits & Logos</label>
-        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #02df82);" /> Brief / Contact</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #02df82);" /> بخش هیرو (Hero)</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #02df82);" /> مانیفست (نویسنده نامرئی)</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #02df82);" /> تریتمنت‌های برگزیده</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #02df82);" /> کمپین‌ها و هوش مصنوعی</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="ai" checked style="accent-color:var(--mint, #02df82);" /> خط تولید هوش مصنوعی</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #02df82);" /> ظهورها (Apparitions)</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #02df82);" /> عوامل و لوگوها</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #02df82);" /> بریف و تماس</label>
       </div>
     </div>
 
     <!-- TAB 4: TYPOGRAPHY TOKENS -->
     <div id="tab-typography" class="panel-content" style="display:none;">
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Typography Tokens</h3>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">توکن‌های تایپوگرافی</h3>
       <div style="margin-bottom:14px;">
-        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Hero Title Size</span><span id="val-hero-size">72px</span></label>
+        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>اندازه عنوان هیرو</span><span id="val-hero-size">72px</span></label>
         <input type="range" id="token-hero-size" min="40" max="120" value="72" style="width:100%;accent-color:var(--mint, #02df82);" />
       </div>
       <div style="margin-bottom:14px;">
-        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>Section Title Size</span><span id="val-sec-size">48px</span></label>
+        <label style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>اندازه عنوان بخش‌ها</span><span id="val-sec-size">48px</span></label>
         <input type="range" id="token-sec-size" min="24" max="80" value="48" style="width:100%;accent-color:var(--mint, #02df82);" />
       </div>
     </div>
   </div>
 
   <div style="padding:16px 20px;border-top:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.3);display:flex;gap:10px;">
-    <button id="panel-apply" style="flex:1;background:var(--mint, #02df82);color:#050706;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Apply & Save</button>
-    <button id="panel-reset" style="background:rgba(255,255,255,0.08);color:#edf1ec;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Reset</button>
+    <button id="panel-apply" style="flex:1;background:var(--mint, #02df82);color:#050706;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">اعمال و ذخیره</button>
+    <button id="panel-reset" style="background:rgba(255,255,255,0.08);color:#edf1ec;border:none;padding:12px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">بازنشانی</button>
   </div>
 </div>
 
-<button id="panel-toggle" style="position:fixed;top:50%;left:0;transform:translateY(-50%);width:36px;height:48px;background:#0d110f;color:var(--mint, #02df82);border:1px solid rgba(237,241,236,0.2);border-left:none;border-radius:0 8px 8px 0;z-index:9998;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:4px 0 15px rgba(0,0,0,0.5);" title="Open Live Control Panel">⚙️</button>
+<button id="panel-toggle" style="position:fixed;top:50%;left:0;transform:translateY(-50%);width:36px;height:48px;background:#0d110f;color:var(--mint, #02df82);border:1px solid rgba(237,241,236,0.2);border-left:none;border-radius:0 8px 8px 0;z-index:9998;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:4px 0 15px rgba(0,0,0,0.5);" title="پنل کنترل زنده">⚙️</button>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -1324,30 +1324,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const secSizeVal = document.getElementById('val-sec-size');
   const panelDot = document.getElementById('panel-dot');
 
-  // Load saved settings
-  const saved = JSON.parse(localStorage.getItem('ghost_pitcher_admin') || '{}');
+  const saved = JSON.parse(localStorage.getItem('bumim_admin_v2') || '{}');
   if (saved.mint) {
-    document.documentElement.style.setProperty('--mint', saved.mint);
+    applyAccentColor(saved.mint);
     colorPicker.value = saved.mint;
     colorText.value = saved.mint;
-    panelDot.style.background = saved.mint;
   }
   if (saved.font) {
     document.body.style.fontFamily = saved.font;
     fontSelect.value = saved.font;
   }
 
-  // Toggle Panel
   toggleBtn.addEventListener('click', () => {
     panel.style.transform = 'translateX(0)';
     toggleBtn.style.display = 'none';
   });
   closeBtn.addEventListener('click', () => {
-    panel.style.transform = 'translateX(-100%)';
+    panel.style.transform = 'translateX(100%)';
     toggleBtn.style.display = 'flex';
   });
 
-  // Tabs
   document.querySelectorAll('.panel-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.panel-tab').forEach(t => {
@@ -1363,26 +1359,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Color change live
-  const updateColor = (hex) => {
+  function applyAccentColor(hex) {
     document.documentElement.style.setProperty('--mint', hex);
     colorPicker.value = hex;
     colorText.value = hex;
-    panelDot.style.background = hex;
-    toggleBtn.style.color = hex;
-  };
-  colorPicker.addEventListener('input', (e) => updateColor(e.target.value));
-  colorText.addEventListener('input', (e) => updateColor(e.target.value));
+    if (panelDot) panelDot.style.background = hex;
+    if (toggleBtn) toggleBtn.style.color = hex;
+
+    let styleTag = document.getElementById('dynamic-cursor-style');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'dynamic-cursor-style';
+      document.head.appendChild(styleTag);
+    }
+    const cleanHex = hex.replace('#','');
+    styleTag.textContent = \`
+      body.fine { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%23\${cleanHex}'/%3E%3C/svg%3E") 10 10, auto; }
+      body.fine a, body.fine button, body.fine .seg { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='12' fill='none' stroke='%23\${cleanHex}' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='14' r='3.5' fill='%23\${cleanHex}'/%3E%3C/svg%3E") 14 14, pointer; }
+      body.fine .rw-card { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23050706' fill-opacity='.55' stroke='%23\${cleanHex}' stroke-width='1.5'/%3E%3Cpath d='M13 10.5 L23 16 L13 21.5 Z' fill='%23\${cleanHex}'/%3E%3C/svg%3E") 16 16, pointer; }
+    \`;
+  }
+
+  colorPicker.addEventListener('input', (e) => applyAccentColor(e.target.value));
+  colorText.addEventListener('input', (e) => applyAccentColor(e.target.value));
   document.querySelectorAll('.palette-btn').forEach(btn => {
-    btn.addEventListener('click', () => updateColor(btn.getAttribute('data-color')));
+    btn.addEventListener('click', () => applyAccentColor(btn.getAttribute('data-color')));
   });
 
-  // Font family live
   fontSelect.addEventListener('change', (e) => {
     document.body.style.fontFamily = e.target.value;
   });
 
-  // Section visibility toggles
   document.querySelectorAll('#sections-toggles input').forEach(chk => {
     chk.addEventListener('change', (e) => {
       const secId = e.target.getAttribute('data-section');
@@ -1393,7 +1400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Typography range sliders live
   heroSizeRange.addEventListener('input', (e) => {
     const val = e.target.value + 'px';
     heroSizeVal.textContent = val;
@@ -1405,25 +1411,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('h2').forEach(h => h.style.fontSize = val);
   });
 
-  // Apply & Save
   applyBtn.addEventListener('click', () => {
     const settings = {
       mint: colorPicker.value,
       font: fontSelect.value
     };
-    localStorage.setItem('ghost_pitcher_admin', JSON.stringify(settings));
+    localStorage.setItem('bumim_admin_v2', JSON.stringify(settings));
     
-    // Success toast notification
     const toast = document.createElement('div');
-    toast.textContent = '✓ Changes applied & saved successfully!';
+    toast.textContent = '✓ تغییرات با موفقیت اعمال و ذخیره شد!';
     toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--mint, #02df82);color:#050706;padding:12px 24px;border-radius:12px;font-weight:700;z-index:100000;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-size:14px;';
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   });
 
-  // Reset
   resetBtn.addEventListener('click', () => {
-    localStorage.removeItem('ghost_pitcher_admin');
+    localStorage.removeItem('bumim_admin_v2');
     location.reload();
   });
 });
