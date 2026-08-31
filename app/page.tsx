@@ -1363,18 +1363,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Color change live
-  const updateColor = (hex) => {
+  // Color change live (universal mint token binding)
+  const applyAccentColor = (hex) => {
     document.documentElement.style.setProperty('--mint', hex);
     colorPicker.value = hex;
     colorText.value = hex;
-    panelDot.style.background = hex;
-    toggleBtn.style.color = hex;
+    if (panelDot) panelDot.style.background = hex;
+    if (toggleBtn) toggleBtn.style.color = hex;
+
+    let styleTag = document.getElementById('comprehensive-accent-patch');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'comprehensive-accent-patch';
+      document.head.appendChild(styleTag);
+    }
+    const cleanHex = hex.replace('#','');
+    styleTag.textContent = 
+      "body.fine { cursor: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%23" + cleanHex + "'/%3E%3C/svg%3E\") 10 10, auto; }" +
+      "body.fine a, body.fine button, body.fine .seg { cursor: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='12' fill='none' stroke='%23" + cleanHex + "' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='14' r='3.5' fill='%23" + cleanHex + "'/%3E%3C/svg%3E\") 14 14, pointer; }" +
+      "body.fine .rw-card { cursor: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23050706' fill-opacity='.55' stroke='%23" + cleanHex + "' stroke-width='1.5'/%3E%3Cpath d='M13 10.5 L23 16 L13 21.5 Z' fill='%23" + cleanHex + "'/%3E%3C/svg%3E\") 16 16, pointer; }" +
+      "::selection { background: " + hex + " !important; color: #050706 !important; }" +
+      ".ap-rail::-webkit-scrollbar-thumb { background: " + hex + " !important; }" +
+      "#tl { border-top-color: " + hex + "33 !important; }" +
+      "body.playing .hud-tl .rec { background: " + hex + " !important; }" +
+      ".hud-tr button { color: " + hex + " !important; border-bottom-color: " + hex + "99 !important; }" +
+      ".hud-tr button:hover { text-shadow: 0 0 14px " + hex + ", 0 0 34px " + hex + "88 !important; }" +
+      "#tl .seg.on { background: " + hex + "3b !important; }" +
+      "#tl .seg.on .sg-no { color: " + hex + " !important; }" +
+      "#tl .playhead { background: " + hex + " !important; }" +
+      "#tl .playhead::before { border-top-color: " + hex + " !important; }" +
+      "#tl .tl-sc .no { color: " + hex + " !important; }" +
+      ".gh::before { color: " + hex + " !important; }" +
+      ".slate .sc { color: " + hex + " !important; }" +
+      ".studio-rot span { color: " + hex + " !important; }" +
+      "#hero h1 .l2 em { color: " + hex + " !important; }" +
+      "#hero .h-scroll .ln { background: linear-gradient(" + hex + ", transparent) !important; }" +
+      "#manifesto h2 em { color: " + hex + " !important; }" +
+      ".strip-end .se em { color: " + hex + " !important; }" +
+      ".strip-prog i { background: " + hex + " !important; }" +
+      ".rw-card:hover .rw-play { border-color: " + hex + " !important; }" +
+      ".rw-card:hover .rw-play::before { border-left-color: " + hex + " !important; }" +
+      "#appar .ap-head h2 em { color: " + hex + " !important; }" +
+      ".nda-stamp { color: " + hex + " !important; }" +
+      ".ap-railhint .tri { border-left-color: " + hex + " !important; }" +
+      ".ap-note b { color: " + hex + " !important; }" +
+      ".svc .s-i { color: " + hex + " !important; }" +
+      "#ai .ai-state h2 em { color: " + hex + " !important; }" +
+      ".brand:hover { color: " + hex + " !important; border-color: " + hex + " !important; }" +
+      ".cr-roll .cr .role { color: " + hex + " !important; }" +
+      "#end .cut em { color: " + hex + " !important; }" +
+      ".end-cta a:hover { border-color: " + hex + " !important; color: " + hex + " !important; }" +
+      ".legal-grid h4 { color: " + hex + " !important; }" +
+      "#menu a .m-sc { color: " + hex + " !important; }" +
+      "#menu a:hover .m-t { color: " + hex + " !important; }";
   };
-  colorPicker.addEventListener('input', (e) => updateColor(e.target.value));
-  colorText.addEventListener('input', (e) => updateColor(e.target.value));
+  colorPicker.addEventListener('input', (e) => applyAccentColor(e.target.value));
+  colorText.addEventListener('input', (e) => applyAccentColor(e.target.value));
   document.querySelectorAll('.palette-btn').forEach(btn => {
-    btn.addEventListener('click', () => updateColor(btn.getAttribute('data-color')));
+    btn.addEventListener('click', () => applyAccentColor(btn.getAttribute('data-color')));
   });
 
   // Font family live
