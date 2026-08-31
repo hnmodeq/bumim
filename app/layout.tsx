@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'استودیوی بومیم — طراحی تریتمنت، پیچ دک و فیلم هوش مصنوعی',
-  description: 'طراحی تریتمنت، پیچ دک، تحقیقات مود و فیلم هوش مصنوعی برای تیزرها، موزیک ویدیوها و فیلم‌ها.',
+  title: 'Ghost Pitcher® — Treatment Design, Pitch Decks & AI Film',
+  description: 'Treatment design, pitch decks, mood research and AI film for commercials, music videos, movies & shows.',
 };
 
 export default function RootLayout({
@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='fa' dir='rtl' style={{ direction: 'rtl', textAlign: 'right' }}>
+    <html lang='en'>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
