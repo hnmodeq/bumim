@@ -473,6 +473,16 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
   font:inherit;font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;border-bottom:1px solid rgba(237,241,236,.3)}
 
 
+/* ---------- pricing tabs ---------- */
+.pr-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:5vh}
+.pr-tab{background:none;border:1px solid var(--line);color:var(--bone);font:inherit;
+  font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;padding:13px 20px;
+  cursor:pointer;transition:border-color .35s,color .35s,background .35s}
+.pr-tab:hover{border-color:rgba(240,168,0,.5);color:var(--mint)}
+.pr-tab.on{background:var(--mint);border-color:var(--mint);color:#050706}
+.pr-svc[data-grp]:not(.on){display:none}
+.pr-list .pr-svc.on{display:block}
+
 /* ---------- PRICING ---------- */
 #pricing{padding:12vh 6vw 6vh;position:relative}
 .pr-head{max-width:1000px;margin-bottom:8vh}
@@ -578,6 +588,7 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
   .svc p{font-size:13px}
   /* pricing cards single column on phones */
   #pricing{padding:10vh 7vw 5vh}
+  .pr-tab{font-size:11px;padding:11px 15px;letter-spacing:.12em}
   .pr-head h2{font-size:clamp(34px,11vw,52px)}
   .pr-sub,.pr-head{font-size:14.5px}
   .pr-grid{grid-template-columns:1fr}

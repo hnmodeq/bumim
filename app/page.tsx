@@ -84,9 +84,17 @@ export default function Page() {
     <h2 class="reveal">Transparent <em>pricing.</em></h2>
     <p class="pr-sub reveal">A single dollar-based rate, set once. Every package below is priced from it automatically — change the exchange rate and the whole list recalculates.</p>
     <div class="pr-rate reveal"><span class="pr-rate-dot"></span> 1 USD = <b id="pr-rate-val">230,000</b>&nbsp;<span>تومان</span></div>
+    <div class="pr-tabs reveal" id="pr-tabs">
+      <button class="pr-tab on" data-grp="0">Video editing</button>
+      <button class="pr-tab" data-grp="1">Motion 2D</button>
+      <button class="pr-tab" data-grp="2">Motion 3D</button>
+      <button class="pr-tab" data-grp="3">Narration</button>
+      <button class="pr-tab" data-grp="4">Graphic design</button>
+      <button class="pr-tab" data-grp="5">Website</button>
+    </div>
   </div>
   <div class="pr-list">
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal on" data-grp="0">
       <div class="pr-svc-head"><span class="pr-svc-no">01</span><h3 class="pr-svc-name">Video editing</h3><span class="pr-svc-calc">per minute · per hour</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -133,7 +141,7 @@ export default function Page() {
       </article>
       </div>
     </div>
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal" data-grp="1">
       <div class="pr-svc-head"><span class="pr-svc-no">02</span><h3 class="pr-svc-name">Motion graphics 2D</h3><span class="pr-svc-calc">per second</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -152,7 +160,7 @@ export default function Page() {
       </article>
       </div>
     </div>
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal" data-grp="2">
       <div class="pr-svc-head"><span class="pr-svc-no">03</span><h3 class="pr-svc-name">Motion graphics 3D</h3><span class="pr-svc-calc">per second</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -171,7 +179,7 @@ export default function Page() {
       </article>
       </div>
     </div>
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal" data-grp="3">
       <div class="pr-svc-head"><span class="pr-svc-no">04</span><h3 class="pr-svc-name">Narration</h3><span class="pr-svc-calc">per second · per minute</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -197,7 +205,7 @@ export default function Page() {
       </article>
       </div>
     </div>
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal" data-grp="4">
       <div class="pr-svc-head"><span class="pr-svc-no">05</span><h3 class="pr-svc-name">Graphic design</h3><span class="pr-svc-calc">per design</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -237,7 +245,7 @@ export default function Page() {
       </article>
       </div>
     </div>
-    <div class="pr-svc reveal">
+    <div class="pr-svc reveal" data-grp="5">
       <div class="pr-svc-head"><span class="pr-svc-no">06</span><h3 class="pr-svc-name">Website development</h3><span class="pr-svc-calc">per project</span></div>
       <div class="pr-grid">
       <article class="pr-card">
@@ -586,6 +594,20 @@ document.querySelectorAll('.pr-val').forEach(el => {
   if (savedRatios[el.dataset.pkg] != null) el.dataset.ratio = savedRatios[el.dataset.pkg];
 });
 applyRate();
+/* ---------- pricing service tabs ---------- */
+const prTabs = document.querySelectorAll('.pr-tab');
+const prSvcs = document.querySelectorAll('.pr-svc[data-grp]');
+function activatePr(grp){
+  prTabs.forEach(t => t.classList.toggle('on', t.dataset.grp === grp));
+  prSvcs.forEach(sec => {
+    const on = sec.dataset.grp === grp;
+    sec.classList.toggle('on', on);
+    // re-trigger reveal animation for cards now visible
+    if (on){ sec.querySelectorAll('.reveal').forEach(el => el.classList.add('in')); }
+  });
+}
+prTabs.forEach(t => t.addEventListener('click', () => activatePr(t.dataset.grp)));
+activatePr('0');
 if (fine) document.body.classList.add('fine');
 
 let W = innerWidth, H = innerHeight;
