@@ -472,6 +472,35 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 #menu .m-close{position:absolute;top:24px;right:26px;background:none;border:none;color:var(--bone);
   font:inherit;font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;border-bottom:1px solid rgba(237,241,236,.3)}
 
+
+/* ---------- PRICING ---------- */
+#pricing{padding:12vh 6vw 6vh;position:relative}
+.pr-head{max-width:1000px;margin-bottom:8vh}
+.pr-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(40px,6vw,92px);line-height:1.05}
+.pr-head h2 em{color:var(--mint)}
+.pr-sub{margin-top:3vh;max-width:600px;color:#aab4ad;font-size:16px;line-height:1.85}
+.pr-rate{display:inline-flex;align-items:center;gap:10px;margin-top:4vh;padding:14px 22px;border:1px solid rgba(237,241,236,.16);border-radius:999px;font-size:14px;letter-spacing:.04em;color:var(--bone);background:rgba(5,7,6,.45)}
+.pr-rate-dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px rgba(240,168,0,.7)}
+.pr-rate b{color:var(--mint);font-variant-numeric:tabular-nums;font-weight:400}
+.pr-list{max-width:1200px}
+.pr-svc{border-top:1px solid var(--line);padding-top:5vh;margin-top:6vh}
+.pr-svc-head{display:flex;align-items:baseline;gap:18px;margin-bottom:4vh;flex-wrap:wrap}
+.pr-svc-no{font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;color:var(--mint)}
+.pr-svc-name{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(24px,2.6vw,38px);line-height:1}
+.pr-svc-calc{margin-left:auto;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+.pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.pr-card{position:relative;border:1px solid var(--line);background:rgba(237,241,236,.02);padding:24px 22px;display:flex;flex-direction:column;transition:border-color .4s,background .4s,transform .45s cubic-bezier(.22,1,.3,1)}
+.pr-card:hover{border-color:rgba(240,168,0,.45);background:rgba(240,168,0,.04);transform:translateY(-4px)}
+.pr-tier{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.pr-card.pro .pr-tier{color:var(--mint)}
+.pr-card.pro{border-color:rgba(240,168,0,.18)}
+.pr-name{font-family:'Instrument Serif',serif;font-size:22px;line-height:1.1;margin-bottom:8px}
+.pr-desc{font-size:12.5px;line-height:1.7;color:#9aa49d;flex:1;margin-bottom:18px}
+.pr-price{display:flex;align-items:baseline;gap:6px;color:var(--mint)}
+.pr-val{font-family:'Instrument Serif',serif;font-size:28px;font-variant-numeric:tabular-nums;line-height:1}
+.pr-cur{font-size:12.5px;color:var(--dim)}
+.pr-per{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+
 @media (max-width:900px){
   /* viewfinder frame stays, just tighter and smaller so it reads as a frame
      instead of eating the screen */
@@ -547,6 +576,13 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
   .nda-s{font-size:10px;letter-spacing:.18em;line-height:1.7}
   .svc h3{font-size:19px}
   .svc p{font-size:13px}
+  /* pricing cards single column on phones */
+  #pricing{padding:10vh 7vw 5vh}
+  .pr-head h2{font-size:clamp(34px,11vw,52px)}
+  .pr-sub,.pr-head{font-size:14.5px}
+  .pr-grid{grid-template-columns:1fr}
+  .pr-svc-calc{margin-left:0;width:100%}
+
   #legal{padding:3vh 7vw 5vh}
   .legal-grid p{font-size:12px}
   footer{font-size:10px;letter-spacing:.18em;gap:5vw;padding:18px 7vw calc(var(--tl-h) + 26px)}

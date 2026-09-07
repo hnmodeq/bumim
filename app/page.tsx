@@ -39,13 +39,14 @@ export default function Page() {
 <div id="menu">
   <button class="m-close" id="menu-close">Close ✕</button>
   <a href="#hero"><span class="m-sc">SC 00</span><span class="m-t">Opening titles</span></a>
-  <a href="#manifesto"><span class="m-sc">SC 01</span><span class="m-t">The unseen author</span></a>
-  <a href="#strip"><span class="m-sc">SC 02</span><span class="m-t">Selected treatments</span></a>
-  <a href="#real"><span class="m-sc">SC 03</span><span class="m-t">Pitches that became campaigns</span></a>
-  <a href="#ai"><span class="m-sc">SC 04</span><span class="m-t">AI in the pipeline</span></a>
-  <a href="#appar"><span class="m-sc">SC 05</span><span class="m-t">Apparitions</span></a>
-  <a href="#credits"><span class="m-sc">SC 06</span><span class="m-t">Credits</span></a>
-  <a href="#end"><span class="m-sc">SC 07</span><span class="m-t">Got a brief?</span></a>
+  <a href="#pricing"><span class="m-sc">SC 01</span><span class="m-t">Rate card</span></a>
+  <a href="#manifesto"><span class="m-sc">SC 02</span><span class="m-t">The unseen author</span></a>
+  <a href="#strip"><span class="m-sc">SC 03</span><span class="m-t">Selected treatments</span></a>
+  <a href="#real"><span class="m-sc">SC 04</span><span class="m-t">Pitches that became campaigns</span></a>
+  <a href="#ai"><span class="m-sc">SC 05</span><span class="m-t">AI in the pipeline</span></a>
+  <a href="#appar"><span class="m-sc">SC 06</span><span class="m-t">Apparitions</span></a>
+  <a href="#credits"><span class="m-sc">SC 07</span><span class="m-t">Credits</span></a>
+  <a href="#end"><span class="m-sc">SC 08</span><span class="m-t">Got a brief?</span></a>
 </div>
 
 <!-- ============ SC 00 — HERO ============ -->
@@ -76,9 +77,198 @@ export default function Page() {
   </div>
 </section>
 
-<!-- ============ SC 01 — MANIFESTO ============ -->
-<header class="slate reveal re"><span class="sc">SC 01</span><span class="nm">The unseen author</span><span class="tk">Take 01 · MOS</span></header>
-<section id="manifesto" data-sc="01" data-name="The unseen author">
+<!-- ============ SC 01 — PRICING ============ -->
+<section id="pricing" data-sc="01" data-name="Rate card">
+  <div class="pr-head">
+    <p class="eyebrow reveal">Rate card — global pricing</p>
+    <h2 class="reveal">Transparent <em>pricing.</em></h2>
+    <p class="pr-sub reveal">A single dollar-based rate, set once. Every package below is priced from it automatically — change the exchange rate and the whole list recalculates.</p>
+    <div class="pr-rate reveal"><span class="pr-rate-dot"></span> 1 USD = <b id="pr-rate-val">230,000</b>&nbsp;<span>تومان</span></div>
+  </div>
+  <div class="pr-list">
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">01</span><h3 class="pr-svc-name">Video editing</h3><span class="pr-svc-calc">per minute · per hour</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Standard</div>
+        <div class="pr-name">Short video</div>
+        <div class="pr-desc">Reels, shorts, teasers and social cutdowns.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="short-std" data-ratio="1.0" data-label="Short video — Standard">230,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per minute</div>
+      </article>
+      <article class="pr-card pro">
+        <div class="pr-tier">Pro</div>
+        <div class="pr-name">Short video</div>
+        <div class="pr-desc">Advanced pacing, sound design and motion titles.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="short-pro" data-ratio="1.8" data-label="Short video — Pro">414,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per minute</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Under 2h</div>
+        <div class="pr-name">Long video</div>
+        <div class="pr-desc">Documentaries, interviews and event films.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="long-2" data-ratio="6.0" data-label="Long video — Under 2h">1,380,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per hour</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Under 5h</div>
+        <div class="pr-name">Long video</div>
+        <div class="pr-desc">Multi-camera edits, talks and features.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="long-5" data-ratio="8.0" data-label="Long video — Under 5h">1,840,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per hour</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Under 10h</div>
+        <div class="pr-name">Long video</div>
+        <div class="pr-desc">Extended features and full productions.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="long-10" data-ratio="11.0" data-label="Long video — Under 10h">2,530,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per hour</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">10h+</div>
+        <div class="pr-name">Long video</div>
+        <div class="pr-desc">Large-scale series and long-form content.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="long-plus" data-ratio="15.0" data-label="Long video — 10h+">3,450,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per hour</div>
+      </article>
+      </div>
+    </div>
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">02</span><h3 class="pr-svc-name">Motion graphics 2D</h3><span class="pr-svc-calc">per second</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Standard</div>
+        <div class="pr-name">2D motion</div>
+        <div class="pr-desc">Loops, lower-thirds and clean animation.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="mg2d-std" data-ratio="2.0" data-label="2D motion — Standard">460,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      <article class="pr-card pro">
+        <div class="pr-tier">Pro</div>
+        <div class="pr-name">2D motion</div>
+        <div class="pr-desc">Character, kinetic type and branded animation.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="mg2d-pro" data-ratio="3.2" data-label="2D motion — Pro">736,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      </div>
+    </div>
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">03</span><h3 class="pr-svc-name">Motion graphics 3D</h3><span class="pr-svc-calc">per second</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Standard</div>
+        <div class="pr-name">3D motion</div>
+        <div class="pr-desc">3D titles, product and camera moves.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="mg3d-std" data-ratio="4.5" data-label="3D motion — Standard">1,035,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      <article class="pr-card pro">
+        <div class="pr-tier">Pro</div>
+        <div class="pr-name">3D motion</div>
+        <div class="pr-desc">Full 3D scenes, lighting and rendering.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="mg3d-pro" data-ratio="7.0" data-label="3D motion — Pro">1,610,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      </div>
+    </div>
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">04</span><h3 class="pr-svc-name">Narration</h3><span class="pr-svc-calc">per second · per minute</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Advertisement</div>
+        <div class="pr-name">Voice-over</div>
+        <div class="pr-desc">Commercial and promotional spots.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="narr-ad" data-ratio="1.2" data-label="Voice-over — Advertisement">276,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Short content</div>
+        <div class="pr-name">Voice-over</div>
+        <div class="pr-desc">Social and short-form narration.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="narr-short" data-ratio="0.8" data-label="Voice-over — Short content">184,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per second</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Long content</div>
+        <div class="pr-name">Voice-over</div>
+        <div class="pr-desc">Documentary and long-form narrations.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="narr-long" data-ratio="5.0" data-label="Voice-over — Long content">1,150,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per minute</div>
+      </article>
+      </div>
+    </div>
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">05</span><h3 class="pr-svc-name">Graphic design</h3><span class="pr-svc-calc">per design</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Story</div>
+        <div class="pr-name">Story design</div>
+        <div class="pr-desc">Vertical story frames for social.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="gd-story" data-ratio="0.5" data-label="Story design — Story">115,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">each</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Thumbnail</div>
+        <div class="pr-name">Thumbnail</div>
+        <div class="pr-desc">High-impression thumbnail design.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="gd-thumb" data-ratio="1.0" data-label="Thumbnail — Thumbnail">230,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">each</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Banner</div>
+        <div class="pr-name">Banner</div>
+        <div class="pr-desc">Web and ad banner layouts.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="gd-banner" data-ratio="1.5" data-label="Banner — Banner">345,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">each</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Highlight</div>
+        <div class="pr-name">Highlight</div>
+        <div class="pr-desc">Highlight covers and tiles.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="gd-highlight" data-ratio="1.2" data-label="Highlight — Highlight">276,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">each</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Full Instagram</div>
+        <div class="pr-name">Instagram set</div>
+        <div class="pr-desc">Full cohesive Instagram feed design.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="gd-instagram" data-ratio="3.0" data-label="Instagram set — Full Instagram">690,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">each</div>
+      </article>
+      </div>
+    </div>
+    <div class="pr-svc reveal">
+      <div class="pr-svc-head"><span class="pr-svc-no">06</span><h3 class="pr-svc-name">Website development</h3><span class="pr-svc-calc">per project</span></div>
+      <div class="pr-grid">
+      <article class="pr-card">
+        <div class="pr-tier">Landing page</div>
+        <div class="pr-name">Website</div>
+        <div class="pr-desc">One-page landing site, responsive.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="web-landing" data-ratio="8.0" data-label="Website — Landing page">1,840,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per project</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Multi-page</div>
+        <div class="pr-name">Website</div>
+        <div class="pr-desc">Multi-page site with CMS.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="web-multi" data-ratio="15.0" data-label="Website — Multi-page">3,450,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per project</div>
+      </article>
+      <article class="pr-card">
+        <div class="pr-tier">Web application</div>
+        <div class="pr-name">Website</div>
+        <div class="pr-desc">Custom app, dashboard or portal.</div>
+        <div class="pr-price"><b class="pr-val" data-pkg="web-app" data-ratio="30.0" data-label="Website — Web application">6,900,000</b><span class="pr-cur"> تومان</span></div>
+        <div class="pr-per">per project</div>
+      </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SC 02 — MANIFESTO ============ -->
+<header class="slate reveal re"><span class="sc">SC 02</span><span class="nm">The unseen author</span><span class="tk">Take 01 · MOS</span></header>
+<section id="manifesto" data-sc="02" data-name="The unseen author">
   <div class="m-in">
     <h2 class="reveal split re">You've seen our work on air.<br>
       You've never <em>seen us.</em></h2>
@@ -104,10 +294,10 @@ export default function Page() {
   </div>
 </section>
 
-<!-- ============ SC 02 — TREATMENTS ============ -->
-<section id="strip" data-sc="02" data-name="Selected treatments">
+<!-- ============ SC 03 — TREATMENTS ============ -->
+<section id="strip" data-sc="03" data-name="Selected treatments">
   <div class="pin">
-    <header class="slate reveal re" style="margin-bottom:5vh"><span class="sc">SC 02</span><span class="nm">Selected treatments</span><span class="tk">Take 01 · 05 boards</span></header>
+    <header class="slate reveal re" style="margin-bottom:5vh"><span class="sc">SC 03</span><span class="nm">Selected treatments</span><span class="tk">Take 01 · 05 boards</span></header>
     <div class="track" id="track">
       <div class="fcard">
         <span class="f-no">№ 01</span>
@@ -135,9 +325,9 @@ export default function Page() {
   </div>
 </section>
 
-<!-- ============ SC 03 — REALISED ============ -->
-<header class="slate reveal re"><span class="sc">SC 03</span><span class="nm">Pitches that became campaigns</span><span class="tk">Take 01 · Sync sound</span></header>
-<section id="real" data-sc="03" data-name="Realised">
+<!-- ============ SC 04 — REALISED ============ -->
+<header class="slate reveal re"><span class="sc">SC 04</span><span class="nm">Pitches that became campaigns</span><span class="tk">Take 01 · Sync sound</span></header>
+<section id="real" data-sc="04" data-name="Realised">
   <div class="real-grid reveal">
     <a class="rw-card" href="https://vimeo.com/714045362" target="_blank" rel="noopener noreferrer">
       <span class="rw-still"><img src="/assets/still-01.jpg" alt="Mercedes-Benz × Alicia Keys — brand film" loading="lazy"><span class="rw-play"></span></span>
@@ -187,9 +377,9 @@ export default function Page() {
   </div>
 </section>
 
-<!-- ============ SC 04 — AI ============ -->
-<header class="slate reveal re"><span class="sc">SC 04</span><span class="nm">AI in the pipeline</span><span class="tk">Take 02 · VFX</span></header>
-<section id="ai" data-sc="04" data-name="AI in the pipeline">
+<!-- ============ SC 05 — AI ============ -->
+<header class="slate reveal re"><span class="sc">SC 05</span><span class="nm">AI in the pipeline</span><span class="tk">Take 02 · VFX</span></header>
+<section id="ai" data-sc="05" data-name="AI in the pipeline">
   <div class="ai-state">
     <h2 class="reveal split re">Art directed,<br>then <em>generated.</em></h2>
     <p class="reveal re">AI isn't the pitch. It's the draftsman. Every frame is curated and shaped to the
@@ -220,9 +410,9 @@ export default function Page() {
   </div></div>
 </section>
 
-<!-- ============ SC 05 — APPARITIONS ============ -->
-<header class="slate reveal re"><span class="sc">SC 05</span><span class="nm">Apparitions</span><span class="tk">Take 01 · Credited</span></header>
-<section id="appar" data-sc="05" data-name="Apparitions">
+<!-- ============ SC 06 — APPARITIONS ============ -->
+<header class="slate reveal re"><span class="sc">SC 06</span><span class="nm">Apparitions</span><span class="tk">Take 01 · Credited</span></header>
+<section id="appar" data-sc="06" data-name="Apparitions">
   <div class="ap-head">
     <h2 class="reveal split re">Except when <em>you have.</em></h2>
     <p class="reveal re">Sometimes the ghost steps into frame. Title sequences, key art, posters and logos
@@ -270,9 +460,9 @@ export default function Page() {
   <p class="ap-note reveal re">Main titles · key art · posters · logos — <b>in frame, as credited</b></p>
 </section>
 
-<!-- ============ SC 06 — CREDITS ============ -->
-<header class="slate reveal re"><span class="sc">SC 06</span><span class="nm">Credits</span><span class="tk">Roll · End titles</span></header>
-<section id="credits" data-sc="06" data-name="Credits">
+<!-- ============ SC 07 — CREDITS ============ -->
+<header class="slate reveal re"><span class="sc">SC 07</span><span class="nm">Credits</span><span class="tk">Roll · End titles</span></header>
+<section id="credits" data-sc="07" data-name="Credits">
   <p class="eyebrow cr-cap reveal re">In order of appearance</p>
   <div class="brands reveal">
     <div class="brand"><img src="/assets/logo-mercedes.svg" alt="Mercedes-Benz" loading="lazy"></div>
@@ -312,8 +502,8 @@ export default function Page() {
   </div>
 </section>
 
-<!-- ============ SC 07 — END ============ -->
-<section id="end" data-sc="07" data-name="Got a brief?">
+<!-- ============ SC 08 — END ============ -->
+<section id="end" data-sc="08" data-name="Got a brief?">
   <div class="cut reveal split re"><span class="gh" data-text="Cut.">Cut.</span></div>
   <div class="end-slate reveal">
     <div class="es-stripe"></div>
@@ -376,6 +566,26 @@ export default function Page() {
    ========================================================= */
 const fine = matchMedia('(pointer:fine)').matches;
 const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- global price engine ---------- */
+const USD_RATE_KEY = 'bumim_usd_rate';
+function fmtToman(n){ return Math.round(n).toLocaleString('en-US'); }
+function applyRate(rate){
+  const r = (typeof rate === 'number' && isFinite(rate))
+    ? rate
+    : (parseFloat(localStorage.getItem(USD_RATE_KEY)) || 230000);
+  const rateEl = document.getElementById('pr-rate-val');
+  if (rateEl) rateEl.textContent = fmtToman(r);
+  document.querySelectorAll('.pr-val').forEach(el => {
+    el.textContent = fmtToman(r * (parseFloat(el.dataset.ratio) || 0));
+  });
+}
+let savedRatios = {};
+try { savedRatios = JSON.parse(localStorage.getItem('bumim_ratios') || '{}'); } catch(e){}
+document.querySelectorAll('.pr-val').forEach(el => {
+  if (savedRatios[el.dataset.pkg] != null) el.dataset.ratio = savedRatios[el.dataset.pkg];
+});
+applyRate();
 if (fine) document.body.classList.add('fine');
 
 let W = innerWidth, H = innerHeight;
@@ -684,6 +894,7 @@ requestAnimationFrame(loop);
     <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Fonts</button>
     <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Sections</button>
     <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Type</button>
+    <button class="panel-tab" data-tab="tab-pricing" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Pricing</button>
   </div>
 
   <div style="flex:1;overflow-y:auto;padding:20px;">
@@ -749,6 +960,16 @@ requestAnimationFrame(loop);
         <input type="range" id="token-sec-size" min="24" max="80" value="48" style="width:100%;accent-color:var(--mint, #f0a800);" />
       </div>
     </div>
+    <div id="tab-pricing" class="panel-content" style="display:none;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Global dollar rate</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:8px;">USD → Toman. Every package price = rate × its ratio.</p>
+      <label style="display:block;font-size:12px;margin-bottom:6px;">1 USD (in Toman)</label>
+      <input type="number" id="usd-rate-input" value="230000" min="0" step="1000" style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:4px;" />
+      <p style="font-size:11px;color:var(--mint, #f0a800);margin-bottom:18px;" id="usd-preview"></p>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Package ratios</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:6px;">Edit a ratio to price that package. Changes apply live.</p>
+      <div id="pkg-ratios"></div>
+    </div>
   </div>
 
   <div style="padding:16px 20px;border-top:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.3);display:flex;gap:10px;">
@@ -797,6 +1018,44 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.fontFamily = saved.font;
     fontSelect.value = saved.font;
   }
+
+  // --- Pricing: global dollar rate + package ratios ---
+  const usdInput = document.getElementById('usd-rate-input');
+  const usdPreview = document.getElementById('usd-preview');
+  const ratiosWrap = document.getElementById('pkg-ratios');
+  const getRate = () => parseFloat((usdInput||{}).value) || parseFloat(localStorage.getItem(USD_RATE_KEY)) || 230000;
+  const updateUsdPreview = () => {
+    if (usdPreview) usdPreview.textContent = '1 USD = ' + fmtToman(parseFloat(usdInput.value||'0')) + ' تومان';
+  };
+  if (usdInput) {
+    usdInput.value = localStorage.getItem(USD_RATE_KEY) || '230000';
+    usdInput.addEventListener('input', () => {
+      applyRate(getRate());
+      updateUsdPreview();
+    });
+  }
+  if (ratiosWrap) {
+    document.querySelectorAll('.pr-val').forEach(el => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;';
+      const lbl = document.createElement('span');
+      lbl.textContent = el.dataset.label || el.dataset.pkg;
+      lbl.style.cssText = 'color:#c9cdc9;';
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.step = '0.1'; inp.value = el.dataset.ratio;
+      inp.dataset.pkg = el.dataset.pkg;
+      inp.style.cssText = 'width:80px;padding:6px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:6px;font-family:monospace;font-size:12px;text-align:right;';
+      inp.addEventListener('input', () => {
+        document.querySelectorAll('.pr-val').forEach(t => {
+          if (t.dataset.pkg === inp.dataset.pkg) t.dataset.ratio = inp.value;
+        });
+        applyRate(getRate());
+      });
+      row.appendChild(lbl); row.appendChild(inp);
+      ratiosWrap.appendChild(row);
+    });
+  }
+  updateUsdPreview();
 
   // Toggle Panel
   toggleBtn.addEventListener('click', () => {
@@ -925,6 +1184,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     localStorage.setItem('bumim_admin_settings', JSON.stringify(settings));
     
+    // Save global dollar rate + package ratios
+    const usdInp = document.getElementById('usd-rate-input');
+    if (usdInp) localStorage.setItem(USD_RATE_KEY, usdInp.value);
+    const ratios = {};
+    document.querySelectorAll('#pkg-ratios input').forEach(inp => { ratios[inp.dataset.pkg] = inp.value; });
+    localStorage.setItem('bumim_ratios', JSON.stringify(ratios));
+    
     // Success toast notification
     const toast = document.createElement('div');
     toast.textContent = '✓ Changes applied & saved successfully!';
@@ -936,6 +1202,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reset
   resetBtn.addEventListener('click', () => {
     localStorage.removeItem('bumim_admin_settings');
+    localStorage.removeItem(USD_RATE_KEY);
+    localStorage.removeItem('bumim_ratios');
     location.reload();
   });
 
