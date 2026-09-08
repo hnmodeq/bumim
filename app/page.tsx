@@ -387,7 +387,7 @@ const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
    BUMIM — data-driven PRICING engine + live editor
    (pricing is fully editable from the Live Control Panel)
    ========================================================= */
-const PRICING_KEY = 'bumim_pricing_v2';
+const PRICING_KEY = 'bumim_pricing_v3';
 const USD_RATE_KEY = 'bumim_usd_rate';
 const PRICING_DEFAULT = {
   section: {
@@ -401,7 +401,7 @@ const PRICING_DEFAULT = {
   },
   services: [
     {
-      id: 'svc-short', name: 'Short video', calc: 'per minute', dir: 'ltr', justify: 'start', best: 'short-pro',
+      id: 'svc-short', name: 'Short video', calc: 'per minute', best: 'short-pro',
       details: ['Reels, shorts, teasers and social cutdowns.'],
       packages: [
         { id: 'short-std', tier: 'Standard', name: 'Short video', desc: 'Clean cut, titles and a mix. Refresh-day turnaround.', ratio: 1.0, per: 'per minute', who: 'مناسب برای برندها و صفحات اجتماعی', pro: false, best: false,
@@ -411,7 +411,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-long', name: 'Long video', calc: 'per hour', dir: 'ltr', justify: 'start', best: 'long-5',
+      id: 'svc-long', name: 'Long video', calc: 'per hour', best: 'long-5',
       details: ['Documentaries, interviews and event films.'],
       packages: [
         { id: 'long-2', tier: 'Under 2h', name: 'Long video', desc: 'Documentaries, interviews and event films.', ratio: 6.0, per: 'per hour', who: 'مناسب برای رویداد و مصاحبه', pro: false, best: false, features: ['Multi-cam', 'Grade', '1 revision'] },
@@ -421,7 +421,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-mg2d', name: 'Motion graphics 2D', calc: 'per second', dir: 'ltr', justify: 'start', best: 'mg2d-pro',
+      id: 'svc-mg2d', name: 'Motion graphics 2D', calc: 'per second', best: 'mg2d-pro',
       details: ['Loops, lower-thirds and clean animation.'],
       packages: [
         { id: 'mg2d-std', tier: 'Standard', name: '2D motion', desc: 'Loops, lower-thirds and clean animation.', ratio: 2.0, per: 'per second', who: 'مناسب برای اینفوگرافیک و لوگوموشن', pro: false, best: false, features: ['Keyframes', 'Titles', '1 revision'] },
@@ -429,7 +429,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-mg3d', name: 'Motion graphics 3D', calc: 'per second', dir: 'ltr', justify: 'start', best: 'mg3d-pro',
+      id: 'svc-mg3d', name: 'Motion graphics 3D', calc: 'per second', best: 'mg3d-pro',
       details: ['3D titles, product and camera moves.'],
       packages: [
         { id: 'mg3d-std', tier: 'Standard', name: '3D motion', desc: '3D titles, product and camera moves.', ratio: 4.5, per: 'per second', who: 'مناسب برای معرفی محصول', pro: false, best: false, features: ['3D scene', 'Camera move', '1 revision'] },
@@ -437,7 +437,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-narr', name: 'Narration', calc: 'per second · per minute', dir: 'ltr', justify: 'start', best: 'narr-ad',
+      id: 'svc-narr', name: 'Narration', calc: 'per second · per minute', best: 'narr-ad',
       details: ['Voice-over for commercials and long-form.'],
       packages: [
         { id: 'narr-ad', tier: 'Advertisement', name: 'Voice-over', desc: 'Commercial and promotional spots.', ratio: 1.2, per: 'per second', who: 'مناسب برای آگهی‌های تلویزیونی', pro: false, best: true, features: ['Studio VO', '1 revision'] },
@@ -446,7 +446,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-gd', name: 'Graphic design', calc: 'per design', dir: 'ltr', justify: 'start', best: 'gd-instagram',
+      id: 'svc-gd', name: 'Graphic design', calc: 'per design', best: 'gd-instagram',
       details: ['Stories, thumbnails and full social sets.'],
       packages: [
         { id: 'gd-story', tier: 'Story', name: 'Story design', desc: 'Vertical story frames for social.', ratio: 0.5, per: 'each', who: 'مناسب برای استوری و پست روزانه', pro: false, best: false, features: ['1 frame'] },
@@ -457,7 +457,7 @@ const PRICING_DEFAULT = {
       ]
     },
     {
-      id: 'svc-web', name: 'Website development', calc: 'per project', dir: 'ltr', justify: 'start', best: 'web-multi',
+      id: 'svc-web', name: 'Website development', calc: 'per project', best: 'web-multi',
       details: ['Landing pages, CMS and custom apps.'],
       packages: [
         { id: 'web-landing', tier: 'Landing page', name: 'Website', desc: 'One-page landing site, responsive.', ratio: 8.0, per: 'per project', who: 'مناسب برای معرفی محصول و کمپین', pro: false, best: false, features: ['Responsive', 'SEO'] },
@@ -486,6 +486,7 @@ function renderPricing(){
   const sec = PRICING_CFG.section;
   const sectionEl = document.getElementById('pricing');
   if (sectionEl){
+    sectionEl.setAttribute('dir', sec.dir);
     sectionEl.setAttribute('data-dir', sec.dir);
     sectionEl.setAttribute('data-justify', sec.justify);
   }
@@ -1034,6 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ============================ PERSISTED STATE ============================ */
   const SETTINGS_KEY = 'bumim_admin_settings';
   const SECTIONS_KEY = 'bumim_sections_visible';
+  const SECTIONS_DIR_KEY = 'bumim_sections_dir';
   const FONT_KEY = 'bumim_font_custom';
   const FONT_NAME = 'Bumim-Custom';
   const SECTIONS = [
@@ -1051,6 +1053,8 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   let savedSections = {};
   try { savedSections = JSON.parse(localStorage.getItem(SECTIONS_KEY) || '{}'); } catch(e){}
+  let savedSectionsDir = {};
+  try { savedSectionsDir = JSON.parse(localStorage.getItem(SECTIONS_DIR_KEY) || '{}'); } catch(e){}
 
   // Load saved settings
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
@@ -1285,28 +1289,44 @@ document.addEventListener('DOMContentLoaded', () => {
     wrap.appendChild(ds); wrap.appendChild(js);
     return {wrap:wrap, dirSel:ds, justSel:js};
   }
+  function applySectionLayout(id, dir, justify){
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (dir){ el.setAttribute('dir', dir); el.setAttribute('data-dir', dir); }
+    if (justify){ el.setAttribute('data-justify', justify); }
+  }
+  function persistSectionLayout(id, dir, justify){
+    const cur = savedSectionsDir[id] || {};
+    if (dir){ cur.dir = dir; }
+    if (justify){ cur.justify = justify; }
+    savedSectionsDir[id] = cur;
+    try { localStorage.setItem(SECTIONS_DIR_KEY, JSON.stringify(savedSectionsDir)); } catch(e){}
+  }
   function buildSectionDir(){
     if (secDirWrap){
       secDirWrap.innerHTML = '';
       SECTION_LIST.forEach(function(pair){
-        const secEl = document.getElementById(pair[0]);
-        const curDir = secEl ? (secEl.getAttribute('data-dir')||'ltr') : 'ltr';
-        const curJust = secEl ? (secEl.getAttribute('data-justify')||'start') : 'start';
+        const id = pair[0];
+        const saved = savedSectionsDir[id] || {};
+        const secEl = document.getElementById(id);
+        const curDir = (saved.dir) || (secEl ? (secEl.getAttribute('dir') || secEl.getAttribute('data-dir') || 'ltr') : 'ltr');
+        const curJust = (saved.justify) || (secEl ? (secEl.getAttribute('data-justify') || 'start') : 'start');
+        // apply persisted values to the live section
+        applySectionLayout(id, curDir, curJust);
         const row = document.createElement('div');
         row.style.cssText = 'padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
         row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+pair[1]+'</div>';
-        const c = dirSelectFor(pair[0], curDir, curJust);
+        const c = dirSelectFor(id, curDir, curJust);
         row.appendChild(c.wrap);
-        const id = sectionKeyFromLabel(pair[1]);
         c.dirSel.addEventListener('change', function(){
-          const el = document.getElementById(id);
-          if (el){ el.setAttribute('data-dir', c.dirSel.value); }
-          if (id === 'pricing'){ PRICING_CFG.section.dir = c.dirSel.value; renderPricing(); }
+          const val = c.dirSel.value;
+          if (id === 'pricing'){ PRICING_CFG.section.dir = val; savePricing(PRICING_CFG); renderPricing(); }
+          else { applySectionLayout(id, val, null); persistSectionLayout(id, val, null); }
         });
         c.justSel.addEventListener('change', function(){
-          const el = document.getElementById(id);
-          if (el){ el.setAttribute('data-justify', c.justSel.value); }
-          if (id === 'pricing'){ PRICING_CFG.section.justify = c.justSel.value; renderPricing(); }
+          const val = c.justSel.value;
+          if (id === 'pricing'){ PRICING_CFG.section.justify = val; savePricing(PRICING_CFG); renderPricing(); }
+          else { applySectionLayout(id, null, val); persistSectionLayout(id, null, val); }
         });
         secDirWrap.appendChild(row);
       });
@@ -1323,8 +1343,8 @@ document.addEventListener('DOMContentLoaded', () => {
           row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+esc(svc.name)+'</div>';
           const c = dirSelectFor('svc', svc.dir||'ltr', svc.justify||'start');
           row.appendChild(c.wrap);
-          c.dirSel.addEventListener('change', function(){ svc.dir = c.dirSel.value; renderPricing(); });
-          c.justSel.addEventListener('change', function(){ svc.justify = c.justSel.value; renderPricing(); });
+          c.dirSel.addEventListener('change', function(){ svc.dir = c.dirSel.value; savePricing(PRICING_CFG); renderPricing(); });
+          c.justSel.addEventListener('change', function(){ svc.justify = c.justSel.value; savePricing(PRICING_CFG); renderPricing(); });
           pricingDirWrap.appendChild(row);
         });
       }
