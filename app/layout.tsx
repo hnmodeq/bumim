@@ -498,7 +498,21 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 .pr-svc-no{font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;color:var(--mint)}
 .pr-svc-name{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(24px,2.6vw,38px);line-height:1}
 .pr-svc-calc{margin-left:auto;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
-.pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.pr-grid{display:flex;flex-wrap:wrap;gap:16px}
+.pr-grid > .pr-card{flex:1 1 240px;min-width:220px}
+/* distribute / align the cards across the row */
+.pr-grid[data-justify="start"]{justify-content:flex-start}
+.pr-grid[data-justify="end"]{justify-content:flex-end}
+.pr-grid[data-justify="center"]{justify-content:center}
+.pr-grid[data-justify="space-between"]{justify-content:space-between}
+.pr-grid[data-justify="space-around"]{justify-content:space-around}
+.pr-grid[data-justify="space-evenly"]{justify-content:space-evenly}
+/* when spreading or aligning, cards should not stretch to fill */
+.pr-grid[data-justify="end"] > .pr-card,
+.pr-grid[data-justify="center"] > .pr-card,
+.pr-grid[data-justify="space-between"] > .pr-card,
+.pr-grid[data-justify="space-around"] > .pr-card,
+.pr-grid[data-justify="space-evenly"] > .pr-card{flex:0 1 280px}
 .pr-card{position:relative;border:1px solid var(--line);background:rgba(237,241,236,.02);padding:24px 22px;display:flex;flex-direction:column;transition:border-color .4s,background .4s,transform .45s cubic-bezier(.22,1,.3,1)}
 .pr-card:hover{border-color:rgba(240,168,0,.45);background:rgba(240,168,0,.04);transform:translateY(-4px)}
 .pr-tier{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
@@ -563,6 +577,16 @@ section[data-justify="center"] .pr-card, .pr-svc[data-justify="center"] .pr-card
 section[data-justify="center"] .pr-features li, .pr-svc[data-justify="center"] .pr-features li{padding-left:0;text-align:center}
 section[data-justify="center"] .pr-best, .pr-svc[data-justify="center"] .pr-best{position:static;display:inline-block;margin-bottom:10px}
 section[data-justify="center"] .pr-who, .pr-svc[data-justify="center"] .pr-who{border-left:none;border-right:none;background:rgba(240,168,0,.06);border-radius:8px;text-align:center}
+
+/* per-card internal direction & alignment (per-card control inside each price card) */
+.pr-card[dir="rtl"]{direction:rtl;text-align:right}
+.pr-card[data-justify="center"]{text-align:center}
+.pr-card[data-justify="end"]{text-align:end}
+.pr-card[data-justify="center"] .pr-features li{padding-left:0;text-align:center}
+.pr-card[data-justify="center"] .pr-best{position:static;display:inline-block;margin-bottom:10px}
+.pr-card[data-justify="center"] .pr-who{border-left:none;border-right:none;background:rgba(240,168,0,.06);border-radius:8px;text-align:center}
+.pr-card[data-justify="end"] .pr-best{right:auto;left:14px}
+.pr-card[dir="rtl"] .pr-best{right:auto;left:14px}
 
 @media (max-width:900px){
   /* viewfinder frame stays, just tighter and smaller so it reads as a frame
@@ -644,7 +668,8 @@ section[data-justify="center"] .pr-who, .pr-svc[data-justify="center"] .pr-who{b
   .pr-tab{font-size:11px;padding:11px 15px;letter-spacing:.12em}
   .pr-head h2{font-size:clamp(34px,11vw,52px)}
   .pr-sub,.pr-head{font-size:14.5px}
-  .pr-grid{grid-template-columns:1fr}
+  .pr-grid{flex-direction:column}
+  .pr-grid > .pr-card{flex:1 1 auto;min-width:0}
   .pr-svc-calc{margin-left:0;width:100%}
 
   #legal{padding:3vh 7vw 5vh}

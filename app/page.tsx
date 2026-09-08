@@ -513,10 +513,10 @@ function renderPricing(){
       svc.details.forEach(function(d){ if (d) h += '<li>' + esc(d) + '</li>'; });
       h += '</ul>';
     }
-    h += '<div class="pr-grid" style="justify-content:' + esc(svc.justify||sec.justify) + ';">';
+    h += '<div class="pr-grid" data-justify="' + esc(svc.justify||sec.justify) + '" style="justify-content:' + esc(svc.justify||sec.justify) + ';">';
     svc.packages.forEach(function(p){
       const isBest = String(svc.best) === String(p.id);
-      h += '<article class="pr-card' + (p.pro ? ' pro' : '') +(isBest ? ' best' : '') + '" dir="' + esc(p.dir||svc.dir||sec.dir) + '">';
+      h += '<article class="pr-card' + (p.pro ? ' pro' : '') +(isBest ? ' best' : '') + '" dir="' + esc(p.dir||svc.dir||sec.dir) + '" data-justify="' + esc(p.justify||svc.justify||sec.justify) + '">';
       if (isBest) h += '<div class="pr-best">★ Best sell — پرفروش</div>';
       h += '<div class="pr-tier">' + esc(p.tier) + '</div>';
       h += '<div class="pr-name">' + esc(p.name) + '</div>';
@@ -1166,6 +1166,16 @@ document.addEventListener('DOMContentLoaded', () => {
     html += '<input class="pe-pkg-who" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.who||'')+'" style="'+INP+'margin-bottom:8px;" />';
     html += '<label class="pe-lbl">Includes (one bullet per line)</label>';
     html += '<textarea class="pe-pkg-features" data-si="'+si+'" data-pi="'+pi+'" rows="2" style="'+INP+'resize:vertical;">'+esc((p.features||[]).join('\\n'))+'</textarea>';
+    const svc = PRICING_CFG.services[si] || {};
+    const effDir = p.dir || svc.dir || PRICING_CFG.section.dir || 'ltr';
+    const effJust = p.justify || svc.justify || PRICING_CFG.section.justify || 'start';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px;">';
+    html += '<div><label class="pe-lbl">Card dir</label><select class="pe-pkg-dir" data-si="'+si+'" data-pi="'+pi+'" style="'+SELECT+'"><option value="ltr"'+(effDir!=='rtl'?' selected':'')+'>LTR</option><option value="rtl"'+(effDir==='rtl'?' selected':'')+'>RTL</option></select></div>';
+    html += '<div><label class="pe-lbl">Card align</label><select class="pe-pkg-just" data-si="'+si+'" data-pi="'+pi+'" style="'+SELECT+'">';
+    ['start','center','end'].forEach(function(j){ html += '<option value="'+j+'"'+(effJust===j?' selected':'')+'>'+j.charAt(0).toUpperCase()+j.slice(1)+'</option>'; });
+    html += '</select></div>';
+    html += '<div style="align-self:end;"><label class="pe-lbl">&nbsp;</label><button class="pe-pkg-clear" data-si="'+si+'" data-pi="'+pi+'" title="Reset to service/section setting" style="width:100%;background:rgba(255,255,255,0.06);color:#c9cdc9;border:1px solid rgba(255,255,255,0.12);padding:7px 9px;border-radius:6px;font-size:11px;cursor:pointer;">Inherit</button></div>';
+    html += '</div>';
     wrap.innerHTML = html;
     return wrap;
   }
@@ -1185,11 +1195,14 @@ document.addEventListener('DOMContentLoaded', () => {
       svc.packages.forEach(function(p, pi){
         const g = function(cls){ return document.querySelector(cls+'[data-si="'+si+'"][data-pi="'+pi+'"]'); };
         const tier=g('.pe-pkg-tier'), nm=g('.pe-pkg-name'), desc=g('.pe-pkg-desc'), ratio=g('.pe-pkg-ratio'),
-              per=g('.pe-pkg-per'), id=g('.pe-pkg-id'), who=g('.pe-pkg-who'), feats=g('.pe-pkg-features'), pro=g('.pe-pkg-pro');
+              per=g('.pe-pkg-per'), id=g('.pe-pkg-id'), who=g('.pe-pkg-who'), feats=g('.pe-pkg-features'), pro=g('.pe-pkg-pro'),
+              pdir=g('.pe-pkg-dir'), pjust=g('.pe-pkg-just');
         if (tier) p.tier=tier.value; if (nm) p.name=nm.value; if (desc) p.desc=desc.value;
         if (ratio) p.ratio=parseFloat(ratio.value)||0; if (per) p.per=per.value; if (id) p.id=id.value;
         if (who) p.who=who.value; if (pro) p.pro=pro.checked;
         if (feats) p.features = feats.value.split('\\n').map(s=>s.trim()).filter(Boolean);
+        if (pdir) p.dir = pdir.value;
+        if (pjust) p.justify = pjust.value;
       });
     });
   }
@@ -1240,6 +1253,23 @@ document.addEventListener('DOMContentLoaded', () => {
         readServicesEditorIntoCfg();
         PRICING_CFG.services[si].packages.splice(pi,1);
         renderServicesEditor();
+      } else if (t.classList.contains('pe-pkg-clear')){
+        const si = parseInt(t.dataset.si,10), pi = parseInt(t.dataset.pi,10);
+        const p = PRICING_CFG.services[si].packages[pi];
+        delete p.dir; delete p.justify;
+        savePricing(PRICING_CFG);
+        renderPricing();
+        renderServicesEditor();
+      }
+    });
+    // per-card dir/justify change: mark dirty so it is read on apply + live render
+    servicesWrap.addEventListener('change', function(e){
+      const t = e.target;
+      if (t && t.classList && (t.classList.contains('pe-pkg-dir') || t.classList.contains('pe-pkg-just'))){
+        servicesWrap.dataset.dirty = '1';
+        readServicesEditorIntoCfg();
+        savePricing(PRICING_CFG);
+        renderPricing();
       }
     });
   }
@@ -1275,7 +1305,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ['real','Campaigns'],['ai','AI Pipeline'],['appar','Apparitions'],['credits','Credits'],
     ['end','Brief / Contact']
   ];
-  function dirSelectFor(key, curDir, curJust){
+  const JUSTIFY_TEXT = ['start','center','end'];
+  const JUSTIFY_GRID = ['start','center','end','space-between','space-around','space-evenly'];
+  function dirSelectFor(key, curDir, curJust, justifyList){
+    const list = justifyList || JUSTIFY_TEXT;
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
     const ds = document.createElement('select');
@@ -1284,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ds.value = curDir || 'ltr';
     const js = document.createElement('select');
     js.style.cssText = SELECT;
-    ['start','center','end'].forEach(function(v){ const o=document.createElement('option'); o.value=v; o.textContent=v[0].toUpperCase()+v.slice(1); js.appendChild(o); });
+    list.forEach(function(v){ const o=document.createElement('option'); o.value=v; o.textContent=v.replace(/-/g,' '); js.appendChild(o); });
     js.value = curJust || 'start';
     wrap.appendChild(ds); wrap.appendChild(js);
     return {wrap:wrap, dirSel:ds, justSel:js};
@@ -1316,7 +1349,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = document.createElement('div');
         row.style.cssText = 'padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
         row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+pair[1]+'</div>';
-        const c = dirSelectFor(id, curDir, curJust);
+        const c = dirSelectFor(id, curDir, curJust, id === 'pricing' ? JUSTIFY_GRID : JUSTIFY_TEXT);
         row.appendChild(c.wrap);
         c.dirSel.addEventListener('change', function(){
           const val = c.dirSel.value;
@@ -1341,7 +1374,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const row = document.createElement('div');
           row.style.cssText = 'padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
           row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+esc(svc.name)+'</div>';
-          const c = dirSelectFor('svc', svc.dir||'ltr', svc.justify||'start');
+          const c = dirSelectFor('svc', svc.dir||'ltr', svc.justify||'start', JUSTIFY_GRID);
           row.appendChild(c.wrap);
           c.dirSel.addEventListener('change', function(){ svc.dir = c.dirSel.value; savePricing(PRICING_CFG); renderPricing(); });
           c.justSel.addEventListener('change', function(){ svc.justify = c.justSel.value; savePricing(PRICING_CFG); renderPricing(); });
