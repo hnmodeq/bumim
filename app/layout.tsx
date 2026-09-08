@@ -510,6 +510,34 @@ footer{display:flex;justify-content:space-between;padding:20px 6vw calc(var(--tl
 .pr-val{font-family:'Instrument Serif',serif;font-size:28px;font-variant-numeric:tabular-nums;line-height:1}
 .pr-cur{font-size:12.5px;color:var(--dim)}
 .pr-per{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+/* real card look + editable extras */
+.pr-card{border-radius:14px;background:linear-gradient(180deg,rgba(237,241,236,.05),rgba(237,241,236,.015));box-shadow:0 18px 40px -24px rgba(0,0,0,.7),inset 0 1px 0 rgba(237,241,236,.05);overflow:hidden}
+.pr-card:hover{box-shadow:0 26px 54px -24px rgba(0,0,0,.85),inset 0 1px 0 rgba(237,241,236,.07)}
+.pr-card.pro{background:linear-gradient(180deg,rgba(240,168,0,.10),rgba(240,168,0,.02))}
+.pr-card.best{border-color:rgba(240,168,0,.55);box-shadow:0 20px 46px -22px rgba(240,168,0,.35),inset 0 1px 0 rgba(237,241,236,.06)}
+.pr-best{position:absolute;top:14px;right:14px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);background:rgba(240,168,0,.12);border:1px solid rgba(240,168,0,.35);padding:5px 9px;border-radius:999px;font-weight:600}
+.pr-card[dir="rtl"] .pr-best{right:auto;left:14px}
+.pr-who{margin:0 0 12px;font-size:11.5px;line-height:1.6;color:#aab4ad;padding:9px 11px;border-left:2px solid var(--mint);background:rgba(240,168,0,.05);border-radius:0 8px 8px 0}
+.pr-who b{color:var(--mint);font-weight:600}
+.pr-card[dir="rtl"] .pr-who{border-left:none;border-right:2px solid var(--mint);border-radius:8px 0 0 8px}
+.pr-features{list-style:none;margin:0 0 16px;padding:0}
+.pr-features li{position:relative;font-size:11.5px;line-height:1.65;color:#aab4ad;padding-left:20px;margin-bottom:4px}
+.pr-features li::before{content:"—";position:absolute;left:0;color:var(--mint)}
+.pr-card[dir="rtl"] .pr-features li{padding-left:0;padding-right:20px}
+.pr-card[dir="rtl"] .pr-features li::before{left:auto;right:0}
+.pr-features.svc-details{margin-bottom:4vh}
+/* direction / justify on sections & pricing */
+[data-dir="rtl"], [data-dir="rtl"] .pr-head, [data-dir="rtl"] .pr-list{text-align:right}
+[data-dir="rtl"] .pr-grid{direction:rtl}
+[data-dir="ltr"], [data-dir="ltr"] .pr-head{text-align:left}
+[data-justify="center"]{text-align:center}
+[data-justify="end"]{text-align:right}
+[data-justify="center"] .pr-svc-head{justify-content:center}
+[data-justify="end"] .pr-svc-head{justify-content:flex-end}
+[data-justify="center"] .pr-card{text-align:center}
+[data-justify="center"] .pr-features li{padding-left:0;text-align:center}
+[data-justify="center"] .pr-best{position:static;display:inline-block;margin-bottom:10px}
+[data-justify="center"] .pr-who{border-left:none;border-right:none;background:rgba(240,168,0,.06);border-radius:8px;text-align:center}
 
 @media (max-width:900px){
   /* viewfinder frame stays, just tighter and smaller so it reads as a frame

@@ -78,204 +78,12 @@ export default function Page() {
 </section>
 
 <!-- ============ SC 01 — PRICING ============ -->
-<section id="pricing" data-sc="01" data-name="Rate card">
-  <div class="pr-head">
-    <p class="eyebrow reveal">Rate card — global pricing</p>
-    <h2 class="reveal">Transparent <em>pricing.</em></h2>
-    <p class="pr-sub reveal">A single dollar-based rate, set once. Every package below is priced from it automatically — change the exchange rate and the whole list recalculates.</p>
-    <div class="pr-rate reveal"><span class="pr-rate-dot"></span> 1 USD = <b id="pr-rate-val">230,000</b>&nbsp;<span>تومان</span></div>
-    <div class="pr-tabs reveal" id="pr-tabs">
-      <button class="pr-tab on" data-grp="0">Video editing</button>
-      <button class="pr-tab" data-grp="1">Motion 2D</button>
-      <button class="pr-tab" data-grp="2">Motion 3D</button>
-      <button class="pr-tab" data-grp="3">Narration</button>
-      <button class="pr-tab" data-grp="4">Graphic design</button>
-      <button class="pr-tab" data-grp="5">Website</button>
-    </div>
-  </div>
-  <div class="pr-list">
-    <div class="pr-svc reveal on" data-grp="0">
-      <div class="pr-svc-head"><span class="pr-svc-no">01</span><h3 class="pr-svc-name">Video editing</h3><span class="pr-svc-calc">per minute · per hour</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Standard</div>
-        <div class="pr-name">Short video</div>
-        <div class="pr-desc">Reels, shorts, teasers and social cutdowns.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="short-std" data-ratio="1.0" data-label="Short video — Standard">230,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per minute</div>
-      </article>
-      <article class="pr-card pro">
-        <div class="pr-tier">Pro</div>
-        <div class="pr-name">Short video</div>
-        <div class="pr-desc">Advanced pacing, sound design and motion titles.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="short-pro" data-ratio="1.8" data-label="Short video — Pro">414,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per minute</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Under 2h</div>
-        <div class="pr-name">Long video</div>
-        <div class="pr-desc">Documentaries, interviews and event films.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="long-2" data-ratio="6.0" data-label="Long video — Under 2h">1,380,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per hour</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Under 5h</div>
-        <div class="pr-name">Long video</div>
-        <div class="pr-desc">Multi-camera edits, talks and features.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="long-5" data-ratio="8.0" data-label="Long video — Under 5h">1,840,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per hour</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Under 10h</div>
-        <div class="pr-name">Long video</div>
-        <div class="pr-desc">Extended features and full productions.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="long-10" data-ratio="11.0" data-label="Long video — Under 10h">2,530,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per hour</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">10h+</div>
-        <div class="pr-name">Long video</div>
-        <div class="pr-desc">Large-scale series and long-form content.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="long-plus" data-ratio="15.0" data-label="Long video — 10h+">3,450,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per hour</div>
-      </article>
-      </div>
-    </div>
-    <div class="pr-svc reveal" data-grp="1">
-      <div class="pr-svc-head"><span class="pr-svc-no">02</span><h3 class="pr-svc-name">Motion graphics 2D</h3><span class="pr-svc-calc">per second</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Standard</div>
-        <div class="pr-name">2D motion</div>
-        <div class="pr-desc">Loops, lower-thirds and clean animation.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="mg2d-std" data-ratio="2.0" data-label="2D motion — Standard">460,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      <article class="pr-card pro">
-        <div class="pr-tier">Pro</div>
-        <div class="pr-name">2D motion</div>
-        <div class="pr-desc">Character, kinetic type and branded animation.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="mg2d-pro" data-ratio="3.2" data-label="2D motion — Pro">736,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      </div>
-    </div>
-    <div class="pr-svc reveal" data-grp="2">
-      <div class="pr-svc-head"><span class="pr-svc-no">03</span><h3 class="pr-svc-name">Motion graphics 3D</h3><span class="pr-svc-calc">per second</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Standard</div>
-        <div class="pr-name">3D motion</div>
-        <div class="pr-desc">3D titles, product and camera moves.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="mg3d-std" data-ratio="4.5" data-label="3D motion — Standard">1,035,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      <article class="pr-card pro">
-        <div class="pr-tier">Pro</div>
-        <div class="pr-name">3D motion</div>
-        <div class="pr-desc">Full 3D scenes, lighting and rendering.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="mg3d-pro" data-ratio="7.0" data-label="3D motion — Pro">1,610,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      </div>
-    </div>
-    <div class="pr-svc reveal" data-grp="3">
-      <div class="pr-svc-head"><span class="pr-svc-no">04</span><h3 class="pr-svc-name">Narration</h3><span class="pr-svc-calc">per second · per minute</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Advertisement</div>
-        <div class="pr-name">Voice-over</div>
-        <div class="pr-desc">Commercial and promotional spots.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="narr-ad" data-ratio="1.2" data-label="Voice-over — Advertisement">276,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Short content</div>
-        <div class="pr-name">Voice-over</div>
-        <div class="pr-desc">Social and short-form narration.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="narr-short" data-ratio="0.8" data-label="Voice-over — Short content">184,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per second</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Long content</div>
-        <div class="pr-name">Voice-over</div>
-        <div class="pr-desc">Documentary and long-form narrations.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="narr-long" data-ratio="5.0" data-label="Voice-over — Long content">1,150,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per minute</div>
-      </article>
-      </div>
-    </div>
-    <div class="pr-svc reveal" data-grp="4">
-      <div class="pr-svc-head"><span class="pr-svc-no">05</span><h3 class="pr-svc-name">Graphic design</h3><span class="pr-svc-calc">per design</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Story</div>
-        <div class="pr-name">Story design</div>
-        <div class="pr-desc">Vertical story frames for social.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="gd-story" data-ratio="0.5" data-label="Story design — Story">115,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">each</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Thumbnail</div>
-        <div class="pr-name">Thumbnail</div>
-        <div class="pr-desc">High-impression thumbnail design.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="gd-thumb" data-ratio="1.0" data-label="Thumbnail — Thumbnail">230,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">each</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Banner</div>
-        <div class="pr-name">Banner</div>
-        <div class="pr-desc">Web and ad banner layouts.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="gd-banner" data-ratio="1.5" data-label="Banner — Banner">345,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">each</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Highlight</div>
-        <div class="pr-name">Highlight</div>
-        <div class="pr-desc">Highlight covers and tiles.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="gd-highlight" data-ratio="1.2" data-label="Highlight — Highlight">276,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">each</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Full Instagram</div>
-        <div class="pr-name">Instagram set</div>
-        <div class="pr-desc">Full cohesive Instagram feed design.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="gd-instagram" data-ratio="3.0" data-label="Instagram set — Full Instagram">690,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">each</div>
-      </article>
-      </div>
-    </div>
-    <div class="pr-svc reveal" data-grp="5">
-      <div class="pr-svc-head"><span class="pr-svc-no">06</span><h3 class="pr-svc-name">Website development</h3><span class="pr-svc-calc">per project</span></div>
-      <div class="pr-grid">
-      <article class="pr-card">
-        <div class="pr-tier">Landing page</div>
-        <div class="pr-name">Website</div>
-        <div class="pr-desc">One-page landing site, responsive.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="web-landing" data-ratio="8.0" data-label="Website — Landing page">1,840,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per project</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Multi-page</div>
-        <div class="pr-name">Website</div>
-        <div class="pr-desc">Multi-page site with CMS.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="web-multi" data-ratio="15.0" data-label="Website — Multi-page">3,450,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per project</div>
-      </article>
-      <article class="pr-card">
-        <div class="pr-tier">Web application</div>
-        <div class="pr-name">Website</div>
-        <div class="pr-desc">Custom app, dashboard or portal.</div>
-        <div class="pr-price"><b class="pr-val" data-pkg="web-app" data-ratio="30.0" data-label="Website — Web application">6,900,000</b><span class="pr-cur"> تومان</span></div>
-        <div class="pr-per">per project</div>
-      </article>
-      </div>
-    </div>
-  </div>
+<section id="pricing" data-sc="01" data-name="Rate card" data-dir="ltr" data-justify="start">
+  <div id="pricing-root"></div>
 </section>
 
 <!-- ============ SC 02 — MANIFESTO ============ -->
-<header class="slate reveal re"><span class="sc">SC 02</span><span class="nm">The unseen author</span><span class="tk">Take 01 · MOS</span></header>
+<header class="slate reveal re" data-target="manifesto"><span class="sc">SC 02</span><span class="nm">The unseen author</span><span class="tk">Take 01 · MOS</span></header>
 <section id="manifesto" data-sc="02" data-name="The unseen author">
   <div class="m-in">
     <h2 class="reveal split re">You've seen our work on air.<br>
@@ -334,7 +142,7 @@ export default function Page() {
 </section>
 
 <!-- ============ SC 04 — REALISED ============ -->
-<header class="slate reveal re"><span class="sc">SC 04</span><span class="nm">Pitches that became campaigns</span><span class="tk">Take 01 · Sync sound</span></header>
+<header class="slate reveal re" data-target="real"><span class="sc">SC 04</span><span class="nm">Pitches that became campaigns</span><span class="tk">Take 01 · Sync sound</span></header>
 <section id="real" data-sc="04" data-name="Realised">
   <div class="real-grid reveal">
     <a class="rw-card" href="https://vimeo.com/714045362" target="_blank" rel="noopener noreferrer">
@@ -386,7 +194,7 @@ export default function Page() {
 </section>
 
 <!-- ============ SC 05 — AI ============ -->
-<header class="slate reveal re"><span class="sc">SC 05</span><span class="nm">AI in the pipeline</span><span class="tk">Take 02 · VFX</span></header>
+<header class="slate reveal re" data-target="ai"><span class="sc">SC 05</span><span class="nm">AI in the pipeline</span><span class="tk">Take 02 · VFX</span></header>
 <section id="ai" data-sc="05" data-name="AI in the pipeline">
   <div class="ai-state">
     <h2 class="reveal split re">Art directed,<br>then <em>generated.</em></h2>
@@ -419,7 +227,7 @@ export default function Page() {
 </section>
 
 <!-- ============ SC 06 — APPARITIONS ============ -->
-<header class="slate reveal re"><span class="sc">SC 06</span><span class="nm">Apparitions</span><span class="tk">Take 01 · Credited</span></header>
+<header class="slate reveal re" data-target="appar"><span class="sc">SC 06</span><span class="nm">Apparitions</span><span class="tk">Take 01 · Credited</span></header>
 <section id="appar" data-sc="06" data-name="Apparitions">
   <div class="ap-head">
     <h2 class="reveal split re">Except when <em>you have.</em></h2>
@@ -469,7 +277,7 @@ export default function Page() {
 </section>
 
 <!-- ============ SC 07 — CREDITS ============ -->
-<header class="slate reveal re"><span class="sc">SC 07</span><span class="nm">Credits</span><span class="tk">Roll · End titles</span></header>
+<header class="slate reveal re" data-target="credits"><span class="sc">SC 07</span><span class="nm">Credits</span><span class="tk">Roll · End titles</span></header>
 <section id="credits" data-sc="07" data-name="Credits">
   <p class="eyebrow cr-cap reveal re">In order of appearance</p>
   <div class="brands reveal">
@@ -575,40 +383,200 @@ export default function Page() {
 const fine = matchMedia('(pointer:fine)').matches;
 const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-/* ---------- global price engine ---------- */
+/* =========================================================
+   BUMIM — data-driven PRICING engine + live editor
+   (pricing is fully editable from the Live Control Panel)
+   ========================================================= */
+const PRICING_KEY = 'bumim_pricing_v2';
 const USD_RATE_KEY = 'bumim_usd_rate';
+const PRICING_DEFAULT = {
+  section: {
+    eyebrow: 'Rate card — global pricing',
+    title: 'Transparent <em>pricing.</em>',
+    sub: 'A single dollar-based rate, set once. Every package below is priced from it automatically — change the exchange rate and the whole list recalculates.',
+    showRate: true,
+    rate: 230000,
+    dir: 'ltr',
+    justify: 'start'
+  },
+  services: [
+    {
+      id: 'svc-short', name: 'Short video', calc: 'per minute', dir: 'ltr', justify: 'start', best: 'short-pro',
+      details: ['Reels, shorts, teasers and social cutdowns.'],
+      packages: [
+        { id: 'short-std', tier: 'Standard', name: 'Short video', desc: 'Clean cut, titles and a mix. Refresh-day turnaround.', ratio: 1.0, per: 'per minute', who: 'مناسب برای برندها و صفحات اجتماعی', pro: false, best: false,
+          features: ['Cut + sound', 'Captions', '1 revision'] },
+        { id: 'short-pro', tier: 'Pro', name: 'Short video', desc: 'Advanced pacing, sound design and motion titles.', ratio: 1.8, per: 'per minute', who: 'مناسب برای کمپین‌های تبلیغاتی', pro: true, best: true,
+          features: ['Motion titles', 'Sound design', 'Color grade', '3 revisions'] }
+      ]
+    },
+    {
+      id: 'svc-long', name: 'Long video', calc: 'per hour', dir: 'ltr', justify: 'start', best: 'long-5',
+      details: ['Documentaries, interviews and event films.'],
+      packages: [
+        { id: 'long-2', tier: 'Under 2h', name: 'Long video', desc: 'Documentaries, interviews and event films.', ratio: 6.0, per: 'per hour', who: 'مناسب برای رویداد و مصاحبه', pro: false, best: false, features: ['Multi-cam', 'Grade', '1 revision'] },
+        { id: 'long-5', tier: 'Under 5h', name: 'Long video', desc: 'Multi-camera edits, talks and features.', ratio: 8.0, per: 'per hour', who: 'مناسب برای سخنرانی‌ها و همایش‌ها', pro: false, best: true, features: ['Multi-cam', 'Grade', 'Sound', '2 revisions'] },
+        { id: 'long-10', tier: 'Under 10h', name: 'Long video', desc: 'Extended features and full productions.', ratio: 11.0, per: 'per hour', who: 'مناسب برای مستندهای بلند', pro: false, best: false, features: ['Full grade', 'Sound', '3 revisions'] },
+        { id: 'long-plus', tier: '10h+', name: 'Long video', desc: 'Large-scale series and long-form content.', ratio: 15.0, per: 'per hour', who: 'مناسب برای سریال و محتوای حرفه‌ای', pro: false, best: false, features: ['Dedicated edit suite', 'Unlimited revisions'] }
+      ]
+    },
+    {
+      id: 'svc-mg2d', name: 'Motion graphics 2D', calc: 'per second', dir: 'ltr', justify: 'start', best: 'mg2d-pro',
+      details: ['Loops, lower-thirds and clean animation.'],
+      packages: [
+        { id: 'mg2d-std', tier: 'Standard', name: '2D motion', desc: 'Loops, lower-thirds and clean animation.', ratio: 2.0, per: 'per second', who: 'مناسب برای اینفوگرافیک و لوگوموشن', pro: false, best: false, features: ['Keyframes', 'Titles', '1 revision'] },
+        { id: 'mg2d-pro', tier: 'Pro', name: '2D motion', desc: 'Character, kinetic type and branded animation.', ratio: 3.2, per: 'per second', who: 'مناسب برای برندسازی و آگهی', pro: true, best: true, features: ['Character rig', 'Kinetic type', '3 revisions'] }
+      ]
+    },
+    {
+      id: 'svc-mg3d', name: 'Motion graphics 3D', calc: 'per second', dir: 'ltr', justify: 'start', best: 'mg3d-pro',
+      details: ['3D titles, product and camera moves.'],
+      packages: [
+        { id: 'mg3d-std', tier: 'Standard', name: '3D motion', desc: '3D titles, product and camera moves.', ratio: 4.5, per: 'per second', who: 'مناسب برای معرفی محصول', pro: false, best: false, features: ['3D scene', 'Camera move', '1 revision'] },
+        { id: 'mg3d-pro', tier: 'Pro', name: '3D motion', desc: 'Full 3D scenes, lighting and rendering.', ratio: 7.0, per: 'per second', who: 'مناسب برای تیزر محصولات لوکس', pro: true, best: true, features: ['Full 3D', 'Lighting', 'Render farm', '3 revisions'] }
+      ]
+    },
+    {
+      id: 'svc-narr', name: 'Narration', calc: 'per second · per minute', dir: 'ltr', justify: 'start', best: 'narr-ad',
+      details: ['Voice-over for commercials and long-form.'],
+      packages: [
+        { id: 'narr-ad', tier: 'Advertisement', name: 'Voice-over', desc: 'Commercial and promotional spots.', ratio: 1.2, per: 'per second', who: 'مناسب برای آگهی‌های تلویزیونی', pro: false, best: true, features: ['Studio VO', '1 revision'] },
+        { id: 'narr-short', tier: 'Short content', name: 'Voice-over', desc: 'Social and short-form narration.', ratio: 0.8, per: 'per second', who: 'مناسب برای محتوای شبکه‌های اجتماعی', pro: false, best: false, features: ['Fast pickup'] },
+        { id: 'narr-long', tier: 'Long content', name: 'Voice-over', desc: 'Documentary and long-form narrations.', ratio: 5.0, per: 'per minute', who: 'مناسب برای مستندها و کتاب صوتی', pro: false, best: false, features: ['Full session', '2 revisions'] }
+      ]
+    },
+    {
+      id: 'svc-gd', name: 'Graphic design', calc: 'per design', dir: 'ltr', justify: 'start', best: 'gd-instagram',
+      details: ['Stories, thumbnails and full social sets.'],
+      packages: [
+        { id: 'gd-story', tier: 'Story', name: 'Story design', desc: 'Vertical story frames for social.', ratio: 0.5, per: 'each', who: 'مناسب برای استوری و پست روزانه', pro: false, best: false, features: ['1 frame'] },
+        { id: 'gd-thumb', tier: 'Thumbnail', name: 'Thumbnail', desc: 'High-impression thumbnail design.', ratio: 1.0, per: 'each', who: 'مناسب برای کانال‌های یوتیوب', pro: false, best: false, features: ['CTR optimized'] },
+        { id: 'gd-banner', tier: 'Banner', name: 'Banner', desc: 'Web and ad banner layouts.', ratio: 1.5, per: 'each', who: 'مناسب برای تبلیغات بنری', pro: false, best: false, features: ['Responsive'] },
+        { id: 'gd-highlight', tier: 'Highlight', name: 'Highlight', desc: 'Highlight covers and tiles.', ratio: 1.2, per: 'each', who: 'مناسب برای هایلایت اینستاگرام', pro: false, best: false, features: ['Set of covers'] },
+        { id: 'gd-instagram', tier: 'Full Instagram', name: 'Instagram set', desc: 'Full cohesive Instagram feed design.', ratio: 3.0, per: 'each', who: 'مناسب برای پیج‌های برند و فروشگاه', pro: false, best: true, features: ['Feed grid', 'Templates'] }
+      ]
+    },
+    {
+      id: 'svc-web', name: 'Website development', calc: 'per project', dir: 'ltr', justify: 'start', best: 'web-multi',
+      details: ['Landing pages, CMS and custom apps.'],
+      packages: [
+        { id: 'web-landing', tier: 'Landing page', name: 'Website', desc: 'One-page landing site, responsive.', ratio: 8.0, per: 'per project', who: 'مناسب برای معرفی محصول و کمپین', pro: false, best: false, features: ['Responsive', 'SEO'] },
+        { id: 'web-multi', tier: 'Multi-page', name: 'Website', desc: 'Multi-page site with CMS.', ratio: 15.0, per: 'per project', who: 'مناسب برای شرکت‌ها و کسب‌وکارها', pro: false, best: true, features: ['CMS', 'Blog', 'Forms'] },
+        { id: 'web-app', tier: 'Web application', name: 'Website', desc: 'Custom app, dashboard or portal.', ratio: 30.0, per: 'per project', who: 'مناسب برای استارتاپ‌ها و پنل‌ها', pro: false, best: false, features: ['Database', 'Auth', 'API'] }
+      ]
+    }
+  ]
+};
+function loadPricing(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(PRICING_KEY));
+    if (saved && saved.section && Array.isArray(saved.services) && saved.services.length) return saved;
+  } catch(e){}
+  return JSON.parse(JSON.stringify(PRICING_DEFAULT));
+}
+function savePricing(cfg){ try { localStorage.setItem(PRICING_KEY, JSON.stringify(cfg)); } catch(e){} }
+let PRICING_CFG = loadPricing();
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtToman(n){ return Math.round(n).toLocaleString('en-US'); }
-function applyRate(rate){
-  const r = (typeof rate === 'number' && isFinite(rate))
-    ? rate
-    : (parseFloat(localStorage.getItem(USD_RATE_KEY)) || 230000);
+function prValText(rate, ratio){ return fmtToman((parseFloat(rate)||0) * (parseFloat(ratio)||0)); }
+
+function renderPricing(){
+  const root = document.getElementById('pricing-root');
+  if (!root) return;
+  const sec = PRICING_CFG.section;
+  const sectionEl = document.getElementById('pricing');
+  if (sectionEl){
+    sectionEl.setAttribute('data-dir', sec.dir);
+    sectionEl.setAttribute('data-justify', sec.justify);
+  }
+  const dirAttr = 'dir="' + esc(sec.dir) + '"';
+  const ja = 'justify-content:' + esc(sec.justify) + ';';
+  let h = '<div class="pr-head" ' + dirAttr + '>';
+  h += '<p class="eyebrow reveal">' + esc(sec.eyebrow) + '</p>';
+  h += '<h2 class="reveal">' + (sec.title || '') + '</h2>';
+  h += '<p class="pr-sub reveal">' + esc(sec.sub) + '</p>';
+  if (sec.showRate){
+    h += '<div class="pr-rate reveal"><span class="pr-rate-dot"></span> 1 USD = <b id="pr-rate-val">' + fmtToman(sec.rate) + '</b>&nbsp;<span>تومان</span></div>';
+  }
+  h += '<div class="pr-tabs reveal" id="pr-tabs">';
+  PRICING_CFG.services.forEach(function(svc, i){
+    h += '<button class="pr-tab' + (i===0 ? ' on' : '') + '" data-grp="' + i + '">' + esc(svc.name) + '</button>';
+  });
+  h += '</div></div>';
+  h += '<div class="pr-list">';
+  PRICING_CFG.services.forEach(function(svc, si){
+    h += '<div class="pr-svc reveal' + (si===0 ? ' on' : '') + '" data-grp="' + si + '" dir="' + esc(svc.dir||sec.dir) + '" data-justify="' + esc(svc.justify||sec.justify) + '">';
+    h += '<div class="pr-svc-head"><span class="pr-svc-no">' + (si+1 < 10 ? '0'+(si+1) : si+1) + '</span><h3 class="pr-svc-name">' + esc(svc.name) + '</h3><span class="pr-svc-calc">' + esc(svc.calc) + '</span></div>';
+    if (svc.details && svc.details.length){
+      h += '<ul class="pr-features svc-details">';
+      svc.details.forEach(function(d){ if (d) h += '<li>' + esc(d) + '</li>'; });
+      h += '</ul>';
+    }
+    h += '<div class="pr-grid" style="justify-content:' + esc(svc.justify||sec.justify) + ';">';
+    svc.packages.forEach(function(p){
+      const isBest = String(svc.best) === String(p.id);
+      h += '<article class="pr-card' + (p.pro ? ' pro' : '') +(isBest ? ' best' : '') + '" dir="' + esc(p.dir||svc.dir||sec.dir) + '">';
+      if (isBest) h += '<div class="pr-best">★ Best sell — پرفروش</div>';
+      h += '<div class="pr-tier">' + esc(p.tier) + '</div>';
+      h += '<div class="pr-name">' + esc(p.name) + '</div>';
+      h += '<div class="pr-desc">' + esc(p.desc) + '</div>';
+      if (p.who) h += '<div class="pr-who"><b>Who is it for?</b> ' + esc(p.who) + '</div>';
+      if (p.features && p.features.length){
+        h += '<ul class="pr-features">';
+        p.features.forEach(function(f){ if (f) h += '<li>' + esc(f) + '</li>'; });
+        h += '</ul>';
+      }
+      h += '<div class="pr-price"><b class="pr-val" data-pkg="' + esc(p.id) + '" data-ratio="' + esc(p.ratio) + '" data-label="' + esc(p.name+' — '+p.tier) + '">' + prValText(sec.rate, p.ratio) + '</b><span class="pr-cur"> تومان</span></div>';
+      h += '<div class="pr-per">' + esc(p.per) + '</div>';
+      h += '</article>';
+    });
+    h += '</div></div>';
+  });
+  h += '</div>';
+  root.innerHTML = h;
+  updateRateText(sec.rate);
+  bindPricingTabs();
+  // Re-trigger reveals so freshly re-rendered pricing is visible after an edit/save.
+  root.querySelectorAll('.pr-head .reveal').forEach(function(el){ el.classList.add('in'); });
+  const _on = root.querySelector('.pr-svc.on');
+  if (_on){ _on.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+}
+function updateRateText(rate){
   const rateEl = document.getElementById('pr-rate-val');
-  if (rateEl) rateEl.textContent = fmtToman(r);
-  document.querySelectorAll('.pr-val').forEach(el => {
+  if (rateEl) rateEl.textContent = fmtToman(parseFloat(rate)||0);
+}
+function applyRate(rate){
+  const r = (typeof rate === 'number' && isFinite(rate)) ? rate
+    : (parseFloat(PRICING_CFG.section.rate) || 230000);
+  updateRateText(r);
+  document.querySelectorAll('#pricing-root .pr-val').forEach(function(el){
     el.textContent = fmtToman(r * (parseFloat(el.dataset.ratio) || 0));
   });
 }
-let savedRatios = {};
-try { savedRatios = JSON.parse(localStorage.getItem('bumim_ratios') || '{}'); } catch(e){}
-document.querySelectorAll('.pr-val').forEach(el => {
-  if (savedRatios[el.dataset.pkg] != null) el.dataset.ratio = savedRatios[el.dataset.pkg];
-});
-applyRate();
-/* ---------- pricing service tabs ---------- */
-const prTabs = document.querySelectorAll('.pr-tab');
-const prSvcs = document.querySelectorAll('.pr-svc[data-grp]');
-function activatePr(grp){
-  prTabs.forEach(t => t.classList.toggle('on', t.dataset.grp === grp));
-  prSvcs.forEach(sec => {
-    const on = sec.dataset.grp === grp;
-    sec.classList.toggle('on', on);
-    // re-trigger reveal animation for cards now visible
-    if (on){ sec.querySelectorAll('.reveal').forEach(el => el.classList.add('in')); }
+let _prTabsBound = false;
+function bindPricingTabs(){
+  const wrap = document.getElementById('pr-tabs');
+  if (!wrap) return;
+  if (_prTabsBound){ return; }
+  _prTabsBound = true;
+  wrap.addEventListener('click', function(e){
+    const t = e.target.closest ? e.target.closest('.pr-tab') : null;
+    if (t){ activatePr(t.dataset.grp); }
   });
 }
-prTabs.forEach(t => t.addEventListener('click', () => activatePr(t.dataset.grp)));
-activatePr('0');
-if (fine) document.body.classList.add('fine');
+function activatePr(grp){
+  document.querySelectorAll('#pr-tabs .pr-tab').forEach(function(t){
+    t.classList.toggle('on', t.dataset.grp === grp);
+  });
+  document.querySelectorAll('#pricing-root .pr-svc[data-grp]').forEach(function(sec){
+    const on = sec.dataset.grp === grp;
+    sec.classList.toggle('on', on);
+    if (on){ sec.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+  });
+}
+renderPricing();
+
+
 
 let W = innerWidth, H = innerHeight;
 
@@ -912,11 +880,12 @@ requestAnimationFrame(loop);
   </div>
   
   <div style="display:flex;border-bottom:1px solid rgba(237,241,236,0.1);background:rgba(0,0,0,0.2);">
-    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 6px;background:none;border:none;color:#edf1ec;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #f0a800);">Colors</button>
-    <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Fonts</button>
-    <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Sections</button>
-    <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Type</button>
-    <button class="panel-tab" data-tab="tab-pricing" style="flex:1;padding:12px 6px;background:none;border:none;color:#a1a1aa;font-size:11px;font-weight:600;cursor:pointer;">Pricing</button>
+    <button class="panel-tab active" data-tab="tab-colors" style="flex:1;padding:12px 3px;background:none;border:none;color:#edf1ec;font-size:10px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--mint, #f0a800);">Colors</button>
+    <button class="panel-tab" data-tab="tab-fonts" style="flex:1;padding:12px 3px;background:none;border:none;color:#a1a1aa;font-size:10px;font-weight:600;cursor:pointer;">Fonts</button>
+    <button class="panel-tab" data-tab="tab-sections" style="flex:1;padding:12px 3px;background:none;border:none;color:#a1a1aa;font-size:10px;font-weight:600;cursor:pointer;">Sections</button>
+    <button class="panel-tab" data-tab="tab-page" style="flex:1;padding:12px 3px;background:none;border:none;color:#a1a1aa;font-size:10px;font-weight:600;cursor:pointer;">Page</button>
+    <button class="panel-tab" data-tab="tab-typography" style="flex:1;padding:12px 3px;background:none;border:none;color:#a1a1aa;font-size:10px;font-weight:600;cursor:pointer;">Type</button>
+    <button class="panel-tab" data-tab="tab-pricing" style="flex:1;padding:12px 3px;background:none;border:none;color:#a1a1aa;font-size:10px;font-weight:600;cursor:pointer;">Pricing</button>
   </div>
 
   <div style="flex:1;overflow-y:auto;padding:20px;">
@@ -951,15 +920,27 @@ requestAnimationFrame(loop);
           <option value="'Vazirmatn', sans-serif">Vazirmatn (Persian)</option>
           <option value="'Inter', sans-serif">Inter (Sans)</option>
           <option value="system-ui, sans-serif">System UI</option>
+          <option value="Bumim-Custom">Uploaded font…</option>
         </select>
+      </div>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Upload a font (site-wide)</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:8px;">Choose a .woff2 / .woff / .ttf / .otf file. It is embedded and applied to all text. Upload &amp; save from the bottom bar.</p>
+      <input type="file" id="font-upload" accept=".woff2,.woff,.ttf,.otf" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.25);border-radius:8px;color:#c9cdc9;font-size:12px;margin-bottom:4px;" />
+      <p style="font-size:11px;color:var(--mint, #f0a800);margin-bottom:16px;" id="font-upload-status">No file selected.</p>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;margin-bottom:6px;">Weights for this font (comma separated)</label>
+        <input type="text" id="font-weights" placeholder="400,700" style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:12px;box-sizing:border-box;" />
+        <button id="font-remove" style="width:100%;margin-top:8px;background:rgba(255,120,120,0.12);color:#ff9c9c;border:1px solid rgba(255,120,120,0.25);padding:10px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;">Remove uploaded font</button>
       </div>
     </div>
 
     <!-- TAB 3: SECTIONS -->
     <div id="tab-sections" class="panel-content" style="display:none;">
       <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:12px;">Hide / Show Sections</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:12px;">Toggles apply live. Section cards (SC 00–08), pricing, legal and footer are all covered.</p>
       <div id="sections-toggles" style="display:flex;flex-direction:column;gap:12px;">
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="hero" checked style="accent-color:var(--mint, #f0a800);" /> Hero Section</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="pricing" checked style="accent-color:var(--mint, #f0a800);" /> Pricing / Rate Card</label>
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="manifesto" checked style="accent-color:var(--mint, #f0a800);" /> Manifesto (The Unseen Author)</label>
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="strip" checked style="accent-color:var(--mint, #f0a800);" /> Selected Treatments</label>
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="real" checked style="accent-color:var(--mint, #f0a800);" /> Campaigns</label>
@@ -967,6 +948,20 @@ requestAnimationFrame(loop);
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="appar" checked style="accent-color:var(--mint, #f0a800);" /> Apparitions</label>
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="credits" checked style="accent-color:var(--mint, #f0a800);" /> Credits & Logos</label>
         <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="end" checked style="accent-color:var(--mint, #f0a800);" /> Brief / Contact</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="legal" checked style="accent-color:var(--mint, #f0a800);" /> Fine Print / Legal</label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;"><input type="checkbox" data-section="footer" checked style="accent-color:var(--mint, #f0a800);" /> Footer</label>
+      </div>
+    </div>
+
+    <!-- TAB: PAGE (section editor: direction/justify + pricing text grid) -->
+    <div id="tab-page" class="panel-content" style="display:none;">
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Section direction &amp; alignment</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:12px;">Set RTL / LTR and Start / Center / End for each section's content. Applies live via CSS data attributes.</p>
+      <div id="section-dir" style="display:flex;flex-direction:column;gap:14px;"></div>
+      <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">
+        <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Pricing — card direction &amp; alignment</h3>
+        <p style="font-size:11px;color:#76827a;margin-bottom:6px;">Per-service RTL/LTR and justify. Card texts, tiers, bullets and who-for are extended in the Pricing tab.</p>
+        <div id="pricing-dir" style="display:flex;flex-direction:column;gap:14px;"></div>
       </div>
     </div>
 
@@ -983,14 +978,23 @@ requestAnimationFrame(loop);
       </div>
     </div>
     <div id="tab-pricing" class="panel-content" style="display:none;">
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Global dollar rate</h3>
-      <p style="font-size:11px;color:#76827a;margin-bottom:8px;">USD → Toman. Every package price = rate × its ratio.</p>
-      <label style="display:block;font-size:12px;margin-bottom:6px;">1 USD (in Toman)</label>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Section title &amp; caption</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:6px;">Edit every text in this section (title may contain &lt;em&gt;).</p>
+      <label style="display:block;font-size:12px;margin-bottom:4px;">Eyebrow</label>
+      <input type="text" id="pr-eyebrow" style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:12px;box-sizing:border-box;margin-bottom:10px;" />
+      <label style="display:block;font-size:12px;margin-bottom:4px;">Title (HTML allowed)</label>
+      <input type="text" id="pr-title" style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:12px;box-sizing:border-box;margin-bottom:10px;" />
+      <label style="display:block;font-size:12px;margin-bottom:4px;">Caption</label>
+      <textarea id="pr-sub" rows="3" style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-size:12px;box-sizing:border-box;margin-bottom:12px;resize:vertical;"></textarea>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:14px;"><input type="checkbox" id="pr-showrate" checked style="accent-color:var(--mint, #f0a800);" /> Show exchange-rate chip (hide the dollar price)</label>
+      <label style="display:block;font-size:12px;margin-bottom:4px;">1 USD (in Toman)</label>
       <input type="number" id="usd-rate-input" value="230000" min="0" step="1000" style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:4px;" />
-      <p style="font-size:11px;color:var(--mint, #f0a800);margin-bottom:18px;" id="usd-preview"></p>
-      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Package ratios</h3>
-      <p style="font-size:11px;color:#76827a;margin-bottom:6px;">Edit a ratio to price that package. Changes apply live.</p>
-      <div id="pkg-ratios"></div>
+      <p style="font-size:11px;color:var(--mint, #f0a800);margin-bottom:14px;" id="usd-preview"></p>
+
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#76827a;margin-bottom:8px;">Services &amp; packages</h3>
+      <p style="font-size:11px;color:#76827a;margin-bottom:6px;">Edit names, add / remove services and packages, set Best-sell and "Who is it for?".</p>
+      <div id="pricing-services" style="display:flex;flex-direction:column;gap:16px;margin-bottom:14px;"></div>
+      <button id="add-service" style="width:100%;background:rgba(255,255,255,0.08);color:#edf1ec;border:1px dashed rgba(255,255,255,0.25);padding:12px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;">+ Add a service</button>
     </div>
   </div>
 
@@ -1027,9 +1031,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (toggleBtn) toggleBtn.style.display = 'flex';
 
+  /* ============================ PERSISTED STATE ============================ */
+  const SETTINGS_KEY = 'bumim_admin_settings';
+  const SECTIONS_KEY = 'bumim_sections_visible';
+  const FONT_KEY = 'bumim_font_custom';
+  const FONT_NAME = 'Bumim-Custom';
+  const SECTIONS = [
+    ['hero', 'Hero Section'],
+    ['pricing', 'Pricing / Rate Card'],
+    ['manifesto', 'Manifesto (The Unseen Author)'],
+    ['strip', 'Selected Treatments'],
+    ['real', 'Campaigns'],
+    ['ai', 'AI in the Pipeline'],
+    ['appar', 'Apparitions'],
+    ['credits', 'Credits & Logos'],
+    ['end', 'Brief / Contact'],
+    ['legal', 'Fine Print / Legal'],
+    ['footer', 'Footer']
+  ];
+  let savedSections = {};
+  try { savedSections = JSON.parse(localStorage.getItem(SECTIONS_KEY) || '{}'); } catch(e){}
 
   // Load saved settings
-  const saved = JSON.parse(localStorage.getItem('bumim_admin_settings') || '{}');
+  const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
   if (saved.mint) {
     document.documentElement.style.setProperty('--mint', saved.mint);
     colorPicker.value = saved.mint;
@@ -1037,49 +1061,398 @@ document.addEventListener('DOMContentLoaded', () => {
     panelDot.style.background = saved.mint;
   }
   if (saved.font) {
-    document.body.style.fontFamily = saved.font;
-    fontSelect.value = saved.font;
+    if (saved.font === FONT_NAME) { applyCustomFont(); }
+    else { document.body.style.fontFamily = saved.font; fontSelect.value = saved.font; }
   }
 
-  // --- Pricing: global dollar rate + package ratios ---
+  /* ============================ PRICING EDITOR ============================ */
   const usdInput = document.getElementById('usd-rate-input');
   const usdPreview = document.getElementById('usd-preview');
-  const ratiosWrap = document.getElementById('pkg-ratios');
-  const getRate = () => parseFloat((usdInput||{}).value) || parseFloat(localStorage.getItem(USD_RATE_KEY)) || 230000;
+  const prEyebrow = document.getElementById('pr-eyebrow');
+  const prTitle = document.getElementById('pr-title');
+  const prSub = document.getElementById('pr-sub');
+  const prShowRate = document.getElementById('pr-showrate');
+  const servicesWrap = document.getElementById('pricing-services');
+  const addServiceBtn = document.getElementById('add-service');
+  const getRate = () => parseFloat((usdInput||{}).value) || parseFloat(PRICING_CFG.section.rate) || 230000;
   const updateUsdPreview = () => {
     if (usdPreview) usdPreview.textContent = '1 USD = ' + fmtToman(parseFloat(usdInput.value||'0')) + ' تومان';
   };
-  if (usdInput) {
-    usdInput.value = localStorage.getItem(USD_RATE_KEY) || '230000';
-    usdInput.addEventListener('input', () => {
-      applyRate(getRate());
+
+  function valueOf(cfg, path, fallback){ return cfg; }
+
+  function readEditorIntoCfg(){
+    PRICING_CFG.section.eyebrow = prEyebrow ? prEyebrow.value : PRICING_CFG.section.eyebrow;
+    PRICING_CFG.section.title = prTitle ? prTitle.value : PRICING_CFG.section.title;
+    PRICING_CFG.section.sub = prSub ? prSub.value : PRICING_CFG.section.sub;
+    PRICING_CFG.section.showRate = prShowRate ? prShowRate.checked : PRICING_CFG.section.showRate;
+    PRICING_CFG.section.rate = parseFloat(usdInput ? usdInput.value : PRICING_CFG.section.rate) || 230000;
+  }
+
+  function fillEditorFromCfg(){
+    if (prEyebrow) prEyebrow.value = PRICING_CFG.section.eyebrow;
+    if (prTitle) prTitle.value = PRICING_CFG.section.title;
+    if (prSub) prSub.value = PRICING_CFG.section.sub;
+    if (prShowRate) prShowRate.checked = PRICING_CFG.section.showRate !== false;
+    if (usdInput) usdInput.value = PRICING_CFG.section.rate;
+  }
+
+  // Build the service/package editor DOM
+  function renderServicesEditor(){
+    if (!servicesWrap) return;
+    // Gather current field values first
+    if (servicesWrap.dataset.dirty === '1'){
+      readServicesEditorIntoCfg();
+    }
+    servicesWrap.innerHTML = '';
+    PRICING_CFG.services.forEach(function(svc, si){
+      const card = document.createElement('div');
+      card.className = 'pe-svc';
+      card.style.cssText = 'border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;background:rgba(255,255,255,0.03);';
+      let html = '';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+      html += '<b style="font-size:13px;">#' + (si+1) + ' Service</b>';
+      html += '<button class="pe-addpkg" data-si="'+si+'" style="background:rgba(255,255,255,0.08);color:#edf1ec;border:1px solid rgba(255,255,255,0.15);padding:5px 9px;border-radius:6px;font-size:11px;cursor:pointer;">+ Package</button>';
+      html += '<button class="pe-del-svc" data-si="'+si+'" style="background:rgba(255,120,120,0.12);color:#ff9c9c;border:1px solid rgba(255,120,120,0.25);padding:5px 9px;border-radius:6px;font-size:11px;cursor:pointer;">Remove</button>';
+      html += '</div>';
+      html += '<label class="pe-lbl">Service name</label>';
+      html += '<input class="pe-svc-name" data-si="'+si+'" value="'+esc(svc.name)+'" style="'+INP+'margin-bottom:8px;" />';
+      html += '<label class="pe-lbl">Calc note (per second etc.)</label>';
+      html += '<input class="pe-svc-calc" data-si="'+si+'" value="'+esc(svc.calc)+'" style="'+INP+'margin-bottom:8px;" />';
+      html += '<label class="pe-lbl">Best-sell package</label>';
+      html += '<select class="pe-svc-best" data-si="'+si+'" style="'+SELECT+'margin-bottom:8px;">';
+      svc.packages.forEach(function(p){ html += '<option value="'+esc(p.id)+'"'+(String(svc.best)===String(p.id)?' selected':'')+'>'+esc(p.name+' — '+p.tier)+'</option>'; });
+      html += '</select>';
+      html += '<label class="pe-lbl">Service details (one per line)</label>';
+      html += '<textarea class="pe-svc-details" data-si="'+si+'" rows="2" style="'+INP+'margin-bottom:10px;resize:vertical;">'+esc((svc.details||[]).join('\\n'))+'</textarea>';
+      card.innerHTML = html;
+      servicesWrap.appendChild(card);
+      // Package sub-cards
+      svc.packages.forEach(function(p, pi){
+        card.appendChild(buildPkgCard(si, pi, p));
+      });
+    });
+    servicesWrap.dataset.dirty = '0';
+  }
+  const INP = 'width:100%;padding:7px 9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;font-size:12px;box-sizing:border-box;font-family:inherit;';
+  const SELECT = 'width:100%;padding:7px 9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;font-size:12px;box-sizing:border-box;';
+
+  function buildPkgCard(si, pi, p){
+    const wrap = document.createElement('div');
+    wrap.className = 'pe-pkg';
+    wrap.style.cssText = 'border:1px solid rgba(237,241,236,0.1);border-radius:8px;padding:10px;margin-top:10px;background:rgba(0,0,0,0.18);';
+    let html = '';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+    html += '<b style="font-size:12px;color:#c9cdc9;">Package ' + (pi+1) + '</b>';
+    html += '<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;"><input class="pe-pkg-pro" data-si="'+si+'" data-pi="'+pi+'" type="checkbox"'+(p.pro?' checked':'')+' style="accent-color:var(--mint, #f0a800);" /> Pro</label>';
+    html += '<button class="pe-del-pkg" data-si="'+si+'" data-pi="'+pi+'" style="background:rgba(255,120,120,0.12);color:#ff9c9c;border:1px solid rgba(255,120,120,0.25);padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;">Remove</button>';
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">';
+    html += '<div><label class="pe-lbl">Tier</label><input class="pe-pkg-tier" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.tier)+'" style="'+INP+'" /></div>';
+    html += '<div><label class="pe-lbl">Name</label><input class="pe-pkg-name" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.name)+'" style="'+INP+'" /></div>';
+    html += '</div>';
+    html += '<label class="pe-lbl">Description</label>';
+    html += '<input class="pe-pkg-desc" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.desc)+'" style="'+INP+'margin-bottom:8px;" />';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">';
+    html += '<div><label class="pe-lbl">Ratio</label><input class="pe-pkg-ratio" data-si="'+si+'" data-pi="'+pi+'" type="number" step="0.1" value="'+p.ratio+'" style="'+INP+'" /></div>';
+    html += '<div><label class="pe-lbl">Per</label><input class="pe-pkg-per" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.per)+'" style="'+INP+'" /></div>';
+    html += '<div><label class="pe-lbl">ID</label><input class="pe-pkg-id" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.id)+'" style="'+INP+'" /></div>';
+    html += '</div>';
+    html += '<label class="pe-lbl">Who is it for? (مناسب برای …)</label>';
+    html += '<input class="pe-pkg-who" data-si="'+si+'" data-pi="'+pi+'" value="'+esc(p.who||'')+'" style="'+INP+'margin-bottom:8px;" />';
+    html += '<label class="pe-lbl">Includes (one bullet per line)</label>';
+    html += '<textarea class="pe-pkg-features" data-si="'+si+'" data-pi="'+pi+'" rows="2" style="'+INP+'resize:vertical;">'+esc((p.features||[]).join('\\n'))+'</textarea>';
+    wrap.innerHTML = html;
+    return wrap;
+  }
+
+  function readServicesEditorIntoCfg(){
+    // service-level
+    PRICING_CFG.services.forEach(function(svc, si){
+      const name = document.querySelector('.pe-svc-name[data-si="'+si+'"]');
+      const calc = document.querySelector('.pe-svc-calc[data-si="'+si+'"]');
+      const best = document.querySelector('.pe-svc-best[data-si="'+si+'"]');
+      const details = document.querySelector('.pe-svc-details[data-si="'+si+'"]');
+      if (name) svc.name = name.value;
+      if (calc) svc.calc = calc.value;
+      if (best) svc.best = best.value;
+      if (details) svc.details = details.value.split('\\n').map(s=>s.trim()).filter(Boolean);
+      // package-level
+      svc.packages.forEach(function(p, pi){
+        const g = function(cls){ return document.querySelector(cls+'[data-si="'+si+'"][data-pi="'+pi+'"]'); };
+        const tier=g('.pe-pkg-tier'), nm=g('.pe-pkg-name'), desc=g('.pe-pkg-desc'), ratio=g('.pe-pkg-ratio'),
+              per=g('.pe-pkg-per'), id=g('.pe-pkg-id'), who=g('.pe-pkg-who'), feats=g('.pe-pkg-features'), pro=g('.pe-pkg-pro');
+        if (tier) p.tier=tier.value; if (nm) p.name=nm.value; if (desc) p.desc=desc.value;
+        if (ratio) p.ratio=parseFloat(ratio.value)||0; if (per) p.per=per.value; if (id) p.id=id.value;
+        if (who) p.who=who.value; if (pro) p.pro=pro.checked;
+        if (feats) p.features = feats.value.split('\\n').map(s=>s.trim()).filter(Boolean);
+      });
+    });
+  }
+
+  function refreshAll(){
+    readEditorIntoCfg();
+    readServicesEditorIntoCfg();
+    savePricing(PRICING_CFG);
+    renderPricing();
+    fillEditorFromCfg();
+  }
+
+  function rebuildSvcSelects(){
+    // best-sell options changed
+    PRICING_CFG.services.forEach(function(svc, si){
+      const sel = document.querySelector('.pe-svc-best[data-si="'+si+'"]');
+      if (!sel) return;
+      const prev = sel.value;
+      sel.innerHTML = '';
+      svc.packages.forEach(function(p){
+        const o=document.createElement('option'); o.value=p.id; o.textContent=p.name+' — '+p.tier;
+        sel.appendChild(o);
+      });
+      if (prev && svc.packages.some(p=>p.id===prev)) sel.value=prev;
+    });
+  }
+
+  function attachServicesEvents(){
+    if (!servicesWrap) return;
+    servicesWrap.addEventListener('input', function(e){ servicesWrap.dataset.dirty='1'; });
+    servicesWrap.addEventListener('change', function(e){ servicesWrap.dataset.dirty='1'; });
+    servicesWrap.addEventListener('click', function(e){
+      const t = e.target;
+      if (t.classList.contains('pe-del-svc')){
+        const si = parseInt(t.dataset.si,10);
+        readServicesEditorIntoCfg();
+        PRICING_CFG.services.splice(si,1);
+        renderServicesEditor();
+      } else if (t.classList.contains('pe-addpkg')){
+        const si = parseInt(t.dataset.si,10);
+        readServicesEditorIntoCfg();
+        const svc = PRICING_CFG.services[si];
+        const nid = 'pkg-'+si+'-'+Date.now();
+        svc.packages.push({ id:nid, tier:'New', name:'Package', desc:'', ratio:1, per:'per item', who:'', pro:false, features:[] });
+        renderServicesEditor();
+      } else if (t.classList.contains('pe-del-pkg')){
+        const si = parseInt(t.dataset.si,10), pi = parseInt(t.dataset.pi,10);
+        readServicesEditorIntoCfg();
+        PRICING_CFG.services[si].packages.splice(pi,1);
+        renderServicesEditor();
+      }
+    });
+  }
+
+  function initPricingEditor(){
+    fillEditorFromCfg();
+    updateUsdPreview();
+    renderServicesEditor();
+    attachServicesEvents();
+    if (prEyebrow) prEyebrow.addEventListener('input', () => { PRICING_CFG.section.eyebrow = prEyebrow.value; renderPricing(); });
+    if (prTitle) prTitle.addEventListener('input', () => { PRICING_CFG.section.title = prTitle.value; renderPricing(); });
+    if (prSub) prSub.addEventListener('input', () => { PRICING_CFG.section.sub = prSub.value; renderPricing(); });
+    if (prShowRate) prShowRate.addEventListener('change', () => { PRICING_CFG.section.showRate = prShowRate.checked; renderPricing(); });
+    if (usdInput) usdInput.addEventListener('input', () => {
+      PRICING_CFG.section.rate = parseFloat(usdInput.value) || 230000;
+      applyRate(PRICING_CFG.section.rate);
       updateUsdPreview();
     });
-  }
-  if (ratiosWrap) {
-    document.querySelectorAll('.pr-val').forEach(el => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;';
-      const lbl = document.createElement('span');
-      lbl.textContent = el.dataset.label || el.dataset.pkg;
-      lbl.style.cssText = 'color:#c9cdc9;';
-      const inp = document.createElement('input');
-      inp.type = 'number'; inp.step = '0.1'; inp.value = el.dataset.ratio;
-      inp.dataset.pkg = el.dataset.pkg;
-      inp.style.cssText = 'width:80px;padding:6px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:6px;font-family:monospace;font-size:12px;text-align:right;';
-      inp.addEventListener('input', () => {
-        document.querySelectorAll('.pr-val').forEach(t => {
-          if (t.dataset.pkg === inp.dataset.pkg) t.dataset.ratio = inp.value;
-        });
-        applyRate(getRate());
-      });
-      row.appendChild(lbl); row.appendChild(inp);
-      ratiosWrap.appendChild(row);
+    if (addServiceBtn) addServiceBtn.addEventListener('click', () => {
+      readServicesEditorIntoCfg();
+      PRICING_CFG.services.push({ id:'svc-'+Date.now(), name:'New service', calc:'per item', dir:'ltr', justify:'start', best:'', details:[], packages:[{ id:'pkg-'+Date.now(), tier:'Standard', name:'Package', desc:'', ratio:1, per:'per item', who:'', pro:false, features:[] }] });
+      renderServicesEditor();
     });
   }
-  updateUsdPreview();
+  if (usdInput) usdInput.value = PRICING_CFG.section.rate;
+  initPricingEditor();
 
-  // Toggle Panel
+  /* ============================ PAGE (section speed/direction) ============================ */
+  const secDirWrap = document.getElementById('section-dir');
+  const pricingDirWrap = document.getElementById('pricing-dir');
+  const SECTION_LIST = [
+    ['hero','Hero'],['pricing','Pricing / Rate Card'],['manifesto','Manifesto'],['strip','Selected Treatments'],
+    ['real','Campaigns'],['ai','AI Pipeline'],['appar','Apparitions'],['credits','Credits'],
+    ['end','Brief / Contact']
+  ];
+  function dirSelectFor(key, curDir, curJust){
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
+    const ds = document.createElement('select');
+    ds.style.cssText = SELECT;
+    ['ltr','rtl'].forEach(function(v){ const o=document.createElement('option'); o.value=v; o.textContent=v.toUpperCase(); ds.appendChild(o); });
+    ds.value = curDir || 'ltr';
+    const js = document.createElement('select');
+    js.style.cssText = SELECT;
+    ['start','center','end'].forEach(function(v){ const o=document.createElement('option'); o.value=v; o.textContent=v[0].toUpperCase()+v.slice(1); js.appendChild(o); });
+    js.value = curJust || 'start';
+    wrap.appendChild(ds); wrap.appendChild(js);
+    return {wrap:wrap, dirSel:ds, justSel:js};
+  }
+  function buildSectionDir(){
+    if (secDirWrap){
+      secDirWrap.innerHTML = '';
+      SECTION_LIST.forEach(function(pair){
+        const secEl = document.getElementById(pair[0]);
+        const curDir = secEl ? (secEl.getAttribute('data-dir')||'ltr') : 'ltr';
+        const curJust = secEl ? (secEl.getAttribute('data-justify')||'start') : 'start';
+        const row = document.createElement('div');
+        row.style.cssText = 'padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
+        row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+pair[1]+'</div>';
+        const c = dirSelectFor(pair[0], curDir, curJust);
+        row.appendChild(c.wrap);
+        const id = sectionKeyFromLabel(pair[1]);
+        c.dirSel.addEventListener('change', function(){
+          const el = document.getElementById(id);
+          if (el){ el.setAttribute('data-dir', c.dirSel.value); }
+          if (id === 'pricing'){ PRICING_CFG.section.dir = c.dirSel.value; renderPricing(); }
+        });
+        c.justSel.addEventListener('change', function(){
+          const el = document.getElementById(id);
+          if (el){ el.setAttribute('data-justify', c.justSel.value); }
+          if (id === 'pricing'){ PRICING_CFG.section.justify = c.justSel.value; renderPricing(); }
+        });
+        secDirWrap.appendChild(row);
+      });
+    }
+    if (pricingDirWrap){
+      // Per-service direction for pricing
+      pricingDirWrap.innerHTML = '';
+      function rebuildPricingDir(){
+        readServicesEditorIfDirty();
+        pricingDirWrap.innerHTML = '';
+        PRICING_CFG.services.forEach(function(svc, si){
+          const row = document.createElement('div');
+          row.style.cssText = 'padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);';
+          row.innerHTML = '<div style="font-weight:600;font-size:12px;margin-bottom:6px;">'+esc(svc.name)+'</div>';
+          const c = dirSelectFor('svc', svc.dir||'ltr', svc.justify||'start');
+          row.appendChild(c.wrap);
+          c.dirSel.addEventListener('change', function(){ svc.dir = c.dirSel.value; renderPricing(); });
+          c.justSel.addEventListener('change', function(){ svc.justify = c.justSel.value; renderPricing(); });
+          pricingDirWrap.appendChild(row);
+        });
+      }
+      rebuildPricingDir();
+      pricingDirWrap.dataset.rebuild = String(rebuildPricingDir);
+    }
+  }
+  function readServicesEditorIfDirty(){
+    if (servicesWrap && servicesWrap.dataset.dirty === '1'){
+      readServicesEditorIntoCfg();
+      servicesWrap.dataset.dirty = '0';
+    }
+  }
+  function sectionKeyFromLabel(label){
+    // map label -> id from SECTIONS list
+    const hit = SECTIONS.find(function(s){ return s[1]===label; });
+    return hit ? hit[0] : label;
+  }
+  buildSectionDir();
+
+  /* ============================ SECTION VISIBILITY ============================ */
+  function applySectionVisibility(){
+    SECTIONS.forEach(function(pair){
+      const id = pair[0];
+      const chk = document.querySelector('#sections-toggles input[data-section="'+id+'"]');
+      const el = document.getElementById(id);
+      const show = savedSections[id] !== false;
+      if (el) el.style.display = show ? '' : 'none';
+      if (chk) chk.checked = show;
+      // Hide the loose slate header that precedes / belongs to this section
+      const slate = document.querySelector('header[data-target="'+id+'"]');
+      if (slate) slate.style.display = show ? '' : 'none';
+    });
+  }
+  function buildSectionsToggles(){
+    const wrap = document.getElementById('sections-toggles');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    SECTIONS.forEach(function(pair){
+      const id = pair[0], label = pair[1];
+      const labelEl = document.createElement('label');
+      labelEl.style.cssText = 'display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;';
+      labelEl.innerHTML = '<input type="checkbox" data-section="'+id+'"'+(savedSections[id]!==false?' checked':'')+' style="accent-color:var(--mint, #f0a800);" /> '+label;
+      wrap.appendChild(labelEl);
+    });
+    wrap.addEventListener('change', function(e){
+      const input = e.target;
+      if (!input || !input.dataset.section) return;
+      const id = input.dataset.section;
+      savedSections[id] = input.checked;
+      const el = document.getElementById(id);
+      if (el) el.style.display = input.checked ? '' : 'none';
+      const slate = document.querySelector('header[data-target="'+id+'"]');
+      if (slate) slate.style.display = input.checked ? '' : 'none';
+      try { localStorage.setItem(SECTIONS_KEY, JSON.stringify(savedSections)); } catch(err){}
+    });
+  }
+  buildSectionsToggles();
+  applySectionVisibility();
+
+  /* ============================ FONT UPLOAD (item 13) ============================ */
+  const fontUpload = document.getElementById('font-upload');
+  const fontWeights = document.getElementById('font-weights');
+  const fontUploadStatus = document.getElementById('font-upload-status');
+  const fontRemove = document.getElementById('font-remove');
+  let pendingFont = null;
+  function applyCustomFont(){
+    try {
+      const data = JSON.parse(localStorage.getItem(FONT_KEY));
+      if (data && data.url){
+        let style = document.getElementById('bumim-font-face');
+        if (!style){
+          style = document.createElement('style');
+          style.id = 'bumim-font-face';
+          document.head.appendChild(style);
+        }
+        const w = (data.weights || '400').split(',').map(s=>s.trim()).filter(Boolean);
+        let css = '';
+        w.forEach(function(weight){
+          css += '@font-face{font-family:"'+FONT_NAME+'";font-style:normal;font-weight:'+weight+';src:url('+data.url+') format("'+data.format+'");}' ;
+        });
+        css += 'body,body .hud,body .panel-tab,body input,body select,body textarea,body button{font-family:"'+FONT_NAME+'", sans-serif !important;}';
+        style.textContent = css;
+        document.body.style.fontFamily = '"'+FONT_NAME+'", sans-serif';
+        fontSelect.value = FONT_NAME;
+      }
+    } catch(e){}
+  }
+  if (fontUpload){
+    fontUpload.addEventListener('change', function(){
+      const file = fontUpload.files && fontUpload.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        const urlBase = reader.result;
+        const ext = (file.name.split('.').pop()||'').toLowerCase();
+        const formatMap = { woff:'woff', woff2:'woff2', ttf:'truetype', otf:'opentype' };
+        pendingFont = { name:file.name, url:urlBase, format:formatMap[ext]||'woff2', weights:(fontWeights?fontWeights.value:'400')||'400' };
+        if (fontUploadStatus) fontUploadStatus.textContent = 'Ready: ' + file.name + ' (' + (Math.round(file.size/1024)) + ' KB). Press Apply & Save to embed.';
+        // live preview
+        pendingPreview();
+      };
+      reader.readAsDataURL(file);
+    });
+    function pendingPreview(){
+      if (!pendingFont) return;
+      let style = document.getElementById('bumim-font-preview');
+      if (!style){ style = document.createElement('style'); style.id='bumim-font-preview'; document.head.appendChild(style); }
+      const w = (pendingFont.weights || '400').split(',').map(s=>s.trim()).filter(Boolean);
+      let css = '';
+      w.forEach(function(weight){ css += '@font-face{font-family:"'+FONT_NAME+'";font-style:normal;font-weight:'+weight+';src:url('+pendingFont.url+') format("'+pendingFont.format+'");}'; });
+      css += 'body{font-family:"'+FONT_NAME+'", sans-serif;}';
+      style.textContent = css;
+      document.body.style.fontFamily = '"'+FONT_NAME+'", sans-serif';
+      fontSelect.value = FONT_NAME;
+    }
+    if (fontRemove) fontRemove.addEventListener('click', function(){
+      localStorage.removeItem(FONT_KEY);
+      const st = document.getElementById('bumim-font-face'); if (st) st.remove();
+      const sp = document.getElementById('bumim-font-preview'); if (sp) sp.remove();
+      document.body.style.fontFamily = '';
+      fontSelect.value = "'Space Grotesk', sans-serif";
+      if (fontUploadStatus) fontUploadStatus.textContent = 'Uploaded font removed.';
+      pendingFont = null;
+    });
+  }
+
+  /* ============================ PANEL OPEN/CLOSE ============================ */
   toggleBtn.addEventListener('click', () => {
     panel.style.transform = 'translateX(0)';
     toggleBtn.style.display = 'none';
@@ -1089,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.style.display = 'flex';
   });
 
-  // Tabs
+  /* ============================ TABS ============================ */
   document.querySelectorAll('.panel-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.panel-tab').forEach(t => {
@@ -1105,21 +1478,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Color change live (universal mint token binding)
+  /* ============================ COLOR ============================ */
   const applyAccentColor = (hex) => {
     document.documentElement.style.setProperty('--mint', hex);
     colorPicker.value = hex;
     colorText.value = hex;
     if (panelDot) panelDot.style.background = hex;
     if (toggleBtn) toggleBtn.style.color = hex;
-
     let styleTag = document.getElementById('comprehensive-accent-patch');
-    if (!styleTag) {
+    if (!styleTag){
       styleTag = document.createElement('style');
       styleTag.id = 'comprehensive-accent-patch';
       document.head.appendChild(styleTag);
     }
-    const cleanHex = hex.replace('#','');
     const enc = (s) => 'data:image/svg+xml,' + encodeURIComponent(s);
     const dotSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="4" fill="' + hex + '"/></svg>';
     const ringSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="none" stroke="' + hex + '" stroke-width="1.5"/><circle cx="14" cy="14" r="3.5" fill="' + hex + '"/></svg>';
@@ -1161,8 +1532,9 @@ document.addEventListener('DOMContentLoaded', () => {
       '.end-cta a:hover { border-color: ' + hex + ' !important; color: ' + hex + ' !important; }' +
       '.legal-grid h4 { color: ' + hex + ' !important; }' +
       '#menu a .m-sc { color: ' + hex + ' !important; }' +
-      '#menu a:hover .m-t { color: ' + hex + ' !important; }';
-
+      '#menu a:hover .m-t { color: ' + hex + ' !important; }' +
+      '.pr-best { color: ' + hex + ' !important; }' +
+      '.pr-who b { color: ' + hex + ' !important; }';
   };
   colorPicker.addEventListener('input', (e) => applyAccentColor(e.target.value));
   colorText.addEventListener('input', (e) => applyAccentColor(e.target.value));
@@ -1170,50 +1542,37 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => applyAccentColor(btn.getAttribute('data-color')));
   });
 
-  // Font family live
+  /* ============================ FONT FAMILY (select) ============================ */
   fontSelect.addEventListener('change', (e) => {
-    document.body.style.fontFamily = e.target.value;
+    if (e.target.value === FONT_NAME){ applyCustomFont(); }
+    else { document.body.style.fontFamily = e.target.value; }
   });
 
-  // Section visibility toggles
-  document.querySelectorAll('#sections-toggles input').forEach(chk => {
-    chk.addEventListener('change', (e) => {
-      const secId = e.target.getAttribute('data-section');
-      const el = document.getElementById(secId);
-      if (el) {
-        el.style.display = e.target.checked ? '' : 'none';
-      }
-    });
-  });
-
-  // Typography range sliders live
+  /* ============================ TYPOGRAPHY SLIDERS ============================ */
   heroSizeRange.addEventListener('input', (e) => {
     const val = e.target.value + 'px';
     heroSizeVal.textContent = val;
-    document.querySelectorAll('h1').forEach(h => h.style.fontSize = val);
+    document.querySelectorAll('#hero h1').forEach(h => h.style.fontSize = val);
   });
   secSizeRange.addEventListener('input', (e) => {
     const val = e.target.value + 'px';
     secSizeVal.textContent = val;
-    document.querySelectorAll('h2').forEach(h => h.style.fontSize = val);
+    document.querySelectorAll('section h2, section h3').forEach(h => h.style.fontSize = val);
   });
 
-  // Apply & Save
+  /* ============================ APPLY & SAVE ============================ */
   applyBtn.addEventListener('click', () => {
-    const settings = {
-      mint: colorPicker.value,
-      font: fontSelect.value
-    };
-    localStorage.setItem('bumim_admin_settings', JSON.stringify(settings));
-    
-    // Save global dollar rate + package ratios
-    const usdInp = document.getElementById('usd-rate-input');
-    if (usdInp) localStorage.setItem(USD_RATE_KEY, usdInp.value);
-    const ratios = {};
-    document.querySelectorAll('#pkg-ratios input').forEach(inp => { ratios[inp.dataset.pkg] = inp.value; });
-    localStorage.setItem('bumim_ratios', JSON.stringify(ratios));
-    
-    // Success toast notification
+    readEditorIntoCfg();
+    readServicesEditorIntoCfg();
+    savePricing(PRICING_CFG);
+    renderPricing();
+    const settings = { mint: colorPicker.value, font: fontSelect.value };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    if (fontSelect.value === FONT_NAME && pendingFont){
+      localStorage.setItem(FONT_KEY, JSON.stringify({ url: pendingFont.url, format: pendingFont.format, weights: pendingFont.weights }));
+      applyCustomFont();
+    }
+    try { localStorage.setItem(SECTIONS_KEY, JSON.stringify(savedSections)); } catch(e){}
     const toast = document.createElement('div');
     toast.textContent = '✓ Changes applied & saved successfully!';
     toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--mint, #f0a800);color:#050706;padding:12px 24px;border-radius:12px;font-weight:700;z-index:100000;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-size:14px;';
@@ -1221,15 +1580,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 3000);
   });
 
-  // Reset
+  /* ============================ RESET ============================ */
   resetBtn.addEventListener('click', () => {
-    localStorage.removeItem('bumim_admin_settings');
+    localStorage.removeItem(SETTINGS_KEY);
     localStorage.removeItem(USD_RATE_KEY);
     localStorage.removeItem('bumim_ratios');
+    localStorage.removeItem(PRICING_KEY);
+    localStorage.removeItem(SECTIONS_KEY);
+    localStorage.removeItem(FONT_KEY);
     location.reload();
   });
 
-  // Log out
+  /* ============================ LOG OUT ============================ */
   if (logoutBtn) logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('bumim_admin');
     location.href = '/admin';
