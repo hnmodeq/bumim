@@ -7,6 +7,33 @@
     "title": "Bumim — The professional network for Iranian video editors",
     "description": "A professional platform for video editors: build profiles, showcase portfolios, understand market pricing, generate quotes, and collaborate with peers."
   },
+  "nav": {
+    "primary": "Primary navigation",
+    "footer": "Footer navigation",
+    "menu": "Menu",
+    "editors": "Editors",
+    "projects": "Projects",
+    "rateGuide": "Rate guide",
+    "quote": "Quote",
+    "community": "Community",
+    "resources": "Resources",
+    "howItWorks": "How it works",
+    "about": "About"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "getStarted": "Get started",
+    "account": "Account"
+  },
+  "common": {
+    "notifications": "Notifications",
+    "noNotifications": "You have no notifications yet.",
+    "menu": "Menu",
+    "comingSoon": "Coming soon",
+    "backHome": "Back home",
+    "underConstruction": "This section is under construction."
+  },
   "home": {
     "badge": "Under construction",
     "heroTitle": "The professional network for video editors",
@@ -23,6 +50,86 @@
       "collaboration": "Collaboration",
       "collaborationDesc": "Outsource overflow work and team up on projects."
     }
+  },
+  "marketing": {
+    "editors": {
+      "title": "Editors",
+      "description": "Browse professional editor profiles, see their skills and portfolios, and reach out to collaborate."
+    },
+    "editorsDetail": {
+      "title": "Editor profile",
+      "description": "A complete view of this editor's profile, portfolio, and ratings."
+    },
+    "projects": {
+      "title": "Projects",
+      "description": "Browse outsourced projects and apply for the ones that fit you."
+    },
+    "projectsDetail": {
+      "title": "Project details",
+      "description": "Full project details, budget, and deadline."
+    },
+    "rateGuide": {
+      "title": "Rate guide",
+      "description": "See market rates for editing services by experience and city."
+    },
+    "quote": {
+      "title": "Quote",
+      "description": "Build a professional quote with the rate calculator and send it to your client."
+    },
+    "community": {
+      "title": "Community",
+      "description": "Discuss with peers, share experiences, and learn."
+    },
+    "resources": {
+      "title": "Resources",
+      "description": "Articles and learning resources for editors' professional growth."
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "description": "Learn how the Bumim platform and collaboration flow work."
+    },
+    "about": {
+      "title": "About",
+      "description": "Bumim is the professional network and work platform for Iranian video editors."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "profile": "Profile",
+    "portfolio": "Portfolio",
+    "projects": "Projects",
+    "applications": "Applications",
+    "collaborations": "Collaborations",
+    "messages": "Messages",
+    "reviews": "Reviews",
+    "settings": "Settings",
+    "overviewDesc": "A summary of your activity and account status.",
+    "profileDesc": "Build and manage your professional profile.",
+    "portfolioDesc": "Showcase your projects.",
+    "projectsDesc": "Manage your outsourced projects.",
+    "applicationsDesc": "Your applications to projects.",
+    "collaborationsDesc": "Active and completed collaborations.",
+    "messagesDesc": "Conversations with peers.",
+    "reviewsDesc": "Reviews you have received and given.",
+    "settingsDesc": "Account and privacy settings."
+  },
+  "admin": {
+    "title": "Admin",
+    "overview": "Overview",
+    "users": "Users",
+    "projects": "Projects",
+    "reports": "Reports",
+    "verification": "Verification",
+    "rates": "Rates",
+    "community": "Community",
+    "overviewDesc": "Platform overview and key metrics.",
+    "usersDesc": "Manage users and roles.",
+    "projectsDesc": "Monitor published projects.",
+    "reportsDesc": "Review abuse reports.",
+    "verificationDesc": "Review verification requests.",
+    "ratesDesc": "Manage rate guide data.",
+    "communityDesc": "Moderate community content."
   },
   "notFound": {
     "title": "Page not found",
