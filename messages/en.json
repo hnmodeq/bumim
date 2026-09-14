@@ -1,0 +1,37 @@
+{
+  "site": {
+    "name": "Bumim",
+    "tagline": "The professional network and work platform for Iranian video editors"
+  },
+  "meta": {
+    "title": "Bumim — The professional network for Iranian video editors",
+    "description": "A professional platform for video editors: build profiles, showcase portfolios, understand market pricing, generate quotes, and collaborate with peers."
+  },
+  "home": {
+    "badge": "Under construction",
+    "heroTitle": "The professional network for video editors",
+    "heroSubtitle": "Build a professional profile, share your portfolio, understand market pricing, and collaborate with fellow editors.",
+    "comingSoon": "Coming soon",
+    "features": {
+      "profile": "Professional profile",
+      "profileDesc": "Showcase your skills, software, and experience.",
+      "portfolio": "Portfolio",
+      "portfolioDesc": "Present your work and earn client trust.",
+      "pricing": "Market pricing",
+      "pricingDesc": "Know what to charge for every job.",
+      "collaboration": "Collaboration",
+      "collaborationDesc": "Outsource overflow work and team up on projects."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has moved.",
+    "backHome": "Back home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "retry": "Try again"
+  },
+  "loading": "Loading…"
+}
