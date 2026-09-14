@@ -11,12 +11,15 @@ export function EmptyState({
   description,
   action,
   className,
+  headingLevel: Heading = "h3",
 }: {
   icon?: LucideIcon;
   title: string;
   description?: string;
   action?: React.ReactNode;
   className?: string;
+  /** Heading level. Defaults to h3 (when used under a PageHeader's h1). */
+  headingLevel?: "h1" | "h2" | "h3";
 }) {
   return (
     <div
@@ -31,7 +34,7 @@ export function EmptyState({
         </span>
       )}
       <div className="space-y-1">
-        <h3 className="text-base font-semibold">{title}</h3>
+        <Heading className="text-base font-semibold">{title}</Heading>
         {description && (
           <p className="max-w-sm text-sm text-muted-foreground">
             {description}

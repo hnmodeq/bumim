@@ -19,6 +19,7 @@ export default async function LoginPage({
         icon={LockKeyhole}
         title={t("login")}
         description={`${tc("comingSoon")} — ${tc("underConstruction")}`}
+        headingLevel="h1"
       />
     </Card>
   );

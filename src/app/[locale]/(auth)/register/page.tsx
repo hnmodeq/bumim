@@ -19,6 +19,7 @@ export default async function RegisterPage({
         icon={UserPlus}
         title={t("register")}
         description={`${tc("comingSoon")} — ${tc("underConstruction")}`}
+        headingLevel="h1"
       />
     </Card>
   );
