@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/shared/spinner";
+import { FieldError } from "@/components/auth/field-error";
 import { CheckEmailState } from "@/components/auth/check-email-state";
 
 type FormValues = { email: string };
@@ -66,10 +67,11 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           placeholder={t("emailPlaceholder")}
           aria-invalid={errors.email ? true : undefined}
+          aria-describedby={errors.email ? "email-error" : undefined}
           {...register("email")}
         />
         {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <FieldError id="email-error">{errors.email.message}</FieldError>
         )}
       </div>
 

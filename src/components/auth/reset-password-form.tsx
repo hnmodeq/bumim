@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordInput } from "@/components/auth/password-input";
+import { FieldError } from "@/components/auth/field-error";
 import { Spinner } from "@/components/shared/spinner";
 
 type FormValues = { password: string; confirmPassword: string };
@@ -62,10 +63,11 @@ export function ResetPasswordForm() {
           autoComplete="new-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={errors.password ? true : undefined}
+          aria-describedby={errors.password ? "password-error" : undefined}
           {...register("password")}
         />
         {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <FieldError id="password-error">{errors.password.message}</FieldError>
         )}
       </div>
 
@@ -76,12 +78,13 @@ export function ResetPasswordForm() {
           autoComplete="new-password"
           placeholder={t("confirmPasswordPlaceholder")}
           aria-invalid={errors.confirmPassword ? true : undefined}
+          aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-sm text-destructive">
+          <FieldError id="confirmPassword-error">
             {errors.confirmPassword.message}
-          </p>
+          </FieldError>
         )}
       </div>
 

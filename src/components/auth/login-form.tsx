@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordInput } from "@/components/auth/password-input";
+import { FieldError } from "@/components/auth/field-error";
 import { Spinner } from "@/components/shared/spinner";
 
 type FormValues = { email: string; password: string };
@@ -65,10 +66,11 @@ export function LoginForm({ initialError }: { initialError?: AuthErrorKey }) {
           autoComplete="email"
           placeholder={t("emailPlaceholder")}
           aria-invalid={errors.email ? true : undefined}
+          aria-describedby={errors.email ? "email-error" : undefined}
           {...register("email")}
         />
         {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <FieldError id="email-error">{errors.email.message}</FieldError>
         )}
       </div>
 
@@ -79,10 +81,11 @@ export function LoginForm({ initialError }: { initialError?: AuthErrorKey }) {
           autoComplete="current-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={errors.password ? true : undefined}
+          aria-describedby={errors.password ? "password-error" : undefined}
           {...register("password")}
         />
         {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <FieldError id="password-error">{errors.password.message}</FieldError>
         )}
       </div>
 

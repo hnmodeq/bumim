@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordInput } from "@/components/auth/password-input";
+import { FieldError } from "@/components/auth/field-error";
 import { Spinner } from "@/components/shared/spinner";
 import { CheckEmailState } from "@/components/auth/check-email-state";
 
@@ -79,12 +80,13 @@ export function RegisterForm() {
           autoComplete="name"
           placeholder={t("displayNamePlaceholder")}
           aria-invalid={errors.displayName ? true : undefined}
+          aria-describedby={errors.displayName ? "displayName-error" : undefined}
           {...register("displayName")}
         />
         {errors.displayName && (
-          <p className="text-sm text-destructive">
+          <FieldError id="displayName-error">
             {errors.displayName.message}
-          </p>
+          </FieldError>
         )}
       </div>
 
@@ -96,10 +98,11 @@ export function RegisterForm() {
           placeholder={t("usernamePlaceholder")}
           dir="ltr"
           aria-invalid={errors.username ? true : undefined}
+          aria-describedby={errors.username ? "username-error" : undefined}
           {...register("username")}
         />
         {errors.username && (
-          <p className="text-sm text-destructive">{errors.username.message}</p>
+          <FieldError id="username-error">{errors.username.message}</FieldError>
         )}
       </div>
 
@@ -111,10 +114,11 @@ export function RegisterForm() {
           autoComplete="email"
           placeholder={t("emailPlaceholder")}
           aria-invalid={errors.email ? true : undefined}
+          aria-describedby={errors.email ? "email-error" : undefined}
           {...register("email")}
         />
         {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <FieldError id="email-error">{errors.email.message}</FieldError>
         )}
       </div>
 
@@ -125,10 +129,11 @@ export function RegisterForm() {
           autoComplete="new-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={errors.password ? true : undefined}
+          aria-describedby={errors.password ? "password-error" : undefined}
           {...register("password")}
         />
         {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <FieldError id="password-error">{errors.password.message}</FieldError>
         )}
       </div>
 
