@@ -10,10 +10,12 @@ create extension if not exists pgcrypto;
 
 -- ---------------------------------------------------------------------------
 -- Disable the provisioning triggers so we can insert rows explicitly with
--- fixed, readable UUIDs (re-enabled at the end).
+-- fixed, readable UUIDs (re-enabled at the end). We use a session flag
+-- (bumim.provisioning) instead of ALTER TABLE ... DISABLE TRIGGER because the
+-- latter requires ownership of auth.users, which the seed role (postgres) does
+-- not have on hosted Supabase.
 -- ---------------------------------------------------------------------------
-alter table auth.users disable trigger on_auth_user_created;
-alter table public.profiles disable trigger on_profile_created;
+set bumim.provisioning = 'off';
 
 -- ============================================================================
 -- Reference data: skills
@@ -267,5 +269,4 @@ insert into public.portfolio_media (id, project_id, kind, url, is_cover, sort_or
 -- ============================================================================
 -- Re-enable the provisioning triggers
 -- ============================================================================
-alter table auth.users enable trigger on_auth_user_created;
-alter table public.profiles enable trigger on_profile_created;
+reset bumim.provisioning;

@@ -100,6 +100,14 @@ declare
   base_username text;
   final_username text;
 begin
+  -- During seeding (hosted Supabase runs the seed as a non-superuser role
+  -- that cannot ALTER auth.users) we set bumim.provisioning = 'off' so the
+  -- seed can insert rows with explicit, fixed UUIDs without this trigger
+  -- creating a conflicting profile.
+  if current_setting('bumim.provisioning', true) = 'off' then
+    return new;
+  end if;
+
   base_username := coalesce(
     nullif(new.raw_user_meta_data ->> 'username', ''),
     'editor-' || left(new.id::text, 8)
@@ -134,6 +142,10 @@ security definer
 set search_path = public
 as $$
 begin
+  if current_setting('bumim.provisioning', true) = 'off' then
+    return new;
+  end if;
+
   if new.role = 'editor' then
     insert into public.editor_profiles (profile_id)
     values (new.id);

@@ -62,6 +62,23 @@ schema changes (once a Supabase project is linked):
 supabase gen types typescript --project-id <ref> > src/types/database.types.ts
 ```
 
+## Deploying to a hosted project (no Docker / CLI)
+
+`scripts/deploy_migrations.py` applies the local migrations + seed to a hosted
+Supabase project through the Management API, using a personal access token
+(`sbp_...`) — no DB password, Docker, or CLI required.
+
+```bash
+SUPABASE_ACCESS_TOKEN=sbp_... SUPABASE_PROJECT_REF=xxxxxxxxxxxx \
+    python3 supabase/scripts/deploy_migrations.py            # migrations + seed
+    # add --skip-seed to apply migrations only
+```
+
+> The seed sets a session flag (`bumim.provisioning = 'off'`) that the
+> `handle_new_user` / `handle_new_profile` triggers respect, instead of
+> `ALTER TABLE ... DISABLE TRIGGER` (which fails on hosted Supabase because
+> the seed role does not own `auth.users`).
+
 ## Workflow
 
 ```bash
