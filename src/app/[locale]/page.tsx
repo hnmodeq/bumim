@@ -1,13 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 
 const FEATURES = ["profile", "portfolio", "pricing", "collaboration"] as const;
 
@@ -40,16 +34,24 @@ export default async function HomePage({ params }: Props) {
         </Button>
       </section>
 
-      <section className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
-        {FEATURES.map((key) => (
-          <Card key={key}>
-            <CardHeader>
-              <CardTitle>{t(`features.${key}`)}</CardTitle>
-              <CardDescription>{t(`features.${key}Desc`)}</CardDescription>
-            </CardHeader>
-            <CardContent />
-          </Card>
-        ))}
+      <section aria-labelledby="features-heading" className="w-full">
+        <h2 id="features-heading" className="sr-only">
+          {t("featuresTitle")}
+        </h2>
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+          {FEATURES.map((key) => (
+            <Card key={key}>
+              <CardHeader>
+                <h3 className="text-base font-semibold tracking-tight">
+                  {t(`features.${key}`)}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t(`features.${key}Desc`)}
+                </p>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
       </section>
 
       <footer className="text-sm text-muted-foreground">

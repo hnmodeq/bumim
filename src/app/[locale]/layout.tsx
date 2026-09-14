@@ -29,10 +29,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
+  const tSite = await getTranslations({ locale, namespace: "site" });
   return {
     title: {
       default: t("title"),
-      template: `%s — ${t("title")}`,
+      template: `%s · ${tSite("name")}`,
     },
     description: t("description"),
   };
