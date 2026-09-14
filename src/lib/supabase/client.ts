@@ -1,5 +1,6 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { env } from "@/lib/env";
+import type { Database } from "@/types/database.types";
 
 /**
  * Browser Supabase client — used only in Client Components for interactivity
@@ -7,5 +8,5 @@ import { env } from "@/lib/env";
  * Never use this for privileged operations.
  */
 export function createClient() {
-  return createBrowserClient(env.supabaseUrl, env.supabaseAnonKey);
+  return createBrowserClient<Database>(env.supabaseUrl, env.supabaseAnonKey);
 }

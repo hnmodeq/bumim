@@ -1,0 +1,42 @@
+# Supabase local development configuration.
+# Used by the Supabase CLI (`supabase start` / `supabase db reset`).
+# Requires Docker for local emulation; for CI without Docker, apply
+# migrations to any PostgreSQL instance (see supabase/tests/run.sh).
+
+project_id = "bumim"
+
+[db]
+# Local database port (Postgres 15 is the Supabase default).
+port = 54322
+# Major version of Postgres to use.
+major_version = 15
+
+[db.seed]
+# Seed file applied by `supabase db reset`.
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[analytics]
+enabled = false
