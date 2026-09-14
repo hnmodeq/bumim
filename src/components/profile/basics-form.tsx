@@ -195,13 +195,13 @@ export function BasicsForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label>{t("fields.availability")}</Label>
+          <Label id="availability-label">{t("fields.availability")}</Label>
           <Controller
             control={control}
             name="availability"
             render={({ field }) => (
               <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-labelledby="availability-label">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -218,46 +218,55 @@ export function BasicsForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>{t("fields.languages")}</Label>
+        <Label htmlFor="languages">{t("fields.languages")}</Label>
         <Controller
           control={control}
           name="languages"
           render={({ field }) => (
             <TagInput
+              id="languages"
               value={field.value ?? []}
               onChange={field.onChange}
               placeholder={t("placeholders.languages")}
               suggestions={["فارسی", "English", "العربية"]}
+              addLabel={t("addTag")}
+              removeLabel={(tag) => t("removeTag", { tag })}
             />
           )}
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>{t("fields.industries")}</Label>
+        <Label htmlFor="industries">{t("fields.industries")}</Label>
         <Controller
           control={control}
           name="industries"
           render={({ field }) => (
             <TagInput
+              id="industries"
               value={field.value ?? []}
               onChange={field.onChange}
               placeholder={t("placeholders.industries")}
+              addLabel={t("addTag")}
+              removeLabel={(tag) => t("removeTag", { tag })}
             />
           )}
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>{t("fields.projectTypes")}</Label>
+        <Label htmlFor="projectTypes">{t("fields.projectTypes")}</Label>
         <Controller
           control={control}
           name="preferredProjectTypes"
           render={({ field }) => (
             <TagInput
+              id="projectTypes"
               value={field.value ?? []}
               onChange={field.onChange}
               placeholder={t("placeholders.projectTypes")}
+              addLabel={t("addTag")}
+              removeLabel={(tag) => t("removeTag", { tag })}
             />
           )}
         />

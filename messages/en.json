@@ -359,6 +359,8 @@
       "titleMaxLength": "Title must be at most 120 characters.",
       "descriptionMaxLength": "Description must be at most 500 characters.",
       "rateInvalid": "Enter a valid whole number."
-    }
+    },
+    "addTag": "Add tag",
+    "removeTag": "Remove {tag}"
   }
 }

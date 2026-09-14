@@ -70,9 +70,9 @@ export async function getPublicProfileByUsername(
     .eq("profile_id", profile.id)
     .maybeSingle();
 
-  if (!editor) {
-    return { profile, editor: null, skills: [], software: [], services: [], projects: [] };
-  }
+  // `/editors/…` is the editor directory — a profile without an
+  // editor_profiles row (e.g. an admin account) has no editor data to show.
+  if (!editor) return null;
 
   const [skillsRes, softwareRes, servicesRes, projectsRes] = await Promise.all([
     supabase

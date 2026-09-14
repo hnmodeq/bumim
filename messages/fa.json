@@ -359,6 +359,8 @@
       "titleMaxLength": "عنوان باید حداکثر ۱۲۰ حرف باشد.",
       "descriptionMaxLength": "توضیحات باید حداکثر ۵۰۰ حرف باشد.",
       "rateInvalid": "یک عدد صحیح وارد کنید."
-    }
+    },
+    "addTag": "افزودن برچسب",
+    "removeTag": "حذف {tag}"
   }
 }

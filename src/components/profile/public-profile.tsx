@@ -144,42 +144,53 @@ export async function PublicProfile({
           {data.projects.length > 0 && (
             <Section title={t("portfolio")}>
               <div className="grid gap-4 sm:grid-cols-2">
-                {data.projects.map((p) => (
-                  <a
-                    key={p.id}
-                    href={p.cover && p.cover.kind !== "image" ? p.cover.url : undefined}
-                    target={p.cover && p.cover.kind !== "image" ? "_blank" : undefined}
-                    rel="noreferrer"
-                    className="group flex flex-col gap-3 rounded-xl border p-4 transition-colors hover:bg-accent"
-                  >
-                    <div className="flex h-28 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                      {p.cover?.kind === "image" ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.cover.url} alt="" className="size-full object-cover" />
-                      ) : (
-                        <FilmIcon className="size-8 text-muted-foreground" aria-hidden />
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-semibold group-hover:text-primary">
-                          {p.title}
-                        </span>
-                        {p.is_featured && (
-                          <Badge variant="secondary">{t("featured")}</Badge>
+                {data.projects.map((p) => {
+                  // Only render a link when the cover points at an external
+                  // video (embed/url). Image covers (or no cover) are static.
+                  const link =
+                    p.cover && p.cover.kind !== "image" ? p.cover.url : null;
+                  const card = (
+                    <>
+                      <div className="flex h-28 items-center justify-center overflow-hidden rounded-lg bg-muted">
+                        {p.cover?.kind === "image" ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.cover.url} alt="" className="size-full object-cover" />
+                        ) : (
+                          <FilmIcon className="size-8 text-muted-foreground" aria-hidden />
                         )}
                       </div>
-                      <p className="line-clamp-2 text-xs text-muted-foreground">
-                        {p.description}
-                      </p>
-                      {(p.client || p.year) && (
-                        <p className="text-xs text-muted-foreground">
-                          {[p.client, p.year].filter(Boolean).join(" · ")}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-semibold group-hover:text-primary">
+                            {p.title}
+                          </span>
+                          {p.is_featured && (
+                            <Badge variant="secondary">{t("featured")}</Badge>
+                          )}
+                        </div>
+                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                          {p.description}
                         </p>
-                      )}
+                        {(p.client || p.year) && (
+                          <p className="text-xs text-muted-foreground">
+                            {[p.client, p.year].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  );
+                  const cls =
+                    "group flex flex-col gap-3 rounded-xl border p-4 transition-colors hover:bg-accent";
+                  return link ? (
+                    <a key={p.id} href={link} target="_blank" rel="noreferrer" className={cls}>
+                      {card}
+                    </a>
+                  ) : (
+                    <div key={p.id} className={cls}>
+                      {card}
                     </div>
-                  </a>
-                ))}
+                  );
+                })}
               </div>
             </Section>
           )}

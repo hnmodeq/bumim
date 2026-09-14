@@ -19,6 +19,8 @@ export function TagInput({
   maxItems = 20,
   id,
   className,
+  addLabel,
+  removeLabel,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
@@ -27,6 +29,10 @@ export function TagInput({
   maxItems?: number;
   id?: string;
   className?: string;
+  /** Localized aria-label for the add button. */
+  addLabel?: string;
+  /** Localized aria-label factory for the remove button. */
+  removeLabel?: (tag: string) => string;
 }) {
   const [draft, setDraft] = useState("");
 
@@ -63,7 +69,7 @@ export function TagInput({
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              aria-label={`Remove ${tag}`}
+              aria-label={removeLabel ? removeLabel(tag) : `Remove ${tag}`}
               className="rounded-full text-muted-foreground transition-colors hover:text-foreground"
             >
               <XIcon className="size-3" aria-hidden />
@@ -96,7 +102,7 @@ export function TagInput({
           variant="outline"
           size="icon-sm"
           onClick={() => addTag(draft)}
-          aria-label="Add"
+          aria-label={addLabel ?? "Add"}
         >
           <PlusIcon className="size-4" aria-hidden />
         </Button>

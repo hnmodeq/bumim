@@ -28,16 +28,16 @@ export function MultiSelectChips({
     return <p className="text-sm text-muted-foreground">{emptyLabel}</p>;
   }
 
-  // Group options when any carry a group label.
+  // Group options when any carry a group label. Ungrouped options (group is
+  // null/undefined) still render, under an empty group, so none are dropped.
   const grouped = new Map<string, ChipOption[]>();
   let hasGroups = false;
   for (const o of options) {
-    if (o.group) {
-      hasGroups = true;
-      const g = grouped.get(o.group) ?? [];
-      g.push(o);
-      grouped.set(o.group, g);
-    }
+    if (o.group) hasGroups = true;
+    const key = o.group ?? "";
+    const g = grouped.get(key) ?? [];
+    g.push(o);
+    grouped.set(key, g);
   }
 
   const renderChip = (o: ChipOption) => {
@@ -68,10 +68,12 @@ export function MultiSelectChips({
   return (
     <div className="flex flex-col gap-4">
       {[...grouped.entries()].map(([group, items]) => (
-        <div key={group} className="flex flex-col gap-2">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {group}
-          </h4>
+        <div key={group || "__ungrouped__"} className="flex flex-col gap-2">
+          {group && (
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {group}
+            </h4>
+          )}
           <div className="flex flex-wrap gap-2">{items.map(renderChip)}</div>
         </div>
       ))}

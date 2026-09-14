@@ -207,13 +207,13 @@ function ServiceForm({
       )}
 
       <div className="flex flex-col gap-1.5">
-        <Label>{t("fields.serviceCategory")}</Label>
+        <Label id="category-label">{t("fields.serviceCategory")}</Label>
         <Controller
           control={control}
           name="category"
           render={({ field }) => (
             <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full" aria-labelledby="category-label">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -270,13 +270,13 @@ function ServiceForm({
           <p className="text-xs text-muted-foreground">{t("toman")}</p>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label>{t("fields.rateUnit")}</Label>
+          <Label id="rateUnit-label">{t("fields.rateUnit")}</Label>
           <Controller
             control={control}
             name="rateUnit"
             render={({ field }) => (
               <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-labelledby="rateUnit-label">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
