@@ -8,11 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { RegisterForm } from "@/components/auth/register-form";
+import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import { getCurrentUser } from "@/lib/auth/session";
 import type { AppLocale } from "@/i18n/routing";
 
-export default async function RegisterPage({
+export default async function ResetPasswordPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -21,23 +21,25 @@ export default async function RegisterPage({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "auth" });
 
+  // Requires a session (established by the recovery link). If the user
+  // navigated here directly, send them to the password-reset request form.
   const user = await getCurrentUser();
-  if (user) {
-    redirect({ href: "/dashboard", locale: locale as AppLocale });
+  if (!user) {
+    redirect({ href: "/forgot-password", locale: locale as AppLocale });
   }
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>{t("registerTitle")}</CardTitle>
-        <CardDescription>{t("registerSubtitle")}</CardDescription>
+        <CardTitle>{t("resetTitle")}</CardTitle>
+        <CardDescription>{t("resetSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <RegisterForm />
+        <ResetPasswordForm />
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground">
-          {t("haveAccount")}{" "}
+          {t("rememberedPassword")}{" "}
           <Link
             href="/login"
             className="text-primary underline-offset-4 hover:underline"

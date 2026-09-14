@@ -1,39 +1,41 @@
 /**
  * Typed access to environment variables.
  *
- * Secrets (SUPABASE_SERVICE_ROLE_KEY, etc.) must NEVER be read in a file that
- * is reachable by client code. This module is imported by server-only modules
- * which are themselves guarded with `import "server-only"` where needed.
+ * IMPORTANT: `NEXT_PUBLIC_*` variables must be read via STATIC property access
+ * (e.g. `process.env.NEXT_PUBLIC_SUPABASE_URL`) so Next.js inlines them into
+ * the client bundle at build time. Dynamic access (`process.env[name]`) is
+ * never inlined and would be `undefined` in the browser.
+ *
+ * Secrets (SUPABASE_SERVICE_ROLE_KEY) must NEVER be read in a file reachable
+ * by client code. The server-only modules that use it are guarded with
+ * `import "server-only"`.
  */
 
-function getEnv(name: string): string | undefined {
-  return process.env[name];
-}
-
-/** Throw a clear error when a required variable is missing. */
-export function requireEnv(name: string): string {
-  const value = getEnv(name);
-  if (!value) {
-    throw new Error(
-      `Missing required environment variable "${name}". ` +
-        `Copy .env.example to .env.local and fill in the value.`,
-    );
-  }
-  return value;
+function missing(name: string): string {
+  throw new Error(
+    `Missing required environment variable "${name}". ` +
+      `Copy .env.example to .env.local and fill in the value.`,
+  );
 }
 
 export const env = {
   get siteUrl() {
-    return getEnv("NEXT_PUBLIC_SITE_URL") ?? "http://localhost:3000";
+    return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   },
   get supabaseUrl() {
-    return requireEnv("NEXT_PUBLIC_SUPABASE_URL");
+    return (
+      process.env.NEXT_PUBLIC_SUPABASE_URL ??
+      missing("NEXT_PUBLIC_SUPABASE_URL")
+    );
   },
   get supabaseAnonKey() {
-    return requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    return (
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+      missing("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    );
   },
   /** Server-only. Never expose this to the browser. */
   get supabaseServiceRoleKey() {
-    return requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+    return process.env.SUPABASE_SERVICE_ROLE_KEY ?? missing("SUPABASE_SERVICE_ROLE_KEY");
   },
 };

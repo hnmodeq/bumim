@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -22,7 +23,9 @@ export function NotificationsButton() {
         <BellIcon className="size-5" aria-hidden />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64 p-2">
-        <DropdownMenuLabel>{t("notifications")}</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{t("notifications")}</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <p className="px-1.5 pb-1 text-sm text-muted-foreground">
           {t("noNotifications")}
         </p>

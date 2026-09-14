@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect, Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import {
   Card,
   CardContent,
@@ -8,11 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { RegisterForm } from "@/components/auth/register-form";
-import { getCurrentUser } from "@/lib/auth/session";
-import type { AppLocale } from "@/i18n/routing";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
-export default async function RegisterPage({
+export default async function ForgotPasswordPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -21,23 +19,18 @@ export default async function RegisterPage({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "auth" });
 
-  const user = await getCurrentUser();
-  if (user) {
-    redirect({ href: "/dashboard", locale: locale as AppLocale });
-  }
-
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>{t("registerTitle")}</CardTitle>
-        <CardDescription>{t("registerSubtitle")}</CardDescription>
+        <CardTitle>{t("forgotTitle")}</CardTitle>
+        <CardDescription>{t("forgotSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <RegisterForm />
+        <ForgotPasswordForm />
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground">
-          {t("haveAccount")}{" "}
+          {t("rememberedPassword")}{" "}
           <Link
             href="/login"
             className="text-primary underline-offset-4 hover:underline"
