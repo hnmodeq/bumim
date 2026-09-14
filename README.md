@@ -12,10 +12,11 @@ portfolios, market pricing, quotes, and reputation. RTL/Persian-first.
 - **Supabase** (PostgreSQL, Auth, Storage, RLS)
 - **Zod** (validation) + **React Hook Form** (complex forms)
 - **next-intl** (RTL/localization)
-- **Vercel** (hosting)
+- **Vercel** / **ParsPack** (hosting)
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full technical
-architecture, database schema, RLS strategy, and roadmap.
+architecture, database schema, RLS strategy, and roadmap, and
+[`docs/PARSPACK.md`](docs/PARSPACK.md) for ParsPack deployment.
 
 ## Getting Started
 
@@ -70,7 +71,7 @@ src/
 │   ├── money.ts    # integer Rial/Toman money model
 │   └── env.ts      # typed env access
 ├── i18n/           # next-intl routing/navigation/request
-├── middleware.ts   # locale routing
+├── proxy.ts        # locale routing (Next.js middleware convention)
 └── types/          # shared + generated DB types
 messages/           # fa.json / en.json message catalogs
 supabase/           # migrations + config (Phase 3)
@@ -79,7 +80,13 @@ docs/               # architecture documentation
 
 ## Current Status
 
-**Phase 1 — Project Foundation.** The app shell, design system, Supabase client
-architecture, RTL/i18n, and error/loading states are in place. No product
-features yet (authentication, profiles, projects, marketplace) — those begin in
-later phases.
+**Phase 2 — Design System + Application Shell.** The design system (Tailwind +
+shadcn/ui), public/dashboard/admin shells, and all structural routes are in
+place with placeholder content. No product features yet (authentication,
+profiles, projects, marketplace) — those begin in later phases.
+
+## Deployment
+
+- **ParsPack:** see [`docs/PARSPACK.md`](docs/PARSPACK.md). Requires Node ≥ 20.9,
+  port `3000`, and env vars set in the panel.
+- **Vercel:** the project also deploys to Vercel out of the box.
