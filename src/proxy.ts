@@ -21,7 +21,8 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip non-page paths: API routes, the auth callback, Next internals, and
-  // static files.
-  matcher: "/((?!api|_next|_vercel|auth|.*\\..*).*)",
+  // Run on all page requests. Skip API routes, Next internals, the auth
+  // callback, and the favicon (a metadata file). Do NOT skip dotted paths —
+  // usernames legitimately contain dots (e.g. `sara.mohammadi`).
+  matcher: "/((?!api|_next|_vercel|auth|favicon\\.ico$).*)",
 };

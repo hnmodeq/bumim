@@ -77,12 +77,15 @@ export type Database = {
       }
       editor_profiles: {
         Row: {
+          availability: "available" | "limited" | "booked"
           city: string | null
           created_at: string
           headline: string | null
           id: string
-          is_available: boolean
+          industries: string[]
+          languages: string[]
           location: string | null
+          preferred_project_types: string[]
           profile_id: string
           rating_avg: number
           rating_count: number
@@ -90,12 +93,15 @@ export type Database = {
           years_experience: number | null
         }
         Insert: {
+          availability?: "available" | "limited" | "booked"
           city?: string | null
           created_at?: string
           headline?: string | null
           id?: string
-          is_available?: boolean
+          industries?: string[]
+          languages?: string[]
           location?: string | null
+          preferred_project_types?: string[]
           profile_id: string
           rating_avg?: number
           rating_count?: number
@@ -103,12 +109,15 @@ export type Database = {
           years_experience?: number | null
         }
         Update: {
+          availability?: "available" | "limited" | "booked"
           city?: string | null
           created_at?: string
           headline?: string | null
           id?: string
-          is_available?: boolean
+          industries?: string[]
+          languages?: string[]
           location?: string | null
+          preferred_project_types?: string[]
           profile_id?: string
           rating_avg?: number
           rating_count?: number

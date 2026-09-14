@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/shared/spinner";
-import { FieldError } from "@/components/auth/field-error";
+import { FieldError } from "@/components/ui/field-error";
 import { CheckEmailState } from "@/components/auth/check-email-state";
 
 type FormValues = { email: string };

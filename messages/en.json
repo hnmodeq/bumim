@@ -120,7 +120,23 @@
     },
     "editorsDetail": {
       "title": "Editor profile",
-      "description": "A complete view of this editor's profile, portfolio, and ratings."
+      "description": "A complete view of this editor's profile, portfolio, and ratings.",
+      "requestCta": "Request collaboration",
+      "verified": "Verified editor",
+      "bio": "About",
+      "services": "Services",
+      "portfolio": "Portfolio",
+      "featured": "Featured",
+      "experience": "Experience",
+      "yearsExperience": "{years} years of experience",
+      "skills": "Skills",
+      "software": "Software",
+      "verification": "Verification",
+      "verificationPlaceholder": "Identity and skill verification is coming soon.",
+      "reviews": "Reviews",
+      "reviewsPlaceholder": "Client reviews will appear here.",
+      "collaboration": "Collaboration",
+      "collaborationPlaceholder": "Collaboration requests will appear here."
     },
     "projects": {
       "title": "Projects",
@@ -203,5 +219,146 @@
     "description": "An unexpected error occurred. Please try again.",
     "retry": "Try again"
   },
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "profile": {
+    "title": "Editor profile",
+    "save": "Save changes",
+    "saved": "Saved",
+    "viewPublic": "View public profile",
+    "toman": "Toman",
+    "tabs": {
+      "basics": "Basics",
+      "skills": "Skills & software",
+      "services": "Services",
+      "photos": "Photos"
+    },
+    "sections": {
+      "avatar": "Profile photo",
+      "cover": "Cover image",
+      "skills": "Skills",
+      "software": "Software"
+    },
+    "fields": {
+      "displayName": "Display name",
+      "username": "Username",
+      "headline": "Professional headline",
+      "bio": "Bio",
+      "location": "Location",
+      "city": "City",
+      "yearsExperience": "Years of experience",
+      "availability": "Availability",
+      "languages": "Languages",
+      "industries": "Industries",
+      "projectTypes": "Preferred project types",
+      "isPublic": "Publish my profile publicly",
+      "serviceCategory": "Category",
+      "serviceTitle": "Service title",
+      "serviceDescription": "Description",
+      "rate": "Rate",
+      "rateUnit": "Unit"
+    },
+    "placeholders": {
+      "headline": "e.g. Documentary editor and colorist",
+      "bio": "Introduce yourself, your experience, and what you specialize in…",
+      "location": "e.g. Tehran",
+      "city": "e.g. Tehran",
+      "languages": "Add a language (e.g. فارسی, English)",
+      "industries": "e.g. Cinema, Advertising, Documentary",
+      "projectTypes": "e.g. Feature film, TV commercial",
+      "serviceTitle": "e.g. Feature film color grading",
+      "serviceDescription": "Describe what the service includes…"
+    },
+    "availability": {
+      "available": "Available",
+      "limited": "Limited availability",
+      "booked": "Fully booked"
+    },
+    "serviceCategories": {
+      "editing": "Editing",
+      "color": "Color grading",
+      "motion": "Motion graphics",
+      "audio": "Sound design",
+      "vfx": "Visual effects",
+      "post": "Post-production",
+      "production": "Production"
+    },
+    "rateUnits": {
+      "project": "per project",
+      "hour": "per hour",
+      "day": "per day",
+      "minute": "per minute",
+      "second": "per second"
+    },
+    "skillCategories": {
+      "editing": "Editing",
+      "color": "Color",
+      "motion": "Motion",
+      "audio": "Audio",
+      "vfx": "VFX",
+      "post": "Post-production",
+      "production": "Production"
+    },
+    "skillsHint": "Select the skills you offer so clients can find you.",
+    "softwareHint": "Select the software you work with.",
+    "emptySkills": "No skills selected yet.",
+    "emptySoftware": "No software selected yet.",
+    "emptyServices": "You haven't added any services yet.",
+    "addService": "Add service",
+    "editService": "Edit service",
+    "deleteService": "Delete service",
+    "serviceHint": "Describe a service you offer and its rate.",
+    "photos": {
+      "changeAvatar": "Change photo",
+      "changeCover": "Change cover",
+      "hint": "JPG, PNG or WebP · up to 5 MB (photo) / 10 MB (cover)",
+      "avatarAlt": "Profile photo",
+      "coverAlt": "Cover image"
+    },
+    "completion": {
+      "title": "Profile completeness",
+      "subtitle": "Complete your profile to attract more clients.",
+      "percentLabel": "Profile {percent}% complete",
+      "done": "Your profile is complete!",
+      "avatar": "Upload a profile photo",
+      "cover": "Add a cover image",
+      "headline": "Write a professional headline",
+      "bio": "Add a short bio",
+      "location": "Add your location",
+      "languages": "Add your languages",
+      "years": "Add your years of experience",
+      "skills": "Select your skills",
+      "software": "Select your software",
+      "services": "Add at least one service",
+      "industries": "Add the industries you work in",
+      "projectTypes": "Add your preferred project types"
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "notEditor": "This section is only available for editors.",
+      "invalidInput": "The information you entered is invalid.",
+      "usernameTaken": "This username is already taken.",
+      "updateFailed": "Could not save your changes. Please try again.",
+      "notFound": "The item you tried to edit was not found.",
+      "invalidFile": "Please choose an image file.",
+      "invalidFileType": "Only JPG, PNG and WebP are supported.",
+      "fileTooLarge": "The file is too large.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "displayNameMinLength": "Display name must be at least 2 characters.",
+      "displayNameMaxLength": "Display name must be at most 80 characters.",
+      "usernameMinLength": "Username must be at least 3 characters.",
+      "usernameMaxLength": "Username must be at most 30 characters.",
+      "usernameInvalid": "Use only letters, numbers, dots, dashes and underscores.",
+      "headlineMaxLength": "Headline must be at most 120 characters.",
+      "bioMaxLength": "Bio must be at most 1000 characters.",
+      "locationMaxLength": "Location must be at most 120 characters.",
+      "cityMaxLength": "City must be at most 120 characters.",
+      "yearsInvalid": "Enter a number of years between 0 and 60.",
+      "tooManyTags": "Too many items.",
+      "categoryRequired": "Choose a category.",
+      "titleRequired": "Title is required.",
+      "titleMaxLength": "Title must be at most 120 characters.",
+      "descriptionMaxLength": "Description must be at most 500 characters.",
+      "rateInvalid": "Enter a valid whole number."
+    }
+  }
 }

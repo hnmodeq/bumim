@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordInput } from "@/components/auth/password-input";
-import { FieldError } from "@/components/auth/field-error";
+import { FieldError } from "@/components/ui/field-error";
 import { Spinner } from "@/components/shared/spinner";
 
 type FormValues = { password: string; confirmPassword: string };
