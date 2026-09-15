@@ -60,9 +60,14 @@ export function ShellFrame({
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    // NOTE: dashboard/admin routes render no SiteHeader (that lives in the
+    // (marketing) group only), so this shell owns the full viewport height and
+    // its sticky bars anchor at top-0 — not top-16. Reserving 4rem for a
+    // non-existent header pushed the sticky bar down over the first row of
+    // page content, hiding it behind the translucent bar and blocking clicks.
+    <div className="flex min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 flex-col gap-6 border-e bg-card p-4 lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-6 border-e bg-card p-4 lg:flex">
         <Link href="/" className="px-3">
           <Logo />
         </Link>
@@ -72,7 +77,7 @@ export function ShellFrame({
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}
-        <div className="sticky top-16 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+        <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <Sheet>
             <SheetTrigger
               className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"

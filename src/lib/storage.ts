@@ -6,9 +6,12 @@ import { env } from "@/lib/env";
  * components don't pull `next/headers` into the browser bundle.)
  */
 
-/** Build a public storage object URL (avatars/covers are in public buckets). */
+/** The public Supabase Storage buckets used for user imagery. */
+export type StorageBucket = "avatars" | "covers" | "portfolio";
+
+/** Build a public storage object URL (all three buckets are public). */
 export function storagePublicUrl(
-  bucket: "avatars" | "covers",
+  bucket: StorageBucket,
   path: string | null,
 ): string | null {
   if (!path) return null;

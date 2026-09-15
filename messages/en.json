@@ -190,7 +190,8 @@
     "collaborationsDesc": "Active and completed collaborations.",
     "messagesDesc": "Conversations with peers.",
     "reviewsDesc": "Reviews you have received and given.",
-    "settingsDesc": "Account and privacy settings."
+    "settingsDesc": "Account and privacy settings.",
+    "portfolioLoadError": "Could not load your portfolio. Please try again."
   },
   "admin": {
     "title": "Admin",
@@ -362,5 +363,89 @@
     },
     "addTag": "Add tag",
     "removeTag": "Remove {tag}"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "subtitle": "Showcase the projects you're proud of.",
+    "addProject": "Add project",
+    "editProject": "Edit project",
+    "deleteProject": "Delete project",
+    "projectHint": "Describe a project: what it was, your role, and the tools you used.",
+    "empty": "No projects yet. Add your first project to start building your portfolio.",
+    "featured": "Featured",
+    "feature": "Mark as featured",
+    "unfeature": "Remove featured",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "create": "Create project",
+    "save": "Save changes",
+    "changeThumbnail": "Change thumbnail",
+    "uploadThumbnail": "Upload thumbnail",
+    "thumbnailHint": "JPG, PNG or WebP · up to 5 MB",
+    "categoryNone": "No category",
+    "watchVideo": "Watch video",
+    "visitProject": "Visit project",
+    "noServices": "No services selected.",
+    "noSoftware": "No software selected.",
+    "fields": {
+      "thumbnail": "Thumbnail",
+      "title": "Title",
+      "category": "Category",
+      "projectDate": "Project date",
+      "role": "Role",
+      "client": "Client",
+      "description": "Description",
+      "videoUrl": "Video URL",
+      "externalUrl": "Project link",
+      "servicesUsed": "Services used",
+      "softwareUsed": "Software used",
+      "isPublished": "Publish this project publicly",
+      "isFeatured": "Featured project"
+    },
+    "videoUrlHint": "A public video link (Aparat, YouTube, Vimeo, …). The platform does not host video.",
+    "placeholders": {
+      "title": "e.g. Feature film color grading",
+      "role": "e.g. Editor and colorist",
+      "client": "e.g. Studio Filmmaker",
+      "description": "Describe the project, your approach, and the result…"
+    },
+    "categories": {
+      "short_film": "Short film",
+      "feature": "Feature film",
+      "documentary": "Documentary",
+      "commercial": "Commercial",
+      "music_video": "Music video",
+      "motion": "Motion graphics",
+      "color": "Color grading",
+      "social": "Social media content",
+      "corporate": "Corporate video",
+      "other": "Other"
+    },
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "private": "Private"
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "notEditor": "This section is only available for editors.",
+      "invalidInput": "The information you entered is invalid.",
+      "updateFailed": "Could not save your changes. Please try again.",
+      "notFound": "The project you tried to edit was not found.",
+      "invalidFile": "Please choose an image file.",
+      "invalidFileType": "Only JPG, PNG and WebP are supported.",
+      "fileTooLarge": "The file is too large.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "titleRequired": "Title is required.",
+      "titleMaxLength": "Title must be at most 120 characters.",
+      "descriptionMaxLength": "Description must be at most 2000 characters.",
+      "roleMaxLength": "Role must be at most 120 characters.",
+      "clientMaxLength": "Client must be at most 120 characters.",
+      "urlInvalid": "Enter a valid URL (starting with http:// or https://).",
+      "videoUrlInvalid": "Enter a valid video URL (starting with http:// or https://).",
+      "urlTooLong": "The URL is too long.",
+      "dateInvalid": "Enter a valid date.",
+      "tooManyTags": "Too many items."
+    }
   }
 }

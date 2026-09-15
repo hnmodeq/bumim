@@ -25,13 +25,13 @@ const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 const MAX_COVER_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-type EditorContext = {
+export type EditorContext = {
   userId: string;
   profileId: string;
   editorId: string | null;
 };
 
-async function getContext(): Promise<
+export async function getContext(): Promise<
   { ok: true; ctx: EditorContext } | { ok: false; error: string }
 > {
   const user = await getCurrentUser();
@@ -50,7 +50,7 @@ async function getContext(): Promise<
   };
 }
 
-async function requireEditor(
+export async function requireEditor(
   ctx: EditorContext,
 ): Promise<{ ok: true; editorId: string } | { ok: false; error: string }> {
   if (!ctx.editorId) return { ok: false, error: "notEditor" };

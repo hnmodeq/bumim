@@ -285,43 +285,58 @@ export type Database = {
       }
       portfolio_projects: {
         Row: {
+          category: string | null
           client: string | null
           created_at: string
           description: string | null
           editor_id: string
+          external_url: string | null
           id: string
           is_featured: boolean
+          project_date: string | null
           role: string | null
+          sort_order: number
           status: "draft" | "published" | "private"
+          thumbnail_path: string | null
           title: string
           updated_at: string
-          year: number | null
+          video_url: string | null
         }
         Insert: {
+          category?: string | null
           client?: string | null
           created_at?: string
           description?: string | null
           editor_id: string
+          external_url?: string | null
           id?: string
           is_featured?: boolean
+          project_date?: string | null
           role?: string | null
+          sort_order?: number
           status?: "draft" | "published" | "private"
+          thumbnail_path?: string | null
           title: string
           updated_at?: string
-          year?: number | null
+          video_url?: string | null
         }
         Update: {
+          category?: string | null
           client?: string | null
           created_at?: string
           description?: string | null
           editor_id?: string
+          external_url?: string | null
           id?: string
           is_featured?: boolean
+          project_date?: string | null
           role?: string | null
+          sort_order?: number
           status?: "draft" | "published" | "private"
+          thumbnail_path?: string | null
           title?: string
           updated_at?: string
-          year?: number | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -333,37 +348,62 @@ export type Database = {
           },
         ]
       }
-      portfolio_media: {
+      portfolio_project_services: {
         Row: {
-          id: string
-          is_cover: boolean
-          kind: "image" | "video_embed" | "video_url"
           project_id: string
-          sort_order: number
-          url: string
+          service_id: string
         }
         Insert: {
-          id?: string
-          is_cover?: boolean
-          kind: "image" | "video_embed" | "video_url"
           project_id: string
-          sort_order?: number
-          url: string
+          service_id: string
         }
         Update: {
-          id?: string
-          is_cover?: boolean
-          kind?: "image" | "video_embed" | "video_url"
           project_id?: string
-          sort_order?: number
-          url?: string
+          service_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "portfolio_media_project_id_fkey"
+            foreignKeyName: "portfolio_project_services_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "portfolio_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_project_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_project_software: {
+        Row: {
+          project_id: string
+          software_id: string
+        }
+        Insert: {
+          project_id: string
+          software_id: string
+        }
+        Update: {
+          project_id?: string
+          software_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_project_software_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_project_software_software_id_fkey"
+            columns: ["software_id"]
+            isOneToOne: false
+            referencedRelation: "software"
             referencedColumns: ["id"]
           },
         ]

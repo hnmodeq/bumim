@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database.types";
+import { getPublicProjects, type PublicProject } from "@/lib/db/portfolio";
 
 /**
  * Profile repository — all profile-related reads live here so components and
@@ -23,16 +24,7 @@ export type PublicProfile = {
   skills: SkillRow[];
   software: SoftwareRow[];
   services: ServiceRow[];
-  projects: {
-    id: string;
-    title: string;
-    description: string | null;
-    role: string | null;
-    client: string | null;
-    year: number | null;
-    is_featured: boolean;
-    cover: { kind: string; url: string } | null;
-  }[];
+  projects: PublicProject[];
 };
 
 /** The currently-authenticated user's own profile + editor extension. */
@@ -74,7 +66,7 @@ export async function getPublicProfileByUsername(
   // editor_profiles row (e.g. an admin account) has no editor data to show.
   if (!editor) return null;
 
-  const [skillsRes, softwareRes, servicesRes, projectsRes] = await Promise.all([
+  const [skillsRes, softwareRes, servicesRes, projects] = await Promise.all([
     supabase
       .from("editor_skills")
       .select("skills(*)")
@@ -89,31 +81,11 @@ export async function getPublicProfileByUsername(
       .eq("editor_id", editor.id)
       .eq("is_active", true)
       .order("created_at", { ascending: true }),
-    supabase
-      .from("portfolio_projects")
-      .select("id, title, description, role, client, year, is_featured")
-      .eq("editor_id", editor.id)
-      .eq("status", "published")
-      .order("year", { ascending: false }),
+    getPublicProjects(editor.id),
   ]);
 
   const skills = (skillsRes.data ?? []).map((r) => r.skills as unknown as SkillRow);
   const software = (softwareRes.data ?? []).map((r) => r.software as unknown as SoftwareRow);
-
-  // Cover media for each project (prefer `is_cover`, then first).
-  const projects = await Promise.all(
-    (projectsRes.data ?? []).map(async (p) => {
-      const { data: media } = await supabase
-        .from("portfolio_media")
-        .select("kind, url")
-        .eq("project_id", p.id)
-        .order("is_cover", { ascending: false })
-        .order("sort_order", { ascending: true })
-        .limit(1);
-      const cover = media?.[0] ? { kind: media[0].kind, url: media[0].url } : null;
-      return { ...p, cover };
-    }),
-  );
 
   return {
     profile,
