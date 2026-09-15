@@ -408,6 +408,84 @@ export type Database = {
           },
         ]
       }
+      rate_categories: {
+        Row: {
+          id: string
+          name_en: string | null
+          name_fa: string
+          slug: string
+          sort: number
+        }
+        Insert: {
+          id?: string
+          name_en?: string | null
+          name_fa: string
+          slug: string
+          sort?: number
+        }
+        Update: {
+          id?: string
+          name_en?: string | null
+          name_fa?: string
+          slug?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      rate_submissions: {
+        Row: {
+          amount_rial: number
+          category_id: string
+          city: string | null
+          created_at: string
+          experience: "junior" | "mid" | "senior"
+          id: string
+          is_anonymous: boolean
+          status: "pending" | "approved" | "rejected"
+          submitted_by: string | null
+          unit: "project" | "hour" | "day" | "minute" | "second"
+        }
+        Insert: {
+          amount_rial: number
+          category_id: string
+          city?: string | null
+          created_at?: string
+          experience: "junior" | "mid" | "senior"
+          id?: string
+          is_anonymous?: boolean
+          status?: "pending" | "approved" | "rejected"
+          submitted_by?: string | null
+          unit?: "project" | "hour" | "day" | "minute" | "second"
+        }
+        Update: {
+          amount_rial?: number
+          category_id?: string
+          city?: string | null
+          created_at?: string
+          experience?: "junior" | "mid" | "senior"
+          id?: string
+          is_anonymous?: boolean
+          status?: "pending" | "approved" | "rejected"
+          submitted_by?: string | null
+          unit?: "project" | "hour" | "day" | "minute" | "second"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_submissions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "rate_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rate_submissions_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: Record<never, never>
     Functions: {
@@ -426,6 +504,19 @@ export type Database = {
           editor_id: string
         }
         Returns: boolean
+      }
+      rate_guide_aggregates: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category_id: string
+          slug: string
+          experience: "junior" | "mid" | "senior"
+          unit: "project" | "hour" | "day" | "minute" | "second"
+          sample_count: number
+          p25_rial: number
+          median_rial: number
+          p75_rial: number
+        }[]
       }
       set_updated_at: {
         Args: Record<PropertyKey, never>

@@ -148,7 +148,54 @@
     },
     "rateGuide": {
       "title": "Rate guide",
-      "description": "See market rates for editing services by experience and city."
+      "description": "See market rates for editing services by experience and city.",
+      "methodology": "Figures are the median of editor-submitted rates that passed review, shown in Toman. The range is the middle 50% of submissions (25th–75th percentile). Data is crowd-sourced and indicative, not a price list.",
+      "emptyTitle": "No approved rate data yet",
+      "emptyDescription": "Once submissions are reviewed and approved, market rates will appear here.",
+      "tableCaption": "Median rates for {category}",
+      "median": "Median",
+      "range": "Typical range",
+      "samples": "Samples",
+      "toman": "Toman",
+      "submitSection": "Add your rate",
+      "submit": "Submit rate",
+      "submittedNotice": "Thank you! Your rate was recorded and will appear once it passes review.",
+      "privacyNote": "Submissions are reviewed before publication. If you are signed in you may post anonymously; your identity is never shown.",
+      "experience": {
+        "junior": "Junior (0–2 yrs)",
+        "mid": "Mid (2–5 yrs)",
+        "senior": "Senior (5+ yrs)"
+      },
+      "units": {
+        "project": "per project",
+        "hour": "per hour",
+        "day": "per day",
+        "minute": "per minute",
+        "second": "per second"
+      },
+      "fields": {
+        "category": "Service category",
+        "experience": "Experience level",
+        "unit": "Pricing unit",
+        "amount": "Rate (Toman)",
+        "city": "City (optional)",
+        "isAnonymous": "Post anonymously",
+        "website": "Website"
+      },
+      "placeholders": {
+        "city": "e.g. Tehran"
+      },
+      "errors": {
+        "categoryRequired": "Choose a service category.",
+        "amountInvalid": "Enter the rate as a whole number of Toman.",
+        "amountTooLarge": "That amount is unrealistically large.",
+        "cityTooLong": "City name is too long.",
+        "spamDetected": "Your submission was flagged as automated. Please try again.",
+        "tooFast": "Please wait a moment and reload the page before submitting.",
+        "duplicate": "You already submitted this exact rate recently.",
+        "invalidInput": "The information you entered is invalid.",
+        "updateFailed": "Could not save your submission. Please try again."
+      }
     },
     "quote": {
       "title": "Quote",
