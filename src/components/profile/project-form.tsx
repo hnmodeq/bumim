@@ -19,13 +19,7 @@ import { FieldError } from "@/components/ui/field-error";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/shared/spinner";
 import { MultiSelectChips } from "@/components/profile/multi-select-chips";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, selectItems } from "@/components/ui/select";
 
 export function ProjectForm({
   project,
@@ -180,6 +174,10 @@ export function ProjectForm({
             name="category"
             render={({ field }) => (
               <Select
+                items={{
+                  "": t("categoryNone"),
+                  ...selectItems(PROJECT_CATEGORIES, (c) => t(`categories.${c}`)),
+                }}
                 value={field.value ?? ""}
                 onValueChange={(v) => field.onChange(v === "" ? undefined : v)}
               >

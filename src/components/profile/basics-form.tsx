@@ -16,13 +16,7 @@ import { FieldError } from "@/components/ui/field-error";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/shared/spinner";
 import { TagInput } from "@/components/profile/tag-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, selectItems } from "@/components/ui/select";
 
 export function BasicsForm({
   profile,
@@ -200,7 +194,11 @@ export function BasicsForm({
             control={control}
             name="availability"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
+              <Select
+                items={selectItems(AVAILABILITY, (a) => t(`availability.${a}`))}
+                value={field.value}
+                onValueChange={(v) => field.onChange(v)}
+              >
                 <SelectTrigger className="w-full" aria-labelledby="availability-label">
                   <SelectValue />
                 </SelectTrigger>

@@ -3,7 +3,8 @@
 > Working title. "The professional network and work platform for Iranian video editors."
 >
 > Status: **Design document + build record.** Phases 1–7 are implemented (foundation/shell,
-> database + RLS, auth, profiles, portfolios, rate guide); Phase 8 (quotes) is next.
+> database + RLS, auth, profiles, portfolios, rate guide — market reference with project
+> characteristics, threshold-gated medians and an admin moderation queue); Phase 8 (quotes) is next.
 > Where the shipped implementation differs from the design below, the difference is noted
 > inline as "As built". The prior marketing site is preserved under tag `old-yellow-design`.
 
@@ -312,10 +313,19 @@ create table public.rate_submissions (
 );
 create index on public.rate_submissions (category_id, experience, status);
 
--- As built (Phase 7, migrations 0010–0012) the shipped table adds three
+-- As built (Phase 7, migrations 0010–0013) the shipped table adds three
 -- moderation columns used by the Phase 15 queue — source_hash text,
 -- reviewed_by uuid → profiles, reviewed_at timestamptz — plus an index on
 -- (source_hash, created_at) and a CHECK on city length (≤ 60).
+--
+-- Migration 0013 adds the project characteristics that make one rate comparable
+-- with another. All are nullable and deliberately COARSE (duration in buckets,
+-- not seconds): in a small market an exact figure is a re-identifying
+-- fingerprint. duration_bucket, complexity, deliverable_count (1–99),
+-- revision_count (0–50), turnaround, usage_rights, includes_motion,
+-- includes_color, includes_sound — each constrained by a CHECK on its
+-- vocabulary — plus the six launch categories the guide was missing
+-- (short_form, youtube, commercial, wedding, documentary, vfx).
 --
 -- Two SECURITY DEFINER functions form the entire public surface; raw rows are
 -- never publicly readable:
@@ -323,13 +333,23 @@ create index on public.rate_submissions (category_id, experience, status);
 --     rows only: sample_count, p25/median/p75, min/max in integer Rial, plus
 --     the category slug. Percentiles use percentile_disc, so every published
 --     figure is an OBSERVED amount — no floating-point money math (§12).
---   * submit_rate(category, experience, amount_rial, unit, city, is_anonymous)
+--   * submit_rate(category, experience, amount_rial, unit, city, is_anonymous,
+--     duration_bucket, complexity, deliverables, revisions, turnaround,
+--     usage_rights, includes_motion, includes_color, includes_sound)
 --     → the only insert path. It pins submitted_by = auth.uid() and
 --     status = 'pending' in the database (neither is an argument), forces
 --     is_anonymous = true for logged-out callers, and returns the new id.
 --     A function is required here because PostgREST always issues
 --     INSERT … RETURNING, and RLS evaluates RETURNING against the SELECT
 --     policies — which deliberately do not exist for the public.
+--
+-- The guide is a MARKET REFERENCE, not a price list, and the rule that keeps it
+-- honest lives in the app: a group publishes a median only from
+-- MIN_SAMPLES_FOR_MEDIAN = 3 approved samples (src/lib/validators/rate.ts).
+-- Below that the page shows the observed min–max and says the data is thin, so
+-- one person's quote is never presented as the market price. Moderation is
+-- /admin/rates (approve/reject → status + reviewed_by + reviewed_at); only
+-- approved rows reach rate_guide_aggregates().
 
 -- ===== Quotes =====
 

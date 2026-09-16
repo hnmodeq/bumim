@@ -80,10 +80,21 @@ docs/               # architecture documentation
 
 ## Current Status
 
-**Phase 2 — Design System + Application Shell.** The design system (Tailwind +
-shadcn/ui), public/dashboard/admin shells, and all structural routes are in
-place with placeholder content. No product features yet (authentication,
-profiles, projects, marketplace) — those begin in later phases.
+**Phase 7 — Rate Guide.** Phases 1–7 are implemented: design system and shells,
+database + RLS, Supabase auth with provisioning triggers, editor profiles,
+portfolios, and the crowd-sourced rate guide.
+
+The rate guide (`/rate-guide`) is a **market reference, not a price list**: it
+publishes the typical range and — only where at least three approved submissions
+exist — the median, alongside the factors that move a price and three worked
+example scenarios. Visitors can submit their own rate anonymously together with
+coarse project characteristics (duration bucket, complexity, deliverables,
+revisions, turnaround, usage rights, motion/colour/sound). Submissions land as
+`pending`; admins approve or reject them at `/admin/rates`, and only approved
+rows feed the public aggregates. All money is integer Rial end to end.
+
+Remaining routes still render placeholders until their phase lands (quotes,
+messaging, applications, community, reports).
 
 ## Deployment
 

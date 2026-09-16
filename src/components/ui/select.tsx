@@ -7,6 +7,21 @@ import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
 const Select = SelectPrimitive.Root;
 
+/**
+ * Build the value -> label map that `Select.Root` needs.
+ *
+ * base-ui renders the RAW value inside `<Select.Value>` unless the Root is given
+ * `items`; without it a category select shows its UUID in the trigger. Derive the
+ * map from the same list the `SelectItem`s are rendered from so the label shown
+ * in the closed trigger can never drift from the option list.
+ */
+export function selectItems<T extends string>(
+  entries: readonly T[],
+  labelOf: (value: T) => React.ReactNode,
+): Record<string, React.ReactNode> {
+  return Object.fromEntries(entries.map((value) => [value, labelOf(value)]));
+}
+
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group

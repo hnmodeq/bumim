@@ -12,7 +12,10 @@ export default async function MarketingLayout({
   return (
     <>
       <SiteHeader />
-      <div className="flex flex-1 flex-col">{children}</div>
+      {/* `main` landmark: the auth layout and the dashboard/admin shell both have
+          one, and without it screen-reader users get no way to jump past the
+          header on any public page. */}
+      <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter locale={locale} />
     </>
   );

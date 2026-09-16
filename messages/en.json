@@ -180,7 +180,20 @@
         "amount": "Rate (Toman)",
         "city": "City (optional)",
         "isAnonymous": "Post anonymously",
-        "website": "Website"
+        "website": "Website",
+        "detailsLegend": "Project details (optional)",
+        "detailsHint": "These help everyone compare your rate fairly. None of them are required.",
+        "duration": "Final video length",
+        "complexity": "Complexity",
+        "deliverables": "Deliverables",
+        "revisions": "Revisions",
+        "turnaround": "Turnaround",
+        "usageRights": "Usage rights",
+        "includesMotion": "Included motion graphics",
+        "includesColor": "Included color work",
+        "includesSound": "Included sound work",
+        "notSpecified": "Not specified",
+        "categoryPlaceholder": "Choose a category"
       },
       "placeholders": {
         "city": "e.g. Tehran"
@@ -194,7 +207,120 @@
         "tooFast": "Please wait a moment and reload the page before submitting.",
         "duplicate": "You already submitted this exact rate recently.",
         "invalidInput": "The information you entered is invalid.",
-        "updateFailed": "Could not save your submission. Please try again."
+        "updateFailed": "Could not save your submission. Please try again.",
+        "deliverablesRange": "Deliverables must be between 1 and 99.",
+        "revisionsRange": "Revisions must be between 0 and 50."
+      },
+      "reference": {
+        "title": "This is not an official price list",
+        "body": "The figures on this page are collected from reviewed editor submissions and are a market reference only. What a project actually pays depends on many factors and can differ a great deal.",
+        "points": [
+          "Read a typical range, not a fixed number: the median and the middle 50% band (25th–75th percentile) show where most deals land.",
+          "A median is only published when at least 3 approved submissions exist; below that you see just the observed range of the samples we have.",
+          "The factors that move a price — from runtime to commercial usage rights — are explained further down this page.",
+          "No figure here is \"the correct price\". Agree the scope and delivery terms with the client before you quote."
+        ]
+      },
+      "factors": {
+        "title": "What moves the price",
+        "intro": "These are the same factors captured in each submission. Two projects of identical length can legitimately land at very different numbers.",
+        "items": [
+          {
+            "name": "Video duration",
+            "detail": "Longer rushes and timelines mean more time watching, cutting and rendering."
+          },
+          {
+            "name": "Complexity",
+            "detail": "A simple narrative with clean cuts versus a fast-paced piece heavy on effects."
+          },
+          {
+            "name": "Number of deliverables",
+            "detail": "One master plus cutdowns and a version per platform."
+          },
+          {
+            "name": "Motion graphics",
+            "detail": "Titles, animated captions, infographics and logo stings are separate hours."
+          },
+          {
+            "name": "Color work",
+            "detail": "A basic balance versus a cinematic look with scopes and a calibrated monitor."
+          },
+          {
+            "name": "Sound work",
+            "detail": "Dialogue cleanup, effects, music and the final mix."
+          },
+          {
+            "name": "Revision count",
+            "detail": "Define the free-revision boundary in the contract; extra rounds mean extra days."
+          },
+          {
+            "name": "Turnaround time",
+            "detail": "A rushed delivery usually adds a significant percentage to the price."
+          },
+          {
+            "name": "Commercial usage rights",
+            "detail": "Broadcast, paid ads or corporate usage all push the price up."
+          },
+          {
+            "name": "Experience level",
+            "detail": "Junior, mid or senior: experience buys speed, better judgement and less risk."
+          }
+        ]
+      },
+      "scenarios": {
+        "title": "Three example scenarios",
+        "intro": "These are built from the data on this page to make comparison easier — they are not price recommendations.",
+        "items": [
+          {
+            "title": "Instagram reel for a small business",
+            "summary": "A 30–60 second cut from supplied footage, animated captions, one revision round.",
+            "factors": "Short runtime · standard complexity · one deliverable · light motion · normal turnaround · social usage",
+            "price": "Common range in the data: roughly 3–6 million Toman at mid level"
+          },
+          {
+            "title": "15-minute YouTube video",
+            "summary": "Narrative edit, dialogue cleanup, music, basic grading and two or three revisions.",
+            "factors": "15–30 min runtime · standard-to-complex · sound and color work · non-commercial usage",
+            "price": "Common range in the data: roughly 9–13 million Toman at mid level"
+          },
+          {
+            "title": "30-second broadcast commercial",
+            "summary": "Fast pace, motion graphics, cinematic grade, sound mix and several cutdowns.",
+            "factors": "Multiple deliverables · many revisions · rush turnaround · broadcast or paid-ad rights",
+            "price": "Common range in the data: from about 40 million Toman (mid) up to 150 million (senior)"
+          }
+        ]
+      },
+      "ctaBody": "Market data gets sharper with every editor who submits. Your entry is anonymous and only appears after review.",
+      "ctaButton": "Add my rate",
+      "insufficientTitle": "Not enough data yet",
+      "insufficientBody": "We do not have enough approved submissions for this group yet. The range below is only the samples we have and is not representative of the market.",
+      "observedRange": "Observed range",
+      "samplesCount": "{count} samples",
+      "beFirst": "Be the first to add one",
+      "durations": {
+        "under_1": "Under 1 minute",
+        "min_1_5": "1–5 minutes",
+        "min_5_15": "5–15 minutes",
+        "min_15_30": "15–30 minutes",
+        "min_30_60": "30–60 minutes",
+        "over_60": "Over 60 minutes"
+      },
+      "complexities": {
+        "simple": "Simple",
+        "standard": "Standard",
+        "complex": "Complex"
+      },
+      "turnarounds": {
+        "flexible": "Flexible",
+        "standard": "Standard",
+        "rush": "Rush"
+      },
+      "usageRightsOptions": {
+        "none": "No commercial use",
+        "social": "Social media",
+        "paid_ads": "Paid advertising",
+        "broadcast": "Broadcast / cinema"
       }
     },
     "quote": {
@@ -255,7 +381,40 @@
     "reportsDesc": "Review abuse reports.",
     "verificationDesc": "Review verification requests.",
     "ratesDesc": "Manage rate guide data.",
-    "communityDesc": "Moderate community content."
+    "communityDesc": "Moderate community content.",
+    "ratesPage": {
+      "title": "Rate submission review",
+      "description": "Only approved submissions feed the public statistics on the rate guide.",
+      "guidance": "Judge a rate against its project characteristics before approving: a 30-second spot with broadcast rights is not comparable to a simple reel. Reject anything implausible, promotional or abusive.",
+      "queueTitle": "Awaiting review",
+      "queueEmpty": "Nothing in the review queue.",
+      "reviewedTitle": "Recently reviewed",
+      "reviewedEmpty": "No reviewed submissions yet.",
+      "queueCount": "{count} in queue",
+      "approve": "Approve",
+      "reject": "Reject",
+      "category": "Category",
+      "experience": "Experience",
+      "unit": "Unit",
+      "amount": "Amount (Toman)",
+      "city": "City",
+      "submittedAt": "Submitted",
+      "status": "Status",
+      "characteristics": "Project details",
+      "anonymous": "Anonymous",
+      "signedIn": "Signed-in user",
+      "noCharacteristics": "No details given",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "backToGuide": "Back to the rate guide",
+      "decisionFailed": "That submission has already been reviewed.",
+      "deliverablesShort": "Deliverables",
+      "revisionsShort": "Revisions",
+      "errorForbidden": "You are not allowed to review this submission.",
+      "errorNotPending": "This submission was already reviewed; refresh the list.",
+      "errorUpdateFailed": "Could not change the status. Please try again."
+    }
   },
   "notFound": {
     "title": "Page not found",

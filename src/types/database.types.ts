@@ -438,6 +438,22 @@ export type Database = {
           category_id: string
           city: string | null
           created_at: string
+          duration_bucket:
+            | "under_1"
+            | "min_1_5"
+            | "min_5_15"
+            | "min_15_30"
+            | "min_30_60"
+            | "over_60"
+            | null
+          complexity: "simple" | "standard" | "complex" | null
+          deliverable_count: number | null
+          revision_count: number | null
+          turnaround: "flexible" | "standard" | "rush" | null
+          usage_rights: "none" | "social" | "paid_ads" | "broadcast" | null
+          includes_motion: boolean
+          includes_color: boolean
+          includes_sound: boolean
           experience: "junior" | "mid" | "senior"
           id: string
           is_anonymous: boolean
@@ -453,6 +469,22 @@ export type Database = {
           category_id: string
           city?: string | null
           created_at?: string
+          duration_bucket?:
+            | "under_1"
+            | "min_1_5"
+            | "min_5_15"
+            | "min_15_30"
+            | "min_30_60"
+            | "over_60"
+            | null
+          complexity?: "simple" | "standard" | "complex" | null
+          deliverable_count?: number | null
+          revision_count?: number | null
+          turnaround?: "flexible" | "standard" | "rush" | null
+          usage_rights?: "none" | "social" | "paid_ads" | "broadcast" | null
+          includes_motion?: boolean
+          includes_color?: boolean
+          includes_sound?: boolean
           experience: "junior" | "mid" | "senior"
           id?: string
           is_anonymous?: boolean
@@ -468,6 +500,22 @@ export type Database = {
           category_id?: string
           city?: string | null
           created_at?: string
+          duration_bucket?:
+            | "under_1"
+            | "min_1_5"
+            | "min_5_15"
+            | "min_15_30"
+            | "min_30_60"
+            | "over_60"
+            | null
+          complexity?: "simple" | "standard" | "complex" | null
+          deliverable_count?: number | null
+          revision_count?: number | null
+          turnaround?: "flexible" | "standard" | "rush" | null
+          usage_rights?: "none" | "social" | "paid_ads" | "broadcast" | null
+          includes_motion?: boolean
+          includes_color?: boolean
+          includes_sound?: boolean
           experience?: "junior" | "mid" | "senior"
           id?: string
           is_anonymous?: boolean
@@ -529,6 +577,15 @@ export type Database = {
           p_unit: string
           p_city?: string | null
           p_is_anonymous?: boolean
+          p_duration_bucket?: string | null
+          p_complexity?: string | null
+          p_deliverables?: number | null
+          p_revisions?: number | null
+          p_turnaround?: string | null
+          p_usage_rights?: string | null
+          p_includes_motion?: boolean | null
+          p_includes_color?: boolean | null
+          p_includes_sound?: boolean | null
         }
         Returns: string
       }

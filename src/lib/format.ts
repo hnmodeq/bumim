@@ -15,3 +15,23 @@ export function formatCount(value: number, locale: "fa" | "en"): string {
     maximumFractionDigits: 0,
   }).format(value);
 }
+
+/**
+ * Format an ISO timestamp for display (Persian/Jalali calendar under `fa`).
+ * Falls back to the raw string if the value is unparseable, so a bad row can
+ * never crash a server render.
+ */
+export function formatDateTime(iso: string | null | undefined, locale: "fa" | "en"): string {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  try {
+    return new Intl.DateTimeFormat(locale === "fa" ? "fa-IR" : "en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(date);
+  } catch {
+    return iso;
+  }
+}

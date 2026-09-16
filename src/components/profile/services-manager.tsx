@@ -30,13 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, selectItems } from "@/components/ui/select";
 
 export function ServicesManager({
   profile,
@@ -212,7 +206,11 @@ function ServiceForm({
           control={control}
           name="category"
           render={({ field }) => (
-            <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
+            <Select
+              items={selectItems(SERVICE_CATEGORIES, (c) => t(`serviceCategories.${c}`))}
+              value={field.value}
+              onValueChange={(v) => field.onChange(v)}
+            >
               <SelectTrigger className="w-full" aria-labelledby="category-label">
                 <SelectValue />
               </SelectTrigger>
@@ -275,7 +273,11 @@ function ServiceForm({
             control={control}
             name="rateUnit"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
+              <Select
+                items={selectItems(RATE_UNITS, (u) => t(`rateUnits.${u}`))}
+                value={field.value}
+                onValueChange={(v) => field.onChange(v)}
+              >
                 <SelectTrigger className="w-full" aria-labelledby="rateUnit-label">
                   <SelectValue />
                 </SelectTrigger>

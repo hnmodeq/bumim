@@ -66,6 +66,28 @@ grant execute on function tests.assert_count(bigint, bigint, text) to anon, auth
 grant execute on function tests.dml_rows(text) to anon, authenticated;
 grant execute on function tests.expect_error(text, text) to anon, authenticated;
 
+-- Like expect_error, but asserts the failure came from the check we intended:
+-- expect_error passes on ANY error (including "permission denied"), which would
+-- hide a function that simply cannot be called.
+create or replace function tests.expect_message(sql text, needle text, msg text)
+returns void language plpgsql as $$
+declare
+  err text;
+begin
+  begin
+    execute sql;
+    raise exception 'FAIL [%]: expected an error but the statement succeeded', msg;
+  exception
+    when others then
+      get stacked diagnostics err = message_text;
+      if position(needle in err) = 0 then
+        raise exception 'FAIL [%]: expected error containing "%" but got "%"', msg, needle, err;
+      end if;
+  end;
+end $$;
+
+grant execute on function tests.expect_message(text, text, text) to anon, authenticated;
+
 -- ---------------------------------------------------------------------------
 -- Setup: make sara's profile PRIVATE so we can verify both the public-read
 -- boundary and the owner's ability to read their own private data.
@@ -306,15 +328,15 @@ declare
   v_new uuid;
 begin
   perform tests.assert_count(
-    (select count(*) from public.rate_categories), 5, 'anon: rate categories are public');
+    (select count(*) from public.rate_categories), 11, 'anon: rate categories are public');
   perform tests.assert_count(
     (select count(*) from public.rate_submissions), 0,
     'anon: raw submissions are never readable');
 
   -- aggregates are approved-only
   perform tests.assert_count(
-    (select count(*) from public.rate_guide_aggregates()), 8,
-    'anon: aggregates cover the 8 seeded approved groups');
+    (select count(*) from public.rate_guide_aggregates()), 28,
+    'anon: aggregates cover the seeded approved groups');
   -- The aggregate output must carry no identifying columns. (Cross-checking the
   -- groups against raw approved rows is impossible here by design: anon cannot
   -- read rate_submissions at all, which is asserted above.)
@@ -328,7 +350,10 @@ begin
 
   -- the anonymous submission path (submit_rate pins status/submitted_by)
   select id into v_cat from public.rate_categories where slug = 'editing';
-  select public.submit_rate(v_cat, 'senior', 1234567890, 'project', 'Tehran', true) into v_new;
+  select public.submit_rate(
+           v_cat, 'senior', 1234567890, 'project', 'Tehran', true,
+           'min_5_15', 'complex', 2, 3, 'rush', 'paid_ads', true, false, true)
+    into v_new;
   perform tests.assert_count((case when v_new is not null then 1 else 0 end)::bigint, 1, 'anon: submit_rate stores a row');
   perform set_config('t.rate_anon_row', v_new::text, false);
 
@@ -339,6 +364,29 @@ begin
   perform tests.expect_error(
     'insert into public.rate_submissions (category_id, experience, amount_rial, unit, status) values (''' || v_cat || ''', ''senior'', 1000, ''project'', ''approved'')',
     'anon: cannot insert an already-approved row');
+
+  -- every optional characteristic is validated, not just the core fields
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, ''feature_film'')',
+    'invalid duration bucket', 'anon: invalid duration bucket rejected');
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, null, ''trivial'')',
+    'invalid complexity', 'anon: invalid complexity rejected');
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, null, null, 0)',
+    'invalid deliverable count', 'anon: zero deliverables rejected');
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, null, null, null, 51)',
+    'invalid revision count', 'anon: absurd revision count rejected');
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, null, null, null, null, ''yesterday'')',
+    'invalid turnaround', 'anon: invalid turnaround rejected');
+  perform tests.expect_message(
+    'select public.submit_rate(''' || v_cat || ''', ''senior'', 1000, ''project'', null, true, null, null, null, null, null, ''everything'')',
+    'invalid usage rights', 'anon: invalid usage rights rejected');
+  -- and a legal call still works after all those rejections
+  perform tests.assert_count(
+    (select count(*) from public.rate_categories), 11, 'anon: taxonomy intact after rejections');
 
   perform tests.assert_count(
     tests.dml_rows('update public.rate_submissions set status = ''approved'''),
@@ -400,6 +448,15 @@ begin
     (select count(*) from public.rate_submissions where id in (v_anon, v_sara)), 2,
     'admin: can read raw submissions');
 
+  -- characteristics survive the round trip (moderators need them to judge a price)
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions
+      where id = v_anon and duration_bucket = 'min_5_15' and complexity = 'complex'
+        and deliverable_count = 2 and revision_count = 3 and turnaround = 'rush'
+        and usage_rights = 'paid_ads' and includes_motion and not includes_color
+        and includes_sound),
+    1, 'admin: project characteristics are stored intact');
+
   perform tests.assert_count(
     tests.dml_rows('update public.rate_submissions set status = ''approved'', reviewed_at = now() where id = ''' || v_anon || ''''),
     1, 'admin: can approve a submission');
@@ -419,7 +476,30 @@ begin
     1, 'admin: cleanup of the approved test row');
 end $$;
 
--- 8d. seed state restored
+-- 8d. table CHECKs back the function up for direct writes.
+-- Run as superuser (RLS bypassed) so a failure can only come from the CHECK
+-- constraint itself, not from the INSERT policy rejecting the identity.
+reset role;
+reset request.jwt.claim.sub;
+reset request.jwt.claim.role;
+
+do $$
+declare
+  v_cat uuid;
+begin
+  select id into v_cat from public.rate_categories where slug = 'wedding';
+  perform tests.expect_error(
+    'insert into public.rate_submissions (category_id, experience, amount_rial, unit, status, duration_bucket) values (''' || v_cat || ''', ''mid'', 1000, ''project'', ''pending'', ''full_length'')',
+    'check: duration_bucket vocabulary enforced');
+  perform tests.expect_error(
+    'insert into public.rate_submissions (category_id, experience, amount_rial, unit, status, revision_count) values (''' || v_cat || ''', ''mid'', 1000, ''project'', ''pending'', 999)',
+    'check: revision_count bound enforced');
+  perform tests.expect_error(
+    'insert into public.rate_submissions (category_id, experience, amount_rial, unit, status, city) values (''' || v_cat || ''', ''mid'', 1000, ''project'', ''pending'', ''' || repeat('x', 61) || ''')',
+    'check: city length enforced');
+end $$;
+
+-- 8e. seed state restored
 reset role;
 reset request.jwt.claim.sub;
 reset request.jwt.claim.role;
@@ -427,11 +507,11 @@ reset request.jwt.claim.role;
 do $$
 begin
   perform tests.assert_count(
-    (select count(*) from public.rate_submissions), 23,
-    'cleanup: rate seed restored to 23 submissions');
+    (select count(*) from public.rate_submissions), 89,
+    'cleanup: rate seed restored to 89 submissions');
   perform tests.assert_count(
-    (select count(*) from public.rate_guide_aggregates()), 8,
-    'cleanup: aggregate groups restored to 8');
+    (select count(*) from public.rate_guide_aggregates()), 28,
+    'cleanup: aggregate groups restored to 28');
 end $$;
 
 -- ============================================================================
