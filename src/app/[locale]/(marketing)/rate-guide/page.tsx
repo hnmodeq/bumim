@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BanknoteIcon, UsersIcon } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -8,15 +9,29 @@ import {
 } from "@/lib/db/rates";
 import { RateSubmissionForm } from "@/components/rate/rate-submission-form";
 import { rial, formatMoney } from "@/lib/money";
+import { formatCount } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PlaceholderPage } from "@/components/shared/placeholder-page";
 
-export default async function RateGuidePage({
-  params,
-}: {
+type Props = {
   params: Promise<{ locale: string }>;
-}) {
+};
+
+/** SEO metadata for the public rate guide. */
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "marketing.rateGuide" });
+  const title = t("title");
+  const description = t("description");
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+  };
+}
+
+export default async function RateGuidePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "marketing.rateGuide" });
@@ -35,6 +50,7 @@ export default async function RateGuidePage({
   };
   const money = (rialStr: string) =>
     formatMoney(rial(rialStr), { locale: locale as "fa" | "en", unit: "toman" });
+  const count = (n: number) => formatCount(n, locale as "fa" | "en");
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
@@ -95,7 +111,7 @@ export default async function RateGuidePage({
                           <td className="py-2.5 text-end text-muted-foreground">
                             <span className="inline-flex items-center gap-1">
                               <UsersIcon className="size-3.5" aria-hidden />
-                              {r.sampleCount}
+                              {count(r.sampleCount)}
                             </span>
                           </td>
                         </tr>

@@ -2,8 +2,10 @@
 
 > Working title. "The professional network and work platform for Iranian video editors."
 >
-> Status: **Design / planning document.** No product features implemented.
-> Repository state: empty (`cleared-starting-fresh`); prior marketing site preserved under tag `old-yellow-design`.
+> Status: **Design document + build record.** Phases 1–7 are implemented (foundation/shell,
+> database + RLS, auth, profiles, portfolios, rate guide); Phase 8 (quotes) is next.
+> Where the shipped implementation differs from the design below, the difference is noted
+> inline as "As built". The prior marketing site is preserved under tag `old-yellow-design`.
 
 ---
 
@@ -310,6 +312,25 @@ create table public.rate_submissions (
 );
 create index on public.rate_submissions (category_id, experience, status);
 
+-- As built (Phase 7, migrations 0010–0012) the shipped table adds three
+-- moderation columns used by the Phase 15 queue — source_hash text,
+-- reviewed_by uuid → profiles, reviewed_at timestamptz — plus an index on
+-- (source_hash, created_at) and a CHECK on city length (≤ 60).
+--
+-- Two SECURITY DEFINER functions form the entire public surface; raw rows are
+-- never publicly readable:
+--   * rate_guide_aggregates() → per (category, experience, unit) over APPROVED
+--     rows only: sample_count, p25/median/p75, min/max in integer Rial, plus
+--     the category slug. Percentiles use percentile_disc, so every published
+--     figure is an OBSERVED amount — no floating-point money math (§12).
+--   * submit_rate(category, experience, amount_rial, unit, city, is_anonymous)
+--     → the only insert path. It pins submitted_by = auth.uid() and
+--     status = 'pending' in the database (neither is an argument), forces
+--     is_anonymous = true for logged-out callers, and returns the new id.
+--     A function is required here because PostgREST always issues
+--     INSERT … RETURNING, and RLS evaluates RETURNING against the SELECT
+--     policies — which deliberately do not exist for the public.
+
 -- ===== Quotes =====
 
 create table public.quotes (
@@ -587,7 +608,7 @@ create function public.is_admin() returns boolean language sql stable security d
 
 **Special cases**
 
-- `rate_submissions`: any authenticated user can insert (anonymous by default); `submitted_by` is only visible to admins (column-level grant, not a policy — restrict by not selecting it in non-admin queries and by a column-level `select` policy).
+- `rate_submissions`: **as built** — anyone (including logged-out visitors) may insert, but only through the `submit_rate()` SECURITY DEFINER function, which pins `submitted_by = auth.uid()` and `status = 'pending'`; the permissive RLS INSERT policy is kept as defence in depth. There is **no** public SELECT policy at all: raw rows are visible to their own submitter and to admins only, so `submitted_by` cannot leak (no column-level grant trick needed). The public reads aggregates exclusively through `rate_guide_aggregates()`.
 - `project_applications`: visible to the applicant **and** the project owner (owner needs to review).
 - `messages` / `conversation_participants`: participant-only.
 - `reviews`: readable by all when `is_public`; writable only by the author, and only for a `collaboration` they participated in (enforced in app + a DB trigger guard as backstop).

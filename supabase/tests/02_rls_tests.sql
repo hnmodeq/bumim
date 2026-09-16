@@ -105,8 +105,11 @@ begin
   perform tests.assert_count(
     (select count(*) from public.portfolio_projects where editor_id = current_setting('t.ep_sara')::uuid),
     0, 'anon: cannot read private editor portfolio');
-  -- media of visible projects
-  perform tests.assert_count((select count(*) from public.portfolio_media), 4, 'anon: media count');
+  -- embedded videos of visible projects (migration 0009 consolidated the old
+  -- portfolio_media table INTO portfolio_projects.video_url)
+  perform tests.assert_count(
+    (select count(*) from public.portfolio_projects where video_url is not null),
+    4, 'anon: visible projects with an embedded video');
 end $$;
 
 -- anonymous cannot write anything
@@ -160,10 +163,10 @@ begin
     (select count(*) from public.portfolio_projects where editor_id = current_setting('t.ep_sara')::uuid),
     2, 'sara: sees own portfolio');
   perform tests.assert_count(
-    (select count(*) from public.portfolio_media pm
-       join public.portfolio_projects pp on pp.id = pm.project_id
-       where pp.editor_id = current_setting('t.ep_sara')::uuid),
-    3, 'sara: sees own media');
+    (select count(*) from public.portfolio_projects
+      where editor_id = current_setting('t.ep_sara')::uuid
+        and video_url is not null),
+    2, 'sara: sees her own embedded videos');
 end $$;
 
 -- sara can create / update / delete her own resources
@@ -191,9 +194,9 @@ begin
   perform tests.assert_count(
     tests.dml_rows('delete from public.portfolio_projects where editor_id = ''' || current_setting('t.ep_amir') || ''''),
     0, 'sara: cannot delete amir portfolio');
-  perform tests.expect_error(
-    'insert into public.portfolio_media (project_id, kind, url) values (''50000000-0000-4000-8000-000000000003'', ''image'', ''x.jpg'')',
-    'sara: cannot add media to amir project');
+  perform tests.assert_count(
+    tests.dml_rows('update public.portfolio_projects set video_url = ''https://evil.example'' where id = ''50000000-0000-4000-8000-000000000003'''),
+    0, 'sara: cannot change the video on amir project');
   perform tests.assert_count(
     tests.dml_rows('update public.profiles set bio=''hacked'' where id = ''' || current_setting('t.amir') || ''''),
     0, 'sara: cannot update amir profile');
@@ -283,6 +286,152 @@ begin
 
   -- cleanup
   delete from auth.users where id = new_user_id;
+end $$;
+
+-- ============================================================================
+-- 8. RATE GUIDE — crowd-sourced pricing (Phase 7)
+-- ============================================================================
+-- Public surface = rate_categories + the two SECURITY DEFINER functions.
+-- Raw submissions are readable only by their own submitter and by admins.
+
+-- 8a. anonymous visitor
+reset role;
+set role anon;
+reset request.jwt.claim.sub;
+reset request.jwt.claim.role;
+
+do $$
+declare
+  v_cat uuid;
+  v_new uuid;
+begin
+  perform tests.assert_count(
+    (select count(*) from public.rate_categories), 5, 'anon: rate categories are public');
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions), 0,
+    'anon: raw submissions are never readable');
+
+  -- aggregates are approved-only
+  perform tests.assert_count(
+    (select count(*) from public.rate_guide_aggregates()), 8,
+    'anon: aggregates cover the 8 seeded approved groups');
+  -- The aggregate output must carry no identifying columns. (Cross-checking the
+  -- groups against raw approved rows is impossible here by design: anon cannot
+  -- read rate_submissions at all, which is asserted above.)
+  perform tests.assert_count(
+    (select count(*) from (
+       select jsonb_object_keys(to_jsonb(g)) as k
+       from public.rate_guide_aggregates() g) x
+      where x.k in ('submitted_by', 'city', 'is_anonymous', 'reviewed_by',
+                    'reviewed_at', 'source_hash')),
+    0, 'anon: aggregate output exposes no PII columns');
+
+  -- the anonymous submission path (submit_rate pins status/submitted_by)
+  select id into v_cat from public.rate_categories where slug = 'editing';
+  select public.submit_rate(v_cat, 'senior', 1234567890, 'project', 'Tehran', true) into v_new;
+  perform tests.assert_count((case when v_new is not null then 1 else 0 end)::bigint, 1, 'anon: submit_rate stores a row');
+  perform set_config('t.rate_anon_row', v_new::text, false);
+
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions), 0,
+    'anon: own submission is still not readable by anon');
+
+  perform tests.expect_error(
+    'insert into public.rate_submissions (category_id, experience, amount_rial, unit, status) values (''' || v_cat || ''', ''senior'', 1000, ''project'', ''approved'')',
+    'anon: cannot insert an already-approved row');
+
+  perform tests.assert_count(
+    tests.dml_rows('update public.rate_submissions set status = ''approved'''),
+    0, 'anon: cannot approve anything');
+  perform tests.assert_count(
+    tests.dml_rows('delete from public.rate_submissions'),
+    0, 'anon: cannot delete anything');
+end $$;
+
+-- 8b. signed-in editor (sara) — identity pinned by the database, not the client
+reset role;
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000001';
+set request.jwt.claim.role = 'authenticated';
+
+do $$
+declare
+  v_cat uuid;
+  v_new uuid;
+begin
+  select id into v_cat from public.rate_categories where slug = 'motion';
+  select public.submit_rate(v_cat, 'mid', 55000000, 'hour', null, false) into v_new;
+  perform tests.assert_count((case when v_new is not null then 1 else 0 end)::bigint, 1, 'sara: submit_rate stores a row');
+  perform set_config('t.rate_sara_row', v_new::text, false);
+
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions where id = v_new), 1,
+    'sara: can read her own submission');
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions
+      where id = v_new and status = 'pending'
+        and submitted_by = current_setting('t.sara')::uuid),
+    1, 'sara: row is pending and attributed to her');
+
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions
+      where id = current_setting('t.rate_anon_row')::uuid),
+    0, 'sara: cannot read a stranger submission');
+  perform tests.assert_count(
+    tests.dml_rows('update public.rate_submissions set status = ''approved'' where id = ''' || v_new || ''''),
+    0, 'sara: cannot approve her own submission');
+  perform tests.assert_count(
+    tests.dml_rows('delete from public.rate_submissions where id = ''' || v_new || ''''),
+    0, 'sara: cannot delete her own submission');
+end $$;
+
+-- 8c. admin — moderation privileges (the Phase 15 queue builds on these)
+reset role;
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-4000-8000-0000000000aa';
+set request.jwt.claim.role = 'authenticated';
+
+do $$
+declare
+  v_anon uuid := current_setting('t.rate_anon_row')::uuid;
+  v_sara uuid := current_setting('t.rate_sara_row')::uuid;
+begin
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions where id in (v_anon, v_sara)), 2,
+    'admin: can read raw submissions');
+
+  perform tests.assert_count(
+    tests.dml_rows('update public.rate_submissions set status = ''approved'', reviewed_at = now() where id = ''' || v_anon || ''''),
+    1, 'admin: can approve a submission');
+
+  perform tests.assert_count(
+    (select count(*) from public.rate_guide_aggregates() g
+      where g.category_id = (select id from public.rate_categories where slug = 'editing')
+        and g.experience = 'senior' and g.unit = 'project'),
+    1, 'admin: approving publishes the row into the aggregates');
+
+  perform tests.assert_count(
+    tests.dml_rows('delete from public.rate_submissions where id = ''' || v_sara || ''''),
+    1, 'admin: can delete a submission');
+
+  perform tests.assert_count(
+    tests.dml_rows('delete from public.rate_submissions where id = ''' || v_anon || ''''),
+    1, 'admin: cleanup of the approved test row');
+end $$;
+
+-- 8d. seed state restored
+reset role;
+reset request.jwt.claim.sub;
+reset request.jwt.claim.role;
+
+do $$
+begin
+  perform tests.assert_count(
+    (select count(*) from public.rate_submissions), 23,
+    'cleanup: rate seed restored to 23 submissions');
+  perform tests.assert_count(
+    (select count(*) from public.rate_guide_aggregates()), 8,
+    'cleanup: aggregate groups restored to 8');
 end $$;
 
 -- ============================================================================

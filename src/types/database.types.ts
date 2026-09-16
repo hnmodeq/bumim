@@ -441,6 +441,9 @@ export type Database = {
           experience: "junior" | "mid" | "senior"
           id: string
           is_anonymous: boolean
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_hash: string | null
           status: "pending" | "approved" | "rejected"
           submitted_by: string | null
           unit: "project" | "hour" | "day" | "minute" | "second"
@@ -453,6 +456,9 @@ export type Database = {
           experience: "junior" | "mid" | "senior"
           id?: string
           is_anonymous?: boolean
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_hash?: string | null
           status?: "pending" | "approved" | "rejected"
           submitted_by?: string | null
           unit?: "project" | "hour" | "day" | "minute" | "second"
@@ -465,6 +471,9 @@ export type Database = {
           experience?: "junior" | "mid" | "senior"
           id?: string
           is_anonymous?: boolean
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_hash?: string | null
           status?: "pending" | "approved" | "rejected"
           submitted_by?: string | null
           unit?: "project" | "hour" | "day" | "minute" | "second"
@@ -480,6 +489,13 @@ export type Database = {
           {
             foreignKeyName: "rate_submissions_submitted_by_fkey"
             columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rate_submissions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -505,6 +521,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      submit_rate: {
+        Args: {
+          p_category_id: string
+          p_experience: string
+          p_amount_rial: number
+          p_unit: string
+          p_city?: string | null
+          p_is_anonymous?: boolean
+        }
+        Returns: string
+      }
       rate_guide_aggregates: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -513,9 +540,13 @@ export type Database = {
           experience: "junior" | "mid" | "senior"
           unit: "project" | "hour" | "day" | "minute" | "second"
           sample_count: number
+          /** Alias of sample_count (kept for the earlier draft shape). */
+          submissions: number
           p25_rial: number
           median_rial: number
           p75_rial: number
+          min_rial: number
+          max_rial: number
         }[]
       }
       set_updated_at: {

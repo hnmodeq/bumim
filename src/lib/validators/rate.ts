@@ -13,8 +13,14 @@ export type Experience = (typeof EXPERIENCES)[number];
 export const RATE_UNITS = ["project", "hour", "day", "minute", "second"] as const;
 export type RateUnit = (typeof RATE_UNITS)[number];
 
-/** Upper bound in Toman (mirrors the Rial CHECK constraint / 10). */
-export const MAX_TOMAN = 100_000_000_000_000n;
+/**
+ * Upper bound in Toman. The DB CHECK is `amount_rial < 1e15` (strict) and the
+ * action stores amount_rial = toman * 10, so the largest acceptable Toman value
+ * is 1e14 - 1. Allowing exactly 1e14 passed validation but was rejected by the
+ * CHECK constraint, surfacing as a generic "updateFailed" instead of a clear
+ * "amount too large" message.
+ */
+export const MAX_TOMAN = 99_999_999_999_999n;
 
 export const rateSubmissionSchema = (t: ProfileTranslator) =>
   z.object({

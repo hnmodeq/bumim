@@ -64,15 +64,19 @@ export async function submitRate(input: RateSubmissionInput): Promise<RateAction
     if ((count ?? 0) > 0) return { ok: false, error: "duplicate" };
   }
 
-  const { error } = await supabase.from("rate_submissions").insert({
-    category_id: values.categoryId,
-    experience: values.experience,
-    amount_rial: Number(amountRial),
-    unit: values.unit,
-    city: values.city ?? null,
-    is_anonymous: isAnonymous,
-    submitted_by: submittedBy,
-    status: "pending",
+  // Inserted through the security-definer `submit_rate` RPC, not a direct
+  // table insert: `rate_submissions` has no public SELECT policy (raw rows are
+  // private), and PostgREST always uses INSERT ... RETURNING, which RLS
+  // evaluates against the SELECT policies — so a direct anonymous insert is
+  // rejected. The RPC also pins submitted_by = auth.uid() and status = 'pending'
+  // inside the database, so neither can be spoofed by a caller.
+  const { error } = await supabase.rpc("submit_rate", {
+    p_category_id: values.categoryId,
+    p_experience: values.experience,
+    p_amount_rial: Number(amountRial),
+    p_unit: values.unit,
+    p_city: values.city ?? null,
+    p_is_anonymous: isAnonymous,
   });
   if (error) return { ok: false, error: "updateFailed" };
 
