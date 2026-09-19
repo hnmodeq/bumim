@@ -515,6 +515,178 @@ begin
 end $$;
 
 -- ============================================================================
+-- 9. QUOTES — private business documents (Phase 8)
+-- ============================================================================
+
+-- 9a. anonymous visitors have no access at all
+set role anon;
+reset request.jwt.claim.sub;
+
+do $$
+begin
+  perform tests.assert_count(
+    (select count(*) from public.quotes), 0,
+    'anon: quote list is empty');
+  perform tests.expect_error(
+    'insert into public.quotes (owner_id, client_name, project_title) values (''' || current_setting('t.sara') || ''', ''x'', ''y'')',
+    'anon: cannot insert a quote');
+  perform tests.expect_error(
+    'insert into public.quote_items (quote_id, description, unit_rial) values (gen_random_uuid(), ''x'', 1000)',
+    'anon: cannot insert quote items');
+end $$;
+
+-- 9b. sara creates her own quote + items, and cannot touch anyone else's
+set role authenticated;
+select set_config('request.jwt.claim.sub', current_setting('t.sara'), false);
+
+do $$
+declare
+  v_qid uuid;
+  v_amir_quote uuid;
+begin
+  -- writing someone else's owner_id is refused by the WITH CHECK clause
+  perform tests.expect_error(
+    'insert into public.quotes (owner_id, client_name, project_title) values (''' || current_setting('t.amir') || ''', ''stolen'', ''stolen'')',
+    'sara: cannot create a quote owned by amir');
+
+  insert into public.quotes (owner_id, client_name, client_company, project_title, revisions_included)
+  values (current_setting('t.sara')::uuid, 'RLS Client', 'RLS Co', 'Test quote', 3)
+  returning id into v_qid;
+
+  perform tests.assert_count(
+    (select count(*) from public.quotes where id = v_qid), 1,
+    'sara: can read her own quote');
+
+  insert into public.quote_items (quote_id, description, quantity, unit_rial, sort_order)
+  values (v_qid, 'Editing', 2, 25000000, 0),
+         (v_qid, 'Motion graphics', 1, 8000000, 1);
+
+  perform tests.assert_count(
+    (select count(*) from public.quote_items where quote_id = v_qid), 2,
+    'sara: can add items to her own quote');
+
+  -- items follow the parent quote's ownership: amir's quote is unreachable
+  select q.id into v_amir_quote
+  from public.quotes q
+  where q.owner_id = current_setting('t.amir')::uuid
+  limit 1;
+
+  if v_amir_quote is not null then
+    perform tests.expect_error(
+      'insert into public.quote_items (quote_id, description, unit_rial) values (''' || v_amir_quote || ''', ''nope'', 1000)',
+      'sara: cannot add items to amir''s quote');
+  end if;
+
+  perform tests.assert_count(
+    (select count(*) from public.quotes where owner_id = current_setting('t.amir')::uuid), 0,
+    'sara: cannot even see that amir has quotes');
+
+  -- CHECK constraints
+  insert into public.quote_items (quote_id, description, quantity, unit_rial)
+  values (v_qid, 'discount line', 1, -5000000);
+  perform tests.expect_error(
+    'insert into public.quote_items (quote_id, description, quantity, unit_rial) values (''' || v_qid || ''', ''huge'', 1, 999999999999999)',
+    'check: unit_rial magnitude ceiling enforced');
+  perform tests.expect_error(
+    'insert into public.quote_items (quote_id, description, quantity, unit_rial) values (''' || v_qid || ''', ''zero qty'', 0, 1000)',
+    'check: zero quantity refused');
+  perform tests.expect_error(
+    'insert into public.quotes (owner_id, client_name, project_title, status) values (''' || current_setting('t.sara') || ''', ''c'', ''p'', ''sent'')',
+    'check: unknown status refused');
+  perform tests.expect_error(
+    'insert into public.quotes (owner_id, client_name, project_title, revisions_included) values (''' || current_setting('t.sara') || ''', ''c'', ''p'', 99)',
+    'check: revisions_included bound enforced');
+
+  -- updated_at trigger
+  update public.quotes set updated_at = '2000-01-01T00:00:00Z' where id = v_qid;
+  update public.quotes set notes = 'touch' where id = v_qid;
+  perform tests.assert_count(
+    (select count(*) from public.quotes where id = v_qid and updated_at > '2020-01-01'), 1,
+    'quotes: updated_at trigger fires');
+
+  -- expires_at defaults to ~30 days out
+  perform tests.assert_count(
+    (select count(*) from public.quotes where id = v_qid and expires_at between current_date + 29 and current_date + 31), 1,
+    'quotes: expires_at defaults to 30 days');
+
+  -- cleanup inside the role so RLS is exercised for DELETE too
+  delete from public.quote_items where quote_id = v_qid;
+  delete from public.quotes where id = v_qid;
+  perform tests.assert_count(
+    (select count(*) from public.quotes where id = v_qid), 0,
+    'sara: can delete her own quote');
+end $$;
+
+-- 9c. amir cannot read, modify or delete sara's seeded quotes.
+-- The target id is captured as superuser FIRST: as amir the row is invisible,
+-- which is exactly what the assertions below then prove.
+reset role;
+select set_config(
+  't.sara_quote',
+  (select id::text from public.quotes
+    where owner_id = current_setting('t.sara')::uuid
+    order by created_at limit 1),
+  false);
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', current_setting('t.amir'), false);
+
+do $$
+declare
+  v_sara_quote uuid := current_setting('t.sara_quote')::uuid;
+  v_rows bigint;
+begin
+  if current_setting('t.sara_quote', true) is null
+     or current_setting('t.sara_quote') = '' then
+    raise exception 'FAIL: expected the seed to contain a quote for sara';
+  end if;
+
+  perform tests.assert_count(
+    (select count(*) from public.quotes where id = v_sara_quote), 0,
+    'amir: sara''s quote is invisible');
+  perform tests.assert_count(
+    (select count(*) from public.quote_items where quote_id = v_sara_quote), 0,
+    'amir: sara''s quote items are invisible');
+
+  update public.quotes set client_name = 'hacked' where id = v_sara_quote;
+  get diagnostics v_rows = row_count;
+  perform tests.assert_count(v_rows, 0, 'amir: update of sara''s quote affects nothing');
+
+  update public.quote_items set unit_rial = 1 where quote_id = v_sara_quote;
+  get diagnostics v_rows = row_count;
+  perform tests.assert_count(v_rows, 0, 'amir: update of sara''s items affects nothing');
+
+  delete from public.quotes where id = v_sara_quote;
+  get diagnostics v_rows = row_count;
+  perform tests.assert_count(v_rows, 0, 'amir: delete of sara''s quote affects nothing');
+end $$;
+
+-- 9d. admin has NO override on private quotes (by design)
+select set_config('request.jwt.claim.sub', current_setting('t.admin'), false);
+
+do $$
+begin
+  perform tests.assert_count(
+    (select count(*) from public.quotes), 0,
+    'admin: quotes are owner-private, no admin override');
+end $$;
+
+-- 9e. seed state restored
+reset role;
+reset request.jwt.claim.sub;
+reset request.jwt.claim.role;
+
+do $$
+begin
+  perform tests.assert_count(
+    (select count(*) from public.quotes), 4,
+    'cleanup: quote seed restored to 4 quotes');
+  perform tests.assert_count(
+    (select count(*) from public.quote_items), 8,
+    'cleanup: quote item seed restored to 8 items');
+end $$;
+
+-- ============================================================================
 -- Done
 -- ============================================================================
 reset role;

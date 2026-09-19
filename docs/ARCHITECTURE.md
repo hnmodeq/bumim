@@ -2,9 +2,11 @@
 
 > Working title. "The professional network and work platform for Iranian video editors."
 >
-> Status: **Design document + build record.** Phases 1–7 are implemented (foundation/shell,
+> Status: **Design document + build record.** Phases 1–8 are implemented (foundation/shell,
 > database + RLS, auth, profiles, portfolios, rate guide — market reference with project
-> characteristics, threshold-gated medians and an admin moderation queue); Phase 8 (quotes) is next.
+> characteristics, threshold-gated medians and an admin moderation queue — and quotes:
+> centralized bigint pricing service, owner-only quote documents, print-to-PDF client
+> document); Phase 9 (directory + search) is next.
 > Where the shipped implementation differs from the design below, the difference is noted
 > inline as "As built". The prior marketing site is preserved under tag `old-yellow-design`.
 

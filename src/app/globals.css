@@ -140,3 +140,43 @@
     background: color-mix(in oklch, var(--primary) 20%, transparent);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Printable documents (Phase 8 quote PDF). The browser print pipeline is the
+   PDF engine: it is the only dependency-free renderer that shapes Persian and
+   applies bidi correctly. Keep the sheet A4, white, and free of app chrome.
+   --------------------------------------------------------------------------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .print\:hidden,
+  [data-slot="toast-viewport"] {
+    display: none !important;
+  }
+
+  .quote-doc {
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  /* keep tables and section blocks from splitting across pages mid-row */
+  .quote-doc tr,
+  .quote-doc footer {
+    break-inside: avoid;
+  }
+
+  .quote-doc {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

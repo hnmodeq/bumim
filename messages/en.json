@@ -324,8 +324,56 @@
       }
     },
     "quote": {
-      "title": "Quote",
-      "description": "Build a professional quote with the rate calculator and send it to your client."
+      "title": "Rate calculator & quote builder",
+      "description": "Enter the project specs to get an estimate grounded in market data, then turn that estimate into a professional quote.",
+      "estimateNote": "The result is a reference estimate, not a fixed or binding price. The final fee is whatever you and the client agree on.",
+      "fieldsTitle": "Project specs",
+      "fields": {
+        "projectType": "Project type",
+        "experience": "Experience level",
+        "videoCount": "Number of videos",
+        "duration": "Duration per video",
+        "complexity": "Editing complexity",
+        "includesMotion": "Motion graphics",
+        "includesColor": "Colour grading",
+        "includesSound": "Sound design & mix",
+        "revisionRounds": "Revision rounds",
+        "turnaround": "Turnaround",
+        "usageRights": "Commercial usage rights"
+      },
+      "results": {
+        "title": "Fee estimate",
+        "range": "Estimated range",
+        "from": "from",
+        "to": "to",
+        "recommended": "Suggested figure for the quote",
+        "perVideo": "per video",
+        "breakdown": "Breakdown",
+        "factorsTitle": "Applied factors",
+        "sourceMarket": "Based on {count} approved submissions from editors in this category",
+        "sourceReference": "Not enough market data for this combination; computed from the reference base.",
+        "disclaimer": "This estimate is a reference only — not a legal offer or a binding price.",
+        "ctaCreate": "Create a quote from this estimate",
+        "ctaLogin": "Sign in to create and save quotes",
+        "empty": "Complete the specs to see the estimate."
+      },
+      "lines": {
+        "base": "Editing & post-production base",
+        "duration": "Duration adjustment",
+        "complexity": "Editing complexity",
+        "motion": "Motion graphics",
+        "color": "Colour grading",
+        "sound": "Sound work",
+        "turnaround": "Turnaround",
+        "usage": "Commercial usage rights",
+        "revisions": "Extra revision rounds",
+        "volume": "Volume discount"
+      },
+      "errors": {
+        "categoryRequired": "Choose a project type.",
+        "videosRange": "Number of videos must be between 1 and 50.",
+        "revisionsRange": "Revision rounds must be between 0 and 20."
+      }
     },
     "community": {
       "title": "Community",
@@ -364,7 +412,89 @@
     "messagesDesc": "Conversations with peers.",
     "reviewsDesc": "Reviews you have received and given.",
     "settingsDesc": "Account and privacy settings.",
-    "portfolioLoadError": "Could not load your portfolio. Please try again."
+    "portfolioLoadError": "Could not load your portfolio. Please try again.",
+    "quotes": "Quotes",
+    "quotesDesc": "Your quotes for clients.",
+    "quotesPage": {
+      "title": "Quotes",
+      "description": "Create, edit, duplicate and export your quotes as PDF.",
+      "new": "New quote",
+      "emptyTitle": "No quotes yet",
+      "emptyDescription": "Start from the rate calculator, or create a blank quote.",
+      "emptyArchived": "Nothing archived.",
+      "calculatorCta": "Rate calculator",
+      "columns": {
+        "client": "Client",
+        "project": "Project",
+        "total": "Total",
+        "status": "Status",
+        "updated": "Last update",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Draft",
+        "archived": "Archived"
+      },
+      "actions": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "archive": "Archive",
+        "restore": "Restore",
+        "print": "Print / PDF"
+      },
+      "showArchived": "Show archived",
+      "items": "{count} items",
+      "editor": {
+        "newTitle": "New quote",
+        "editTitle": "Edit quote",
+        "clientTitle": "Client details",
+        "clientName": "Client name",
+        "clientCompany": "Company / brand (optional)",
+        "projectTitle": "Project name",
+        "deliverables": "Deliverables",
+        "deliverablesHint": "e.g. one 2-minute video and a 30-second cut",
+        "commercialTitle": "Commercial terms",
+        "revisionsIncluded": "Included revisions",
+        "deadline": "Delivery deadline",
+        "expiresAt": "Quote valid until",
+        "terms": "Payment & working terms",
+        "notes": "Note for the client",
+        "itemsTitle": "Line items",
+        "itemDescription": "Description",
+        "itemQuantity": "Qty",
+        "itemUnitPrice": "Unit price (Toman)",
+        "itemTotal": "Total",
+        "addItem": "Add item",
+        "removeItem": "Remove",
+        "total": "Total",
+        "toman": "Toman",
+        "save": "Save quote",
+        "saving": "Saving…",
+        "saved": "Quote saved.",
+        "fromEstimate": "Items were imported from the calculator estimate; edit anything you like.",
+        "backToList": "Back to list"
+      },
+      "errors": {
+        "clientRequired": "Enter the client name.",
+        "clientTooLong": "Client name is limited to 120 characters.",
+        "companyTooLong": "Company name is limited to 120 characters.",
+        "projectRequired": "Enter the project name.",
+        "projectTooLong": "Project name is limited to 160 characters.",
+        "textTooLong": "This text is longer than allowed.",
+        "dateInvalid": "Enter the date as YYYY-MM-DD.",
+        "revisionsRange": "Included revisions must be between 0 and 50.",
+        "itemDescriptionRequired": "Enter a description for the item.",
+        "itemDescriptionLong": "Item description is limited to 300 characters.",
+        "itemQuantityRange": "Quantity must be between 1 and 10,000.",
+        "itemPriceInvalid": "Unit price must be a whole number of Toman.",
+        "itemPriceTooLarge": "Unit price exceeds the allowed maximum.",
+        "itemsRequired": "Add at least one line item.",
+        "itemsTooMany": "At most 40 line items.",
+        "invalidInput": "Some values are invalid; review the form.",
+        "updateFailed": "Saving failed; please try again.",
+        "forbidden": "You do not have access to this quote."
+      }
+    }
   },
   "admin": {
     "title": "Admin",
@@ -653,5 +783,31 @@
       "dateInvalid": "Enter a valid date.",
       "tooManyTags": "Too many items."
     }
+  },
+  "quoteDoc": {
+    "docTitle": "Quote",
+    "issuedAt": "Issued",
+    "expiresAt": "Valid until",
+    "deadline": "Delivery by",
+    "revisions": "Included revisions",
+    "rounds": "{count} rounds",
+    "from": "From",
+    "to": "To",
+    "deliverablesTitle": "Project deliverables",
+    "termsTitle": "Terms",
+    "notesTitle": "Notes",
+    "colDescription": "Description",
+    "colQuantity": "Qty",
+    "colUnitPrice": "Unit price",
+    "colTotal": "Total",
+    "total": "Total",
+    "toman": "Toman",
+    "discountNote": "Items with a negative amount are discounts.",
+    "disclaimer": "This quote is an estimate of the work's cost. It is not a financial document, a contract, or a legally binding commitment.",
+    "brandLine": "Issued with Bumim — the professional network for video editors",
+    "print": "Print / Save as PDF",
+    "back": "Back to quote",
+    "notFound": "Quote not found.",
+    "editorContact": "Bumim profile: /{username}"
   }
 }

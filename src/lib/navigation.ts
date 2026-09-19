@@ -5,6 +5,7 @@ import {
   Users,
   MessageSquare,
   Star,
+  ReceiptText,
   Settings,
   FolderKanban,
   ClipboardList,
@@ -54,6 +55,7 @@ export const dashboardNav: NavItem[] = [
   },
   { key: "messages", href: "/dashboard/messages", icon: MessageSquare },
   { key: "reviews", href: "/dashboard/reviews", icon: Star },
+  { key: "quotes", href: "/dashboard/quotes", icon: ReceiptText },
   { key: "settings", href: "/dashboard/settings", icon: Settings },
 ];
 

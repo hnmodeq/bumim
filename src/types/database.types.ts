@@ -1,6 +1,6 @@
 /**
  * Supabase database types — generated from the Phase 3 schema
- * (supabase/migrations/0001–0006) on 2026-09-14.
+ * (supabase/migrations/0001–0006) on 2026-09-14, hand-extended through 0014.
  *
  * Kept in sync by hand because no Supabase CLI/remote project is available in
  * this environment. Regenerate with the CLI once a linked project exists:
@@ -546,6 +546,100 @@ export type Database = {
             columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          id: string
+          owner_id: string
+          client_name: string
+          client_company: string | null
+          project_title: string
+          deliverables: string | null
+          revisions_included: number
+          deadline: string | null
+          expires_at: string
+          terms: string | null
+          notes: string | null
+          status: "draft" | "archived"
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          client_name: string
+          client_company?: string | null
+          project_title: string
+          deliverables?: string | null
+          revisions_included?: number
+          deadline?: string | null
+          expires_at?: string
+          terms?: string | null
+          notes?: string | null
+          status?: "draft" | "archived"
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          client_name?: string
+          client_company?: string | null
+          project_title?: string
+          deliverables?: string | null
+          revisions_included?: number
+          deadline?: string | null
+          expires_at?: string
+          terms?: string | null
+          notes?: string | null
+          status?: "draft" | "archived"
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_items: {
+        Row: {
+          id: string
+          quote_id: string
+          description: string
+          quantity: number
+          unit_rial: number
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          quote_id: string
+          description: string
+          quantity?: number
+          unit_rial: number
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          quote_id?: string
+          description?: string
+          quantity?: number
+          unit_rial?: number
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
             referencedColumns: ["id"]
           },
         ]

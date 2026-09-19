@@ -80,9 +80,10 @@ docs/               # architecture documentation
 
 ## Current Status
 
-**Phase 7 — Rate Guide.** Phases 1–7 are implemented: design system and shells,
-database + RLS, Supabase auth with provisioning triggers, editor profiles,
-portfolios, and the crowd-sourced rate guide.
+**Phase 8 — Quote Calculator + Quote Generator.** Phases 1–8 are implemented:
+design system and shells, database + RLS, Supabase auth with provisioning
+triggers, editor profiles, portfolios, the crowd-sourced rate guide, and the
+quote calculator / quote generator with a print-to-PDF client document.
 
 The rate guide (`/rate-guide`) is a **market reference, not a price list**: it
 publishes the typical range and — only where at least three approved submissions
@@ -93,8 +94,19 @@ revisions, turnaround, usage rights, motion/colour/sound). Submissions land as
 `pending`; admins approve or reject them at `/admin/rates`, and only approved
 rows feed the public aggregates. All money is integer Rial end to end.
 
-Remaining routes still render placeholders until their phase lands (quotes,
-messaging, applications, community, reports).
+The quote calculator (`/quote`) turns project requirements into a
+market-grounded **estimate range with a full factor breakdown** — every rate
+lives in one centralized pricing service, nothing is hard-coded in the UI, and
+the result is explicitly labelled a reference, never a binding offer. Signed-in
+editors turn an estimate into a saved quote in one click: client and project
+details, deliverables, line items in Toman (stored as integer Rial), revisions,
+deadline, terms, notes and expiry; quotes support create / edit / duplicate /
+archive and are visible only to their owner (RLS-enforced). `/print/quote/[id]`
+renders a clean A4, RTL, Persian document with subtle platform branding that
+prints to PDF from the browser.
+
+Remaining routes still render placeholders until their phase lands (messaging,
+applications, community, reports).
 
 ## Deployment
 
