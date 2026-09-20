@@ -131,8 +131,6 @@ function WheelPicker({
   onSelect: (i: number) => void;
   ariaLabel: string;
 }) {
-  const anglePerItem = 22;
-  const radius = 115;
   const ITEM_PX = 36;
 
   // --- iOS-like physics: smooth single-step wheel + continuous drag with momentum ---
@@ -284,8 +282,7 @@ function WheelPicker({
     [selected, onSelect, clampIdx]
   );
 
-  // live angle during drag (continuous, not stepped) -> the magic of iOS
-  const liveAngle = selected * anglePerItem - (dragOffset / ITEM_PX) * anglePerItem;
+  // center offset: 50% - half item (18px) gives perfect vertical center for both 220 and 260 heights
 
   return (
     <div
@@ -297,109 +294,91 @@ function WheelPicker({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing group bg-transparent touch-none overscroll-contain"
-      style={{ perspective: "900px", perspectiveOrigin: "50% 50%" }}
+      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden"
     >
-      {/* side indicators only - no background */}
-      <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full shadow-[0_0_8px_#ffdf00] pointer-events-none z-10" />
-      <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full shadow-[0_0_8px_#11ffba] pointer-events-none z-10" />
+      {/* simple side ticks – no shadow, no 3D, no blur – avoids GPU glitches */}
+      <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
+      <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* fades - fully transparent */}
-      <div className="absolute inset-x-0 top-0 h-[24px] bg-gradient-to-b from-transparent to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-[24px] bg-gradient-to-t from-transparent to-transparent pointer-events-none z-10" />
+      {/* subtle top/bottom fade to hint scroll, lightweight */}
+      <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#141414]/90 via-[#141414]/40 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#141414]/90 via-[#141414]/40 to-transparent pointer-events-none z-10" />
 
-      <div
-        className="absolute inset-0"
-        style={{
-          transformStyle: "preserve-3d",
-          transform: `translateZ(${-radius}px) rotateX(${liveAngle}deg)`,
-          transition: isDragging ? "none" : "transform 640ms cubic-bezier(0.32, 0.72, 0, 1)",
-          willChange: "transform",
-        }}
-      >
-        {options.map((opt, idx) => {
-          // live distance during drag - gives buttery iOS interpolation
-          const liveIdx = selected - dragOffset / ITEM_PX;
-          const liveDist = idx - liveIdx;
-          const absLive = Math.abs(liveDist);
-          const roundedDist = Math.round(absLive);
-          // use rounded for stable buckets, but live for isSelected threshold (<0.5)
-          const isSelected = absLive < 0.5;
-          const abs = isDragging ? roundedDist : Math.abs(idx - selected);
-          let opacity = 1;
-          let scale = 1;
-          let blur: string | undefined = undefined;
-          if (abs === 0) {
-            opacity = 1;
-            scale = 1.06;
-          } else if (abs === 1) {
-            opacity = 0.78;
-            scale = 0.92;
-          } else if (abs === 2) {
-            opacity = 0.42;
-            scale = 0.82;
-            blur = "0.4px";
-          } else if (abs === 3) {
-            opacity = 0.22;
-            scale = 0.74;
-            blur = "0.8px";
-          } else {
-            opacity = 0.08;
-            scale = 0.68;
-            blur = "1.2px";
-          }
-          // during drag, fade based on live distance for smoothness
-          if (isDragging) {
-            // continuous opacity fade
-            if (absLive < 0.5) opacity = 1;
-            else if (absLive < 1.5) opacity = 0.78 - (absLive - 0.5) * 0.36;
-            else if (absLive < 2.5) opacity = 0.42 - (absLive - 1.5) * 0.20;
-            else opacity = Math.max(0.08, 0.22 - (absLive - 2.5) * 0.08);
-          }
-          const color = isSelected ? "#ffffff" : abs === 1 ? "#ededed" : "#9a9a9a";
-          return (
-            <button
-              key={opt.label}
-              onClick={() => onSelect(idx)}
-              aria-selected={isSelected}
-              className="absolute left-0 right-0 flex items-center justify-center text-center select-none"
-              style={{
-                top: "50%",
-                height: "52px",
-                marginTop: "-26px",
-                transform: `rotateX(${-idx * anglePerItem}deg) translateZ(${radius}px) scale(${scale})`,
-                opacity,
-                filter: blur ? `blur(${blur})` : undefined,
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-                transition: isDragging
-                  ? "none"
-                  : "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1), filter 300ms ease, color 200ms ease",
-                willChange: "transform, opacity",
-              }}
-            >
-              <span
-                className={`block w-full px-1.5 md:px-2 text-center tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis ${
-                  isSelected
-                    ? "text-[15px] md:text-[18px] font-black"
-                    : abs === 1
-                      ? "text-[12px] md:text-[13px] font-bold"
-                      : "text-[11px] md:text-[12px] font-medium"
-                }`}
+      {/* flat list – no preserve-3d / perspective / translateZ / rotateX / blur – 100% stable on low-end GPUs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute left-0 right-0"
+          style={{
+            transform: `translateY(calc(50% - 18px - ${selected * ITEM_PX}px + ${dragOffset}px))`,
+            transition: isDragging ? "none" : "transform 520ms cubic-bezier(0.32, 0.72, 0, 1)",
+          }}
+        >
+          {options.map((opt, idx) => {
+            const liveIdx = selected - dragOffset / ITEM_PX;
+            const liveDist = idx - liveIdx;
+            const absLive = Math.abs(liveDist);
+            const roundedDist = Math.round(absLive);
+            const isSelected = absLive < 0.5;
+            const abs = isDragging ? roundedDist : Math.abs(idx - selected);
+            let opacity = 1;
+            let scale = 1;
+            if (abs === 0) {
+              opacity = 1;
+              scale = 1;
+            } else if (abs === 1) {
+              opacity = 0.72;
+              scale = 0.96;
+            } else if (abs === 2) {
+              opacity = 0.38;
+              scale = 0.90;
+            } else if (abs === 3) {
+              opacity = 0.20;
+              scale = 0.85;
+            } else {
+              opacity = 0.08;
+              scale = 0.82;
+            }
+            if (isDragging) {
+              if (absLive < 0.5) opacity = 1;
+              else if (absLive < 1.5) opacity = 0.72 - (absLive - 0.5) * 0.34;
+              else if (absLive < 2.5) opacity = 0.38 - (absLive - 1.5) * 0.18;
+              else opacity = Math.max(0.06, 0.20 - (absLive - 2.5) * 0.07);
+            }
+            const color = isSelected ? "#ffffff" : abs === 1 ? "#d6d6d6" : "#8a8a8a";
+            return (
+              <button
+                key={opt.label}
+                onClick={() => onSelect(idx)}
+                aria-selected={isSelected}
+                className="w-full flex items-center justify-center text-center select-none"
                 style={{
+                  height: `${ITEM_PX}px`,
+                  opacity,
+                  transform: `scale(${scale})`,
+                  transition: isDragging ? "none" : "opacity 300ms ease, transform 320ms cubic-bezier(0.32,0.72,0,1), color 200ms ease",
                   color,
-                  textShadow: "none",
-                  transform: isSelected ? "translateZ(8px)" : "translateZ(0)",
-                  transition: isDragging ? "none" : "color 300ms ease, text-shadow 400ms ease",
                 }}
               >
-                {opt.label}
-              </span>
-            </button>
-          );
-        })}
+                <span
+                  className={`block w-full px-2 text-center tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis ${
+                    isSelected
+                      ? "text-[15px] md:text-[17px] font-black"
+                      : abs === 1
+                        ? "text-[12px] md:text-[13px] font-bold"
+                        : "text-[11px] md:text-[12px] font-medium"
+                  }`}
+                  style={{
+                    transform: isSelected ? "scale(1.03)" : "scale(1)",
+                    transition: isDragging ? "none" : "transform 300ms ease, color 200ms ease",
+                  }}
+                >
+                  {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-
     </div>
   );
 }
@@ -540,7 +519,7 @@ export default function Page() {
             <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
                 <span className="text-[13px] md:text-[15px] font-black tracking-tight text-white">بومیم</span>
-                <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/bumim-transparent.png" alt="بومیم" className="w-full h-full object-cover" />
                 </div>
