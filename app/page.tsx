@@ -480,94 +480,81 @@ export default function Page() {
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffdf00]/20 to-transparent pointer-events-none" />
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-[calc(100dvh-32px)]">
-        {/* Header row: logo + بومیم on right, title centered - stays at top (not centered) */}
-        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] shrink-0">
-          <h1
-            className="text-[42px] md:text-[64px] font-black tracking-tight text-white text-center leading-[0.95] select-none px-[110px] md:px-[160px]"
-            style={{ fontWeight: 900, letterSpacing: "-0.03em" }}
-          >
-            چقدر دستمزد بگیرم؟
-          </h1>
-
-          {/* logo on right top - same row as title - name left side of logo */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 md:gap-2.5">
+        {/* Header: only logo (title moves inside pack) */}
+        <div className="relative w-full flex items-center justify-end min-h-[48px] md:min-h-[56px] shrink-0">
+          <div className="flex items-center gap-2 md:gap-2.5">
+            <span className="text-[15px] md:text-[18px] font-black tracking-tight text-white hidden sm:block">بومیم</span>
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/bumim-transparent.png" alt="بومیم" className="w-full h-full object-cover" />
             </div>
-            <span className="text-[15px] md:text-[18px] font-black tracking-tight text-white hidden sm:block">بومیم</span>
           </div>
         </div>
 
-        {/* Centered content - vertically centered, horizontally centered */}
+        {/* Centered pack - title inside, no hero, no dividers */}
         <div className="flex-1 w-full flex flex-col justify-center items-center py-2 md:py-4">
-          {/* Wheels */}
-          <div
-            dir="ltr"
-            className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto"
-          >
-          <div className="w-full">
-            <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
-          </div>
-          <div className="w-full">
-            <WheelPicker ariaLabel="مدت زمان" options={durationOptions} selected={durationIdx} onSelect={setDurationIdx} />
-          </div>
-          <div className="w-full">
-            <WheelPicker ariaLabel="نوع پروژه" options={typeOptions} selected={typeIdx} onSelect={setTypeIdx} />
-          </div>
-        </div>
+          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-6 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-4 md:gap-5">
+            <h2 className="text-[26px] md:text-[32px] font-black tracking-tight text-white text-center leading-none select-none" style={{ fontWeight: 900, letterSpacing: "-0.03em" }}>
+              چقدر دستمزد بگیرم؟
+            </h2>
 
-        <div className="flex items-center gap-3 w-full max-w-[860px] mx-auto my-3 md:my-4">
-          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333]" />
-          <span className="text-[11px] md:text-[12px] font-black tracking-[0.12em] uppercase whitespace-nowrap text-[#ffdf00] px-1">
-            خدمات
-          </span>
-          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-l from-transparent via-[#2a2a2a] to-[#333333]" />
-        </div>
+            {/* Wheels */}
+            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto">
+              <div className="w-full">
+                <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
+              </div>
+              <div className="w-full">
+                <WheelPicker ariaLabel="مدت زمان" options={durationOptions} selected={durationIdx} onSelect={setDurationIdx} />
+              </div>
+              <div className="w-full">
+                <WheelPicker ariaLabel="نوع پروژه" options={typeOptions} selected={typeIdx} onSelect={setTypeIdx} />
+              </div>
+            </div>
 
-        <div className="w-full max-w-[860px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            {[...basicServices, ...advancedServices].map((s) => {
-              const isBasic = basicServices.some((b) => b.id === s.id);
-              const checked = isBasic ? !!basicChecked[s.id] : !!advChecked[s.id];
-              const onToggle = isBasic ? () => toggleBasic(s.id) : () => toggleAdv(s.id);
-              return <ServiceItem key={s.id} service={s} checked={checked} onToggle={onToggle} />;
-            })}
-          </div>
-        </div>
+            {/* Services - no title */}
+            <div className="w-full max-w-[860px] mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                {[...basicServices, ...advancedServices].map((s) => {
+                  const isBasic = basicServices.some((b) => b.id === s.id);
+                  const checked = isBasic ? !!basicChecked[s.id] : !!advChecked[s.id];
+                  const onToggle = isBasic ? () => toggleBasic(s.id) : () => toggleAdv(s.id);
+                  return <ServiceItem key={s.id} service={s} checked={checked} onToggle={onToggle} />;
+                })}
+              </div>
+            </div>
 
-        <Divider label="مبلغ نهایی" />
-
-        <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 mt-1 min-h-[56px]">
-          <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
-            <span
-              suppressHydrationWarning
-              className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-              style={{
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
-                textShadow: "0 0 24px rgba(255,223,0,0.20), 0 0 48px rgba(17,255,186,0.14)",
-              }}
-            >
-              {formattedPrice}
-            </span>
-            <span className="text-[15px] md:text-[16px] font-bold text-white/80 translate-y-[-5px]">تومان</span>
+            {/* Price + buttons - no divider, buttons right side */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[56px]">
+              <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
+                <span
+                  suppressHydrationWarning
+                  className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  style={{
+                    fontWeight: 900,
+                    letterSpacing: "-0.04em",
+                    textShadow: "0 0 24px rgba(255,223,0,0.20), 0 0 48px rgba(17,255,186,0.14)",
+                  }}
+                >
+                  {formattedPrice}
+                </span>
+                <span className="text-[15px] md:text-[16px] font-bold text-white/80 translate-y-[-5px]">تومان</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
+                <button
+                  onClick={handleSelectAll}
+                  className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+                >
+                  انتخاب همه
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+                >
+                  بازنشانی
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
-            <button
-              onClick={handleSelectAll}
-              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
-            >
-              انتخاب همه
-            </button>
-            <button
-              onClick={handleReset}
-              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
-            >
-              بازنشانی
-            </button>
-          </div>
-        </div>
         </div>
       </div>
     </main>
