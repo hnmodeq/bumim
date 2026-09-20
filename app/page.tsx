@@ -131,134 +131,181 @@ function WheelPicker({
   onSelect: (i: number) => void;
   ariaLabel: string;
 }) {
-  const isDragging = useRef(false);
-  const startY = useRef(0);
-  const startSelected = useRef(selected);
-  const lastWheelTime = useRef(0);
-  const wheelAccum = useRef(0);
-
   const anglePerItem = 22;
   const radius = 115;
+  const ITEM_PX = 36;
+
+  // --- iOS-like physics: smooth single-step wheel + continuous drag with momentum ---
+  const isDraggingRef = useRef(false);
+  const startYRef = useRef(0);
+  const startSelectedRef = useRef(selected);
+  const lastWheelTimeRef = useRef(0);
+  const wheelAccumRef = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const velocityRef = useRef(0);
+  const lastYRef = useRef(0);
+  const lastTimeRef = useRef(0);
+
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // keep startSelected in sync when not dragging
+  if (!isDraggingRef.current) {
+    startSelectedRef.current = selected;
+  }
+
+  const clampIdx = useCallback(
+    (i: number) => Math.min(Math.max(i, 0), options.length - 1),
+    [options.length]
+  );
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      const now = Date.now();
-      const delta = e.deltaY;
-      const absDelta = Math.abs(delta);
-      const timeDelta = now - lastWheelTime.current;
-      lastWheelTime.current = now;
+      // normalize delta (handle line/page modes and trackpad)
+      let delta = e.deltaY;
+      // @ts-ignore deltaMode exists
+      if (e.deltaMode === 1) delta *= ITEM_PX;
+      else if (e.deltaMode === 2) delta *= 120;
 
-      // speed-sensitive steps: larger delta or faster repeat = more steps
-      let steps = 1;
-      if (absDelta > 120) steps = 3;
-      else if (absDelta > 80) steps = 2;
-      else if (absDelta > 40) steps = 1;
-      else steps = 1;
+      const now = performance.now();
+      // Apple-feel: strictly 1 item per notch, throttled — never jump 2-4 items
+      // Trackpad gives tiny deltas at high frequency → accumulate until one item threshold
+      // Mouse wheel gives ~100px per notch → counts as 1 immediately
+      const isTrackpadSmall = Math.abs(delta) < 55;
+      wheelAccumRef.current += delta;
 
-      // accelerate if scrolling rapidly (small time gap)
-      if (timeDelta < 80 && absDelta > 30) steps = Math.min(steps + 1, 4);
-      if (timeDelta < 40 && absDelta > 20) steps = Math.min(steps + 1, 4);
+      const threshold = 28; // px to trigger one step (feels like iOS tick)
+      if (Math.abs(wheelAccumRef.current) < threshold) return;
 
-      // accumulate small trackpad deltas
-      wheelAccum.current += delta;
-      if (Math.abs(wheelAccum.current) < 18) return;
-      // if accumulated is big, allow steps proportionally
-      if (Math.abs(wheelAccum.current) > 80) steps = Math.max(steps, 2);
-      wheelAccum.current = 0;
+      // throttle: iOS picker never flies 4 items on one swipe of the mouse wheel
+      // 90-120ms between steps = deliberate, controllable, can still flick by continuous scroll
+      const minInterval = isTrackpadSmall ? 72 : 96;
+      if (now - lastWheelTimeRef.current < minInterval) return;
 
-      const dir = delta > 0 ? 1 : -1;
-      const next = Math.min(Math.max(selected + dir * steps, 0), options.length - 1);
+      lastWheelTimeRef.current = now;
+      const dir = wheelAccumRef.current > 0 ? 1 : -1;
+      // consume exactly one threshold (keep remainder for buttery trackpad)
+      wheelAccumRef.current -= dir * threshold;
+      // clamp remainder to avoid runaway
+      if (Math.abs(wheelAccumRef.current) > threshold) wheelAccumRef.current = 0;
+
+      const next = clampIdx(selected + dir);
       if (next !== selected) onSelect(next);
     },
-    [selected, onSelect, options.length]
+    [selected, onSelect, clampIdx]
   );
 
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      isDragging.current = true;
-      startY.current = e.touches[0].clientY;
-      startSelected.current = selected;
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      isDraggingRef.current = true;
+      setIsDragging(true);
+      startYRef.current = e.clientY;
+      startSelectedRef.current = selected;
+      dragOffsetRef.current = 0;
+      setDragOffset(0);
+      lastYRef.current = e.clientY;
+      lastTimeRef.current = performance.now();
+      velocityRef.current = 0;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overscrollBehavior = "contain";
     },
     [selected]
   );
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isDragging.current) return;
-      const dy = e.touches[0].clientY - startY.current;
-      const steps = Math.round(dy / 36);
-      const next = Math.min(Math.max(startSelected.current - steps, 0), options.length - 1);
-      if (next !== selected) onSelect(next);
-    },
-    [selected, onSelect, options.length]
-  );
-  const handleTouchEnd = useCallback(() => {
-    isDragging.current = false;
-  }, []);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      isDragging.current = true;
-      startY.current = e.clientY;
-      startSelected.current = selected;
-      const onMove = (ev: MouseEvent) => {
-        if (!isDragging.current) return;
-        const dy = ev.clientY - startY.current;
-        const steps = Math.round(dy / 36);
-        const next = Math.min(Math.max(startSelected.current - steps, 0), options.length - 1);
-        if (next !== selected) onSelect(next);
-      };
-      const onUp = () => {
-        isDragging.current = false;
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
-        document.body.style.overflow = "";
-      };
-      document.body.style.overflow = "hidden";
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseup", onUp);
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDraggingRef.current) return;
+      const dy = e.clientY - startYRef.current;
+      // rubber-band at edges (iOS bounce feel without leaving bounds)
+      let dampedDy = dy;
+      const start = startSelectedRef.current;
+      const estIdx = start - dy / ITEM_PX;
+      if (estIdx < 0) {
+        const over = -estIdx;
+        dampedDy = start * ITEM_PX + (dy - start * ITEM_PX) * (1 / (1 + over * 0.35));
+      } else if (estIdx > options.length - 1) {
+        const over = estIdx - (options.length - 1);
+        const maxDy = (start - (options.length - 1)) * ITEM_PX;
+        dampedDy = maxDy + (dy - maxDy) * (1 / (1 + over * 0.35));
+      }
+      dragOffsetRef.current = dampedDy;
+      setDragOffset(dampedDy);
+      const now = performance.now();
+      const dt = Math.max(now - lastTimeRef.current, 1);
+      const vy = (e.clientY - lastYRef.current) / dt; // px/ms
+      // smoothing velocity
+      velocityRef.current = velocityRef.current * 0.6 + vy * 0.4;
+      lastYRef.current = e.clientY;
+      lastTimeRef.current = now;
     },
-    [selected, onSelect, options.length]
+    [options.length]
   );
 
-  const handleMouseEnter = useCallback(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overscrollBehavior = "contain";
-  }, []);
-  const handleMouseLeave = useCallback(() => {
-    if (!isDragging.current) {
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+      setIsDragging(false);
       document.body.style.overflow = "";
       document.documentElement.style.overscrollBehavior = "";
-    }
-  }, []);
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+      const dy = dragOffsetRef.current;
+      const v = velocityRef.current; // px/ms
+      // base target from drag distance
+      let target = Math.round(startSelectedRef.current - dy / ITEM_PX);
+      // iOS flick momentum: only if fast and recent
+      const timeSinceLastMove = performance.now() - lastTimeRef.current;
+      if (Math.abs(v) > 0.55 && timeSinceLastMove < 80) {
+        // map velocity to extra items: 0.7 px/ms ~ 1 item, cap at 7 for a strong flick
+        // negative v (up) pushes to higher index
+        let extra = Math.round(-v * 1.55);
+        extra = Math.max(Math.min(extra, 7), -7);
+        // soften small flicks
+        if (Math.abs(extra) === 1 && Math.abs(v) < 0.9) extra = v > 0 ? -1 : 1;
+        target += extra;
+      }
+      target = clampIdx(target);
+      dragOffsetRef.current = 0;
+      setDragOffset(0);
+      velocityRef.current = 0;
+      if (target !== selected) onSelect(target);
+      // if same, just snap back (dragOffset -> 0 animates)
+    },
+    [selected, onSelect, clampIdx]
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        onSelect(Math.max(selected - 1, 0));
+        onSelect(clampIdx(selected - 1));
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
-        onSelect(Math.min(selected + 1, options.length - 1));
+        onSelect(clampIdx(selected + 1));
       }
     },
-    [selected, onSelect, options.length]
+    [selected, onSelect, clampIdx]
   );
+
+  // live angle during drag (continuous, not stepped) -> the magic of iOS
+  const liveAngle = selected * anglePerItem - (dragOffset / ITEM_PX) * anglePerItem;
 
   return (
     <div
       tabIndex={0}
       aria-label={ariaLabel}
       onWheel={handleWheel}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing group bg-transparent"
+      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing group bg-transparent touch-none overscroll-contain"
       style={{ perspective: "900px", perspectiveOrigin: "50% 50%" }}
     >
       {/* side indicators only - no background */}
@@ -273,15 +320,20 @@ function WheelPicker({
         className="absolute inset-0"
         style={{
           transformStyle: "preserve-3d",
-          transform: `translateZ(${-radius}px) rotateX(${selected * anglePerItem}deg)`,
-          transition: "transform 420ms cubic-bezier(0.16, 1, 0.3, 1)",
+          transform: `translateZ(${-radius}px) rotateX(${liveAngle}deg)`,
+          transition: isDragging ? "none" : "transform 560ms cubic-bezier(0.32, 0.72, 0, 1)",
           willChange: "transform",
         }}
       >
         {options.map((opt, idx) => {
-          const offset = idx - selected;
-          const abs = Math.abs(offset);
-          const isSelected = offset === 0;
+          // live distance during drag - gives buttery iOS interpolation
+          const liveIdx = selected - dragOffset / ITEM_PX;
+          const liveDist = idx - liveIdx;
+          const absLive = Math.abs(liveDist);
+          const roundedDist = Math.round(absLive);
+          // use rounded for stable buckets, but live for isSelected threshold (<0.5)
+          const isSelected = absLive < 0.5;
+          const abs = isDragging ? roundedDist : Math.abs(idx - selected);
           let opacity = 1;
           let scale = 1;
           let blur: string | undefined = undefined;
@@ -304,6 +356,14 @@ function WheelPicker({
             scale = 0.68;
             blur = "1.2px";
           }
+          // during drag, fade based on live distance for smoothness
+          if (isDragging) {
+            // continuous opacity fade
+            if (absLive < 0.5) opacity = 1;
+            else if (absLive < 1.5) opacity = 0.78 - (absLive - 0.5) * 0.36;
+            else if (absLive < 2.5) opacity = 0.42 - (absLive - 1.5) * 0.20;
+            else opacity = Math.max(0.08, 0.22 - (absLive - 2.5) * 0.08);
+          }
           const color = isSelected ? "#ffffff" : abs === 1 ? "#ededed" : "#9a9a9a";
           return (
             <button
@@ -320,8 +380,9 @@ function WheelPicker({
                 filter: blur ? `blur(${blur})` : undefined,
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
-                transition:
-                  "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1), filter 300ms ease, color 200ms ease",
+                transition: isDragging
+                  ? "none"
+                  : "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1), filter 300ms ease, color 200ms ease",
                 willChange: "transform, opacity",
               }}
             >
@@ -337,7 +398,7 @@ function WheelPicker({
                   color,
                   textShadow: "none",
                   transform: isSelected ? "translateZ(8px)" : "translateZ(0)",
-                  transition: "color 300ms ease, text-shadow 400ms ease",
+                  transition: isDragging ? "none" : "color 300ms ease, text-shadow 400ms ease",
                 }}
               >
                 {opt.label}
@@ -481,20 +542,20 @@ export default function Page() {
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-[calc(100dvh-32px)]">
         {/* Header: only logo (title moves inside pack) */}
-        <div className="relative w-full flex items-center justify-end min-h-[48px] md:min-h-[56px] shrink-0">
+        <div dir="ltr" className="relative w-full flex items-center justify-start min-h-[48px] md:min-h-[56px] shrink-0">
           <div className="flex items-center gap-2 md:gap-2.5">
-            <span className="text-[15px] md:text-[18px] font-black tracking-tight text-white hidden sm:block">بومیم</span>
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/bumim-transparent.png" alt="بومیم" className="w-full h-full object-cover" />
             </div>
+            <span className="text-[15px] md:text-[18px] font-black tracking-tight text-white hidden sm:block">بومیم</span>
           </div>
         </div>
 
         {/* Centered pack - title inside, no hero, no dividers */}
         <div className="flex-1 w-full flex flex-col justify-center items-center py-2 md:py-4">
           <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-6 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-4 md:gap-5">
-            <h2 className="text-[26px] md:text-[32px] font-black tracking-tight text-white text-center leading-none select-none" style={{ fontWeight: 900, letterSpacing: "-0.03em" }}>
+            <h2 className="text-[26px] md:text-[32px] font-black tracking-tight text-white text-center leading-none select-none pt-5 md:pt-7 pb-0 md:pb-1" style={{ fontWeight: 900, letterSpacing: "-0.03em" }}>
               چقدر دستمزد بگیرم؟
             </h2>
 
