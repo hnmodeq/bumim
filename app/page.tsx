@@ -237,18 +237,16 @@ function WheelPicker({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[300px] md:h-[360px] select-none outline-none cursor-grab active:cursor-grabbing group bg-transparent"
+      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing group bg-transparent"
       style={{ perspective: "900px", perspectiveOrigin: "50% 50%" }}
     >
-      {/* highlight - transparent, only side bars */}
-      <div className="absolute left-2 right-2 md:left-3 md:right-3 top-1/2 -translate-y-1/2 h-[56px] rounded-[14px] bg-transparent border border-transparent pointer-events-none z-10">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full shadow-[0_0_8px_#ffdf00]" />
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full shadow-[0_0_8px_#11ffba]" />
-      </div>
+      {/* side indicators only - no background */}
+      <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full shadow-[0_0_8px_#ffdf00] pointer-events-none z-10" />
+      <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full shadow-[0_0_8px_#11ffba] pointer-events-none z-10" />
 
-      {/* fades - keep subtle but fully transparent to page bg to avoid black card illusion - now transparent */}
-      <div className="absolute inset-x-0 top-0 h-[36px] bg-gradient-to-b from-[#0a0a0a]/0 via-[#0a0a0a]/0 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-[36px] bg-gradient-to-t from-[#0a0a0a]/0 via-[#0a0a0a]/0 to-transparent z-10 pointer-events-none" />
+      {/* fades - fully transparent */}
+      <div className="absolute inset-x-0 top-0 h-[24px] bg-gradient-to-b from-transparent to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[24px] bg-gradient-to-t from-transparent to-transparent pointer-events-none z-10" />
 
       <div
         className="absolute inset-0"
@@ -346,7 +344,7 @@ function ServiceItem({
   return (
     <button
       onClick={onToggle}
-      className={`group w-full flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl transition-all duration-300 cursor-pointer select-none backdrop-blur-sm border ${
+      className={`group w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer select-none backdrop-blur-sm border ${
         checked
           ? "bg-[#242424]/90 border-[#ffdf00]/45 shadow-[0_0_12px_rgba(255,223,0,0.15)]"
           : "bg-[#1a1a1a]/70 hover:bg-[#242424]/80 border-[#2a2a2a] hover:border-[#ffdf00]/25"
@@ -392,7 +390,7 @@ function ServiceItem({
 
 function Divider({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 w-full max-w-[640px] mx-auto my-7 md:my-8">
+    <div className="flex items-center gap-3 w-full max-w-[640px] mx-auto my-3 md:my-4">
       <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333]" />
       <span className="text-[11px] md:text-[12px] font-black tracking-[0.12em] uppercase whitespace-nowrap text-[#ffdf00]">
         {label}
@@ -440,7 +438,7 @@ export default function Page() {
   return (
     <main
       suppressHydrationWarning
-      className="w-full min-h-screen flex flex-col items-center px-4 md:px-6 pb-10 pt-10 md:pt-14 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
+      className="w-full min-h-screen flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-4 md:pt-6 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
     >
       <div className="absolute inset-0 bumim-grid opacity-[0.04] pointer-events-none" />
       <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[120%] h-[70%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.09),transparent_60%)] pointer-events-none blur-[1px]" />
@@ -451,7 +449,7 @@ export default function Page() {
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col items-center">
         {/* Header row: logo + بومیم on right, title centered - same row, no header */}
-        <div className="relative w-full flex items-center justify-center min-h-[52px] md:min-h-[64px] mb-2 pt-4 md:pt-6">
+        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] mb-1">
           <h1
             className="text-[42px] md:text-[64px] font-black tracking-tight text-white text-center leading-[0.95] select-none px-[110px] md:px-[160px]"
             style={{ fontWeight: 900, letterSpacing: "-0.03em" }}
@@ -472,7 +470,7 @@ export default function Page() {
         {/* Wheels */}
         <div
           dir="ltr"
-          className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-start justify-items-center max-w-[1020px] mx-auto mt-6"
+          className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto mt-3 md:mt-4"
         >
           <div className="w-full">
             <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
@@ -488,7 +486,7 @@ export default function Page() {
         <Divider label="خدمات پایه" />
 
         <div className="w-full max-w-[860px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
             {basicServices.map((s) => (
               <ServiceItem key={s.id} service={s} checked={!!basicChecked[s.id]} onToggle={() => toggleBasic(s.id)} />
             ))}
@@ -498,7 +496,7 @@ export default function Page() {
         <Divider label="خدمات پیشرفته" />
 
         <div className="w-full max-w-[860px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
             {advancedServices.map((s) => (
               <ServiceItem key={s.id} service={s} checked={!!advChecked[s.id]} onToggle={() => toggleAdv(s.id)} />
             ))}
@@ -507,11 +505,11 @@ export default function Page() {
 
         <Divider label="مبلغ نهایی" />
 
-        <div className="w-full max-w-[560px] mx-auto flex flex-col items-center mt-2">
-          <div className="flex items-baseline gap-3 md:gap-4 justify-center mt-2 select-none">
+        <div className="w-full max-w-[560px] mx-auto flex flex-col items-center mt-1">
+          <div className="flex items-baseline gap-3 md:gap-4 justify-center mt-1 select-none">
             <span
               suppressHydrationWarning
-              className="persian-num text-[48px] md:text-[68px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
                 fontWeight: 900,
                 letterSpacing: "-0.04em",
@@ -520,7 +518,7 @@ export default function Page() {
             >
               {formattedPrice}
             </span>
-            <span className="text-[16px] md:text-[18px] font-bold text-white/80 translate-y-[-6px]">تومان</span>
+            <span className="text-[15px] md:text-[16px] font-bold text-white/80 translate-y-[-5px]">تومان</span>
           </div>
         </div>
       </div>
