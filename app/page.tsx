@@ -314,9 +314,7 @@ function WheelPicker({
                 }`}
                 style={{
                   color,
-                  textShadow: isSelected
-                    ? "0 1px 12px rgba(255,223,0,0.35), 0 0 24px rgba(17,255,186,0.22)"
-                    : "none",
+                  textShadow: "none",
                   transform: isSelected ? "translateZ(8px)" : "translateZ(0)",
                   transition: "color 300ms ease, text-shadow 400ms ease",
                 }}
@@ -496,27 +494,27 @@ export default function Page() {
           </div>
         </div>
 
-        {/* خدمات header with reset / select all — same row as title */}
+        {/* خدمات header with reset / select all — same side (left) */}
         <div className="flex items-center gap-2 md:gap-3 w-full max-w-[860px] mx-auto my-3 md:my-4">
-          <button
-            onClick={handleReset}
-            className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
-          >
-            بازنشانی
-          </button>
-
           <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
           <span className="text-[11px] md:text-[12px] font-black tracking-[0.12em] uppercase whitespace-nowrap text-[#ffdf00] px-1">
             خدمات
           </span>
           <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-l from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
-
-          <button
-            onClick={handleSelectAll}
-            className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
-          >
-            انتخاب همه
-          </button>
+          <div className="flex items-center gap-2 shrink-0" dir="ltr">
+            <button
+              onClick={handleSelectAll}
+              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+            >
+              انتخاب همه
+            </button>
+            <button
+              onClick={handleReset}
+              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+            >
+              بازنشانی
+            </button>
+          </div>
         </div>
 
         <div className="w-full max-w-[860px] mx-auto">
