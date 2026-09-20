@@ -300,9 +300,9 @@ function WheelPicker({
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* lightweight fades matching page bg #0a0a0a - pack now transparent */}
-      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent pointer-events-none z-10" />
+      {/* fades matching card bg #141414 */}
+      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#141414] via-[#141414]/70 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#141414] via-[#141414]/70 to-transparent pointer-events-none z-10" />
       {/* center highlight for selected - makes white middle item pop, iOS style */}
       <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e]/90 border border-[#2e2e2e] rounded-xl pointer-events-none z-0 backdrop-blur-sm shadow-[0_2px_12px_rgba(0,0,0,0.4)]" />
 
@@ -311,7 +311,8 @@ function WheelPicker({
         <div
           className="absolute left-0 right-0"
           style={{
-            transform: `translateY(calc(50% - 18px - ${selected * ITEM_PX}px + ${dragOffset}px))`,
+            top: "50%",
+            transform: `translateY(calc(-18px - ${selected * ITEM_PX}px + ${dragOffset}px))`,
             transition: isDragging ? "none" : "transform 520ms cubic-bezier(0.32, 0.72, 0, 1)",
           }}
         >
@@ -517,7 +518,7 @@ export default function Page() {
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
         {/* Pack centered, no outer scroll */}
         <div className="w-full flex flex-col justify-center items-center min-h-0">
-          <div className="w-full max-w-[980px] bg-transparent border-0 shadow-none backdrop-blur-none flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-2 md:p-3">
+          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {/* Pack header: logo + name top-right inside card */}
             <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
