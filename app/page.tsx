@@ -163,33 +163,28 @@ function WheelPicker({
     (e: React.WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      // normalize delta (handle line/page modes and trackpad)
       let delta = e.deltaY;
       // @ts-ignore deltaMode exists
       if (e.deltaMode === 1) delta *= ITEM_PX;
       else if (e.deltaMode === 2) delta *= 120;
 
       const now = performance.now();
-      // Apple-feel: strictly 1 item per notch, throttled — never jump 2-4 items
-      // Trackpad gives tiny deltas at high frequency → accumulate until one item threshold
-      // Mouse wheel gives ~100px per notch → counts as 1 immediately
-      const isTrackpadSmall = Math.abs(delta) < 55;
+      // iPhone alarm: ultra-controllable, never skips. 1 notch = 1 item max.
+      // Trackpad small deltas accumulate, mouse wheel big deltas count as exactly 1.
+      const isTrackpadSmall = Math.abs(delta) < 50;
       wheelAccumRef.current += delta;
 
-      const threshold = 28; // px to trigger one step (feels like iOS tick)
+      const threshold = 42; // ~1.15 items — needs deliberate push, like iOS tick resistance
       if (Math.abs(wheelAccumRef.current) < threshold) return;
 
-      // throttle: iOS picker never flies 4 items on one swipe of the mouse wheel
-      // 90-120ms between steps = deliberate, controllable, can still flick by continuous scroll
-      const minInterval = isTrackpadSmall ? 72 : 96;
+      // long throttle = lovely & precise (iOS never rushes). Hold wheel to keep scrolling.
+      const minInterval = isTrackpadSmall ? 135 : 175;
       if (now - lastWheelTimeRef.current < minInterval) return;
 
       lastWheelTimeRef.current = now;
       const dir = wheelAccumRef.current > 0 ? 1 : -1;
-      // consume exactly one threshold (keep remainder for buttery trackpad)
-      wheelAccumRef.current -= dir * threshold;
-      // clamp remainder to avoid runaway
-      if (Math.abs(wheelAccumRef.current) > threshold) wheelAccumRef.current = 0;
+      // consume all, don't keep remainder — prevents queued jumps after pause
+      wheelAccumRef.current = 0;
 
       const next = clampIdx(selected + dir);
       if (next !== selected) onSelect(next);
@@ -258,15 +253,12 @@ function WheelPicker({
       const v = velocityRef.current; // px/ms
       // base target from drag distance
       let target = Math.round(startSelectedRef.current - dy / ITEM_PX);
-      // iOS flick momentum: only if fast and recent
+      // iOS flick momentum — soft, capped. Small flick = 1, strong flick = few, never 7
       const timeSinceLastMove = performance.now() - lastTimeRef.current;
-      if (Math.abs(v) > 0.55 && timeSinceLastMove < 80) {
-        // map velocity to extra items: 0.7 px/ms ~ 1 item, cap at 7 for a strong flick
-        // negative v (up) pushes to higher index
-        let extra = Math.round(-v * 1.55);
-        extra = Math.max(Math.min(extra, 7), -7);
-        // soften small flicks
-        if (Math.abs(extra) === 1 && Math.abs(v) < 0.9) extra = v > 0 ? -1 : 1;
+      if (Math.abs(v) > 0.85 && timeSinceLastMove < 70) {
+        let extra = Math.round(-v * 0.9);
+        extra = Math.max(Math.min(extra, 4), -4);
+        if (Math.abs(extra) === 1 && Math.abs(v) < 1.15) extra = v > 0 ? -1 : 1;
         target += extra;
       }
       target = clampIdx(target);
@@ -321,7 +313,7 @@ function WheelPicker({
         style={{
           transformStyle: "preserve-3d",
           transform: `translateZ(${-radius}px) rotateX(${liveAngle}deg)`,
-          transition: isDragging ? "none" : "transform 560ms cubic-bezier(0.32, 0.72, 0, 1)",
+          transition: isDragging ? "none" : "transform 640ms cubic-bezier(0.32, 0.72, 0, 1)",
           willChange: "transform",
         }}
       >
@@ -541,20 +533,19 @@ export default function Page() {
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffdf00]/20 to-transparent pointer-events-none" />
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-[calc(100dvh-32px)]">
-        {/* Header: only logo (title moves inside pack) */}
-        <div dir="ltr" className="relative w-full flex items-center justify-start min-h-[48px] md:min-h-[56px] shrink-0">
-          <div className="flex items-center gap-2 md:gap-2.5">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/bumim-transparent.png" alt="بومیم" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-[15px] md:text-[18px] font-black tracking-tight text-white hidden sm:block">بومیم</span>
-          </div>
-        </div>
-
-        {/* Centered pack - title inside, no hero, no dividers */}
+        {/* Centered pack - logo now inside pack top-right per request */}
         <div className="flex-1 w-full flex flex-col justify-center items-center py-2 md:py-4">
           <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-6 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-4 md:gap-5">
+            {/* Pack header: logo + name top-right inside card */}
+            <div className="w-full flex justify-end items-center">
+              <div className="flex items-center gap-2 md:gap-2.5">
+                <span className="text-[13px] md:text-[15px] font-black tracking-tight text-white">بومیم</span>
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/bumim-transparent.png" alt="بومیم" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
             <h2 className="text-[26px] md:text-[32px] font-black tracking-tight text-white text-center leading-none select-none pt-5 md:pt-7 pb-0 md:pb-1" style={{ fontWeight: 900, letterSpacing: "-0.03em" }}>
               چقدر دستمزد بگیرم؟
             </h2>
