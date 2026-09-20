@@ -478,7 +478,7 @@ export default function Page() {
   const [countIdx, setCountIdx] = useState(0);
 
   const [basicChecked, setBasicChecked] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(basicServices.map((s) => [s.id, false]))
+    Object.fromEntries(basicServices.map((s) => [s.id, s.id === "rough_cut"]))
   );
   const [advChecked, setAdvChecked] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(advancedServices.map((s) => [s.id, false]))
