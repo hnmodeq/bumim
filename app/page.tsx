@@ -451,7 +451,7 @@ export default function Page() {
   return (
     <main
       suppressHydrationWarning
-      className="w-full min-h-screen flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-4 md:pt-6 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
+      className="w-full min-h-screen flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-8 md:pt-10 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
     >
       <div className="absolute inset-0 bumim-grid opacity-[0.04] pointer-events-none" />
       <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[120%] h-[70%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.09),transparent_60%)] pointer-events-none blur-[1px]" />
@@ -462,7 +462,7 @@ export default function Page() {
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col items-center">
         {/* Header row: logo + بومیم on right, title centered - same row, no header */}
-        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] mb-1">
+        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] mb-0 pt-2 md:pt-3">
           <h1
             className="text-[42px] md:text-[64px] font-black tracking-tight text-white text-center leading-[0.95] select-none px-[110px] md:px-[160px]"
             style={{ fontWeight: 900, letterSpacing: "-0.03em" }}
@@ -483,7 +483,7 @@ export default function Page() {
         {/* Wheels */}
         <div
           dir="ltr"
-          className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto mt-3 md:mt-4"
+          className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto mt-2 md:mt-3"
         >
           <div className="w-full">
             <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
