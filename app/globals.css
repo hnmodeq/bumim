@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --bumim-bg: #0a0a0a;
+  --bumim-bg-2: #141414;
+  --bumim-card: #1a1a1a;
+  --bumim-card-2: #1f1f1f;
+  --bumim-border: #2a2a2a;
+  --bumim-border-2: #333333;
+  --bumim-yellow: #ffdf00;
+  --bumim-yellow-bright: #ffdf00;
+  --bumim-yellow-light: #ffdf00;
+  --bumim-teal: #11ffba;
+  --bumim-teal-dark: #11ffba;
+  --bumim-text: #ededed;
+  --bumim-muted: #9a9a9a;
+  --bumim-white: #ffffff;
+}
+
+* {
+  font-family: var(--font-vazir), system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--bumim-bg);
+  color: var(--bumim-text);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wheel-perspective {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+.wheel-preserve {
+  transform-style: preserve-3d;
+}
+
+.bumim-grid {
+  background-image:
+    linear-gradient(rgba(255, 223, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 223, 0, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
