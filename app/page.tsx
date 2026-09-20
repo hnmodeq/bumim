@@ -300,9 +300,11 @@ function WheelPicker({
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* subtle top/bottom fade to hint scroll, lightweight */}
-      <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#141414]/90 via-[#141414]/40 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#141414]/90 via-[#141414]/40 to-transparent pointer-events-none z-10" />
+      {/* lightweight fades matching page bg #0a0a0a - pack now transparent */}
+      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent pointer-events-none z-10" />
+      {/* center highlight for selected - makes white middle item pop, iOS style */}
+      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e]/90 border border-[#2e2e2e] rounded-xl pointer-events-none z-0 backdrop-blur-sm shadow-[0_2px_12px_rgba(0,0,0,0.4)]" />
 
       {/* flat list – no preserve-3d / perspective / translateZ / rotateX / blur – 100% stable on low-end GPUs */}
       <div className="absolute inset-0 overflow-hidden">
@@ -326,25 +328,25 @@ function WheelPicker({
               opacity = 1;
               scale = 1;
             } else if (abs === 1) {
-              opacity = 0.72;
+              opacity = 0.85;
               scale = 0.96;
             } else if (abs === 2) {
-              opacity = 0.38;
+              opacity = 0.55;
               scale = 0.90;
             } else if (abs === 3) {
-              opacity = 0.20;
-              scale = 0.85;
+              opacity = 0.32;
+              scale = 0.86;
             } else {
-              opacity = 0.08;
+              opacity = 0.14;
               scale = 0.82;
             }
             if (isDragging) {
               if (absLive < 0.5) opacity = 1;
-              else if (absLive < 1.5) opacity = 0.72 - (absLive - 0.5) * 0.34;
-              else if (absLive < 2.5) opacity = 0.38 - (absLive - 1.5) * 0.18;
-              else opacity = Math.max(0.06, 0.20 - (absLive - 2.5) * 0.07);
+              else if (absLive < 1.5) opacity = 0.85 - (absLive - 0.5) * 0.30;
+              else if (absLive < 2.5) opacity = 0.55 - (absLive - 1.5) * 0.23;
+              else opacity = Math.max(0.10, 0.32 - (absLive - 2.5) * 0.08);
             }
-            const color = isSelected ? "#ffffff" : abs === 1 ? "#d6d6d6" : "#8a8a8a";
+            const color = isSelected ? "#ffffff" : abs === 1 ? "#e8e8e8" : "#9a9a9a";
             return (
               <button
                 key={opt.label}
@@ -357,6 +359,7 @@ function WheelPicker({
                   transform: `scale(${scale})`,
                   transition: isDragging ? "none" : "opacity 300ms ease, transform 320ms cubic-bezier(0.32,0.72,0,1), color 200ms ease",
                   color,
+                  textShadow: isSelected ? "0 0 10px rgba(255,255,255,0.35)" : "none",
                 }}
               >
                 <span
@@ -514,7 +517,7 @@ export default function Page() {
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
         {/* Pack centered, no outer scroll */}
         <div className="w-full flex flex-col justify-center items-center min-h-0">
-          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="w-full max-w-[980px] bg-transparent border-0 shadow-none backdrop-blur-none flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-2 md:p-3">
             {/* Pack header: logo + name top-right inside card */}
             <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
@@ -554,8 +557,8 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Price + buttons - no divider, buttons right side */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[56px]">
+            {/* Price + buttons - more breathing room per request */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[56px] pt-6 md:pt-8 pb-4 md:pb-6">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
