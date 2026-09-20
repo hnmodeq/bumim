@@ -429,6 +429,19 @@ export default function Page() {
   const toggleBasic = useCallback((id: string) => setBasicChecked((p) => ({ ...p, [id]: !p[id] })), []);
   const toggleAdv = useCallback((id: string) => setAdvChecked((p) => ({ ...p, [id]: !p[id] })), []);
 
+  const handleSelectAll = useCallback(() => {
+    setBasicChecked(Object.fromEntries(basicServices.map((s) => [s.id, true])));
+    setAdvChecked(Object.fromEntries(advancedServices.map((s) => [s.id, true])));
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setTypeIdx(0);
+    setDurationIdx(0);
+    setCountIdx(0);
+    setBasicChecked(Object.fromEntries(basicServices.map((s) => [s.id, false])));
+    setAdvChecked(Object.fromEntries(advancedServices.map((s) => [s.id, false])));
+  }, []);
+
   const formattedPrice = useMemo(() => {
     const latin = price.total.toLocaleString("en-US");
     const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
@@ -483,23 +496,37 @@ export default function Page() {
           </div>
         </div>
 
-        <Divider label="خدمات پایه" />
+        {/* خدمات header with reset / select all — same row as title */}
+        <div className="flex items-center gap-2 md:gap-3 w-full max-w-[860px] mx-auto my-3 md:my-4">
+          <button
+            onClick={handleReset}
+            className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+          >
+            بازنشانی
+          </button>
 
-        <div className="w-full max-w-[860px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            {basicServices.map((s) => (
-              <ServiceItem key={s.id} service={s} checked={!!basicChecked[s.id]} onToggle={() => toggleBasic(s.id)} />
-            ))}
-          </div>
+          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
+          <span className="text-[11px] md:text-[12px] font-black tracking-[0.12em] uppercase whitespace-nowrap text-[#ffdf00] px-1">
+            خدمات
+          </span>
+          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-l from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
+
+          <button
+            onClick={handleSelectAll}
+            className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+          >
+            انتخاب همه
+          </button>
         </div>
 
-        <Divider label="خدمات پیشرفته" />
-
         <div className="w-full max-w-[860px] mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            {advancedServices.map((s) => (
-              <ServiceItem key={s.id} service={s} checked={!!advChecked[s.id]} onToggle={() => toggleAdv(s.id)} />
-            ))}
+            {[...basicServices, ...advancedServices].map((s) => {
+              const isBasic = basicServices.some((b) => b.id === s.id);
+              const checked = isBasic ? !!basicChecked[s.id] : !!advChecked[s.id];
+              const onToggle = isBasic ? () => toggleBasic(s.id) : () => toggleAdv(s.id);
+              return <ServiceItem key={s.id} service={s} checked={checked} onToggle={onToggle} />;
+            })}
           </div>
         </div>
 
