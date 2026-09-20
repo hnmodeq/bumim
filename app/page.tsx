@@ -533,22 +533,22 @@ export default function Page() {
               چقدر دستمزد بگیرم؟
             </h2>
 
-            {/* Wheels */}
-            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto">
-              <div className="w-full">
+            {/* Wheels - horizontal swipe on mobile to save vertical space, grid on desktop */}
+            <div dir="ltr" className="w-full flex md:grid md:grid-cols-3 gap-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-2 md:pb-0 scrollbar-hide scroll-smooth max-w-[1020px] mx-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
                 <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
               </div>
-              <div className="w-full">
+              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
                 <WheelPicker ariaLabel="مدت زمان" options={durationOptions} selected={durationIdx} onSelect={setDurationIdx} />
               </div>
-              <div className="w-full">
+              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
                 <WheelPicker ariaLabel="نوع پروژه" options={typeOptions} selected={typeIdx} onSelect={setTypeIdx} />
               </div>
             </div>
 
             {/* Services - no title */}
             <div className="w-full max-w-[860px] mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {[...basicServices, ...advancedServices].map((s) => {
                   const isBasic = basicServices.some((b) => b.id === s.id);
                   const checked = isBasic ? !!basicChecked[s.id] : !!advChecked[s.id];
@@ -559,7 +559,7 @@ export default function Page() {
             </div>
 
             {/* Price + buttons - more breathing room per request */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[56px] pt-6 md:pt-8 pb-4 md:pb-6">
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[64px] pt-8 md:pt-8 pb-6 md:pb-6">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
@@ -577,13 +577,13 @@ export default function Page() {
               <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
                 <button
                   onClick={handleSelectAll}
-                  className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+                  className="shrink-0 px-4 py-2.5 md:px-4 md:py-2 rounded-lg text-[12px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
                 >
                   انتخاب همه
                 </button>
                 <button
                   onClick={handleReset}
-                  className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+                  className="shrink-0 px-4 py-2.5 md:px-4 md:py-2 rounded-lg text-[12px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
                 >
                   بازنشانی
                 </button>
