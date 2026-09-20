@@ -134,7 +134,8 @@ function WheelPicker({
   const isDragging = useRef(false);
   const startY = useRef(0);
   const startSelected = useRef(selected);
-  const wheelThrottle = useRef<number | null>(null);
+  const lastWheelTime = useRef(0);
+  const wheelAccum = useRef(0);
 
   const anglePerItem = 22;
   const radius = 115;
@@ -143,13 +144,33 @@ function WheelPicker({
     (e: React.WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (wheelThrottle.current) return;
-      const dir = e.deltaY > 0 ? 1 : -1;
-      const next = Math.min(Math.max(selected + dir, 0), options.length - 1);
+      const now = Date.now();
+      const delta = e.deltaY;
+      const absDelta = Math.abs(delta);
+      const timeDelta = now - lastWheelTime.current;
+      lastWheelTime.current = now;
+
+      // speed-sensitive steps: larger delta or faster repeat = more steps
+      let steps = 1;
+      if (absDelta > 120) steps = 3;
+      else if (absDelta > 80) steps = 2;
+      else if (absDelta > 40) steps = 1;
+      else steps = 1;
+
+      // accelerate if scrolling rapidly (small time gap)
+      if (timeDelta < 80 && absDelta > 30) steps = Math.min(steps + 1, 4);
+      if (timeDelta < 40 && absDelta > 20) steps = Math.min(steps + 1, 4);
+
+      // accumulate small trackpad deltas
+      wheelAccum.current += delta;
+      if (Math.abs(wheelAccum.current) < 18) return;
+      // if accumulated is big, allow steps proportionally
+      if (Math.abs(wheelAccum.current) > 80) steps = Math.max(steps, 2);
+      wheelAccum.current = 0;
+
+      const dir = delta > 0 ? 1 : -1;
+      const next = Math.min(Math.max(selected + dir * steps, 0), options.length - 1);
       if (next !== selected) onSelect(next);
-      wheelThrottle.current = window.setTimeout(() => {
-        wheelThrottle.current = null;
-      }, 140) as unknown as number;
     },
     [selected, onSelect, options.length]
   );
@@ -253,7 +274,7 @@ function WheelPicker({
         style={{
           transformStyle: "preserve-3d",
           transform: `translateZ(${-radius}px) rotateX(${selected * anglePerItem}deg)`,
-          transition: "transform 680ms cubic-bezier(0.23, 1, 0.32, 1)",
+          transition: "transform 420ms cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "transform",
         }}
       >
@@ -300,7 +321,7 @@ function WheelPicker({
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 transition:
-                  "opacity 520ms cubic-bezier(0.23,1,0.32,1), transform 520ms cubic-bezier(0.23,1,0.32,1), filter 520ms ease, color 300ms ease",
+                  "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1), filter 300ms ease, color 200ms ease",
                 willChange: "transform, opacity",
               }}
             >
@@ -449,7 +470,7 @@ export default function Page() {
   return (
     <main
       suppressHydrationWarning
-      className="w-full min-h-screen flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-8 md:pt-10 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
+      className="w-full min-h-[100dvh] flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-6 md:pt-8 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
     >
       <div className="absolute inset-0 bumim-grid opacity-[0.04] pointer-events-none" />
       <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[120%] h-[70%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.09),transparent_60%)] pointer-events-none blur-[1px]" />
@@ -458,9 +479,9 @@ export default function Page() {
       <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[40%] bg-[radial-gradient(ellipse_at_center,_rgba(17,255,186,0.06),transparent_70%)] pointer-events-none" />
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffdf00]/20 to-transparent pointer-events-none" />
 
-      <div className="relative w-full max-w-[980px] mx-auto flex flex-col items-center">
-        {/* Header row: logo + بومیم on right, title centered - same row, no header */}
-        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] mb-0 pt-2 md:pt-3">
+      <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-[calc(100dvh-32px)]">
+        {/* Header row: logo + بومیم on right, title centered - stays at top (not centered) */}
+        <div className="relative w-full flex items-center justify-center min-h-[48px] md:min-h-[56px] shrink-0">
           <h1
             className="text-[42px] md:text-[64px] font-black tracking-tight text-white text-center leading-[0.95] select-none px-[110px] md:px-[160px]"
             style={{ fontWeight: 900, letterSpacing: "-0.03em" }}
@@ -478,11 +499,13 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Wheels */}
-        <div
-          dir="ltr"
-          className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto mt-2 md:mt-3"
-        >
+        {/* Centered content - vertically centered, horizontally centered */}
+        <div className="flex-1 w-full flex flex-col justify-center items-center py-2 md:py-4">
+          {/* Wheels */}
+          <div
+            dir="ltr"
+            className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto"
+          >
           <div className="w-full">
             <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
           </div>
@@ -494,27 +517,12 @@ export default function Page() {
           </div>
         </div>
 
-        {/* خدمات header with reset / select all — same side (left) */}
-        <div className="flex items-center gap-2 md:gap-3 w-full max-w-[860px] mx-auto my-3 md:my-4">
-          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
+        <div className="flex items-center gap-3 w-full max-w-[860px] mx-auto my-3 md:my-4">
+          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-r from-transparent via-[#2a2a2a] to-[#333333]" />
           <span className="text-[11px] md:text-[12px] font-black tracking-[0.12em] uppercase whitespace-nowrap text-[#ffdf00] px-1">
             خدمات
           </span>
-          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-l from-transparent via-[#2a2a2a] to-[#333333] hidden sm:block" />
-          <div className="flex items-center gap-2 shrink-0" dir="ltr">
-            <button
-              onClick={handleSelectAll}
-              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
-            >
-              انتخاب همه
-            </button>
-            <button
-              onClick={handleReset}
-              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
-            >
-              بازنشانی
-            </button>
-          </div>
+          <div className="h-[1.5px] flex-1 rounded-full bg-gradient-to-l from-transparent via-[#2a2a2a] to-[#333333]" />
         </div>
 
         <div className="w-full max-w-[860px] mx-auto">
@@ -530,8 +538,8 @@ export default function Page() {
 
         <Divider label="مبلغ نهایی" />
 
-        <div className="w-full max-w-[560px] mx-auto flex flex-col items-center mt-1">
-          <div className="flex items-baseline gap-3 md:gap-4 justify-center mt-1 select-none">
+        <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 mt-1 min-h-[56px]">
+          <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
             <span
               suppressHydrationWarning
               className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -545,6 +553,21 @@ export default function Page() {
             </span>
             <span className="text-[15px] md:text-[16px] font-bold text-white/80 translate-y-[-5px]">تومان</span>
           </div>
+          <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
+            <button
+              onClick={handleSelectAll}
+              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+            >
+              انتخاب همه
+            </button>
+            <button
+              onClick={handleReset}
+              className="shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-[11px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+            >
+              بازنشانی
+            </button>
+          </div>
+        </div>
         </div>
       </div>
     </main>
