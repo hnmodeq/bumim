@@ -537,7 +537,7 @@ export default function Page() {
         <div className="w-full flex flex-col justify-center items-center min-h-0">
           <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {/* Pack header: logo + name top-right inside card */}
-            <div className="w-full flex justify-end items-center">
+            <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
                 <span className="text-[13px] md:text-[15px] font-black tracking-tight text-white">بومیم</span>
                 <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] bg-[#0a0a0a]">
