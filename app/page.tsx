@@ -346,7 +346,11 @@ function ServiceItem({
   return (
     <button
       onClick={onToggle}
-      className="group w-full flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl bg-[#1a1a1a]/70 hover:bg-[#242424]/80 border border-[#2a2a2a] hover:border-[#ffdf00]/25 transition-all duration-300 cursor-pointer select-none backdrop-blur-sm"
+      className={`group w-full flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl transition-all duration-300 cursor-pointer select-none backdrop-blur-sm border ${
+        checked
+          ? "bg-[#242424]/90 border-[#ffdf00]/45 shadow-[0_0_12px_rgba(255,223,0,0.15)]"
+          : "bg-[#1a1a1a]/70 hover:bg-[#242424]/80 border-[#2a2a2a] hover:border-[#ffdf00]/25"
+      }`}
     >
       <span
         className={`text-[13px] md:text-[14px] font-bold transition-colors duration-300 text-right flex-1 ${
@@ -358,7 +362,7 @@ function ServiceItem({
 
       <span
         className={`relative inline-flex items-center justify-center w-[20px] h-[20px] md:w-[22px] md:h-[22px] rounded-[6px] border-[1.8px] transition-all duration-300 shrink-0
-        ${checked ? "bg-[#ffdf00] border-[#ffdf00] shadow-[0_0_12px_rgba(255,223,0,0.45)]" : "bg-transparent border-[#2a2a2a] group-hover:border-[#11ffba]/40"}
+        ${checked ? "bg-[#ffdf00] border-[#ffdf00] shadow-[0_0_12px_rgba(255,223,0,0.45)]" : "bg-transparent border-[#2a2a2a] group-hover:border-[#ffdf00]/50"}
         `}
       >
         {checked && (
