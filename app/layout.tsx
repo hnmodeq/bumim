@@ -32,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl" className={`${vazir.variable} ${mono.variable}`}>
-      <body className="min-h-screen bg-[#0a0a0a] text-[#ededed] antialiased overflow-x-hidden">
+      <body className="h-[100dvh] h-[100svh] overflow-hidden bg-[#0a0a0a] text-[#ededed] antialiased overscroll-none">
         {children}
       </body>
     </html>

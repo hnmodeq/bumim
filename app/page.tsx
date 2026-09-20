@@ -523,7 +523,7 @@ export default function Page() {
   return (
     <main
       suppressHydrationWarning
-      className="w-full min-h-[100dvh] flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-6 md:pt-8 bg-[#0a0a0a] relative overflow-hidden selection:bg-[#ffdf00]/30"
+      className="w-full h-[100dvh] h-[100svh] overflow-hidden flex flex-col items-center justify-center px-4 md:px-6 py-3 md:py-4 bg-[#0a0a0a] relative selection:bg-[#ffdf00]/30"
     >
       <div className="absolute inset-0 bumim-grid opacity-[0.04] pointer-events-none" />
       <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[120%] h-[70%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.09),transparent_60%)] pointer-events-none blur-[1px]" />
@@ -532,10 +532,10 @@ export default function Page() {
       <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[40%] bg-[radial-gradient(ellipse_at_center,_rgba(17,255,186,0.06),transparent_70%)] pointer-events-none" />
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffdf00]/20 to-transparent pointer-events-none" />
 
-      <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-[calc(100dvh-32px)]">
-        {/* Centered pack - logo now inside pack top-right per request */}
-        <div className="flex-1 w-full flex flex-col justify-center items-center py-2 md:py-4">
-          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-6 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-4 md:gap-5">
+      <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
+        {/* Pack centered, no outer scroll */}
+        <div className="w-full flex flex-col justify-center items-center min-h-0">
+          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {/* Pack header: logo + name top-right inside card */}
             <div className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
