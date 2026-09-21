@@ -568,37 +568,516 @@ export default function Page() {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      // wait for fonts to be ready for perfect Persian
       // @ts-ignore
       if (document.fonts?.ready) await document.fonts.ready;
-      await new Promise((r) => setTimeout(r, 120));
-      const el = invoiceRef.current;
-      if (!el) throw new Error("invoice not found");
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        logging: false,
-        windowWidth: el.scrollWidth,
-        windowHeight: el.scrollHeight,
-      });
-      const imgData = canvas.toDataURL("image/png");
+      await new Promise((r) => setTimeout(r, 80));
+
+      // Load Vazir fonts for copyable Persian text
+      async function loadFont(url: string): Promise<string> {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`font fetch failed ${url}`);
+        const buf = await res.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let binary = "";
+        const chunk = 8192;
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode(...Array.from(bytes.subarray(i, i + chunk)));
+        }
+        return btoa(binary);
+      }
+
+      const [{ jsPDF }] = await Promise.all([import("jspdf")]);
+
+      // Try to load Vazir, fallback to helvetica if fails
+      let vazirRegularBase64: string | null = null;
+      let vazirBoldBase64: string | null = null;
+      try {
+        [vazirRegularBase64, vazirBoldBase64] = await Promise.all([
+          loadFont("/fonts/Vazirmatn-Regular.ttf"),
+          loadFont("/fonts/Vazirmatn-Bold.ttf"),
+        ]);
+      } catch (e) {
+        console.warn("Vazir font load failed, fallback to helvetica", e);
+      }
+
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const maxW = pdfW - margin * 2;
-      const maxH = pdfH - margin * 2;
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-      const ratio = Math.min(maxW / imgW, maxH / imgH);
-      const renderW = imgW * ratio;
-      const renderH = imgH * ratio;
-      const x = (pdfW - renderW) / 2;
-      const y = margin;
-      pdf.addImage(imgData, "PNG", x, y, renderW, renderH);
-      const fileName = `pishfactor-${invoiceNumber}.pdf`;
+      const pdfW = pdf.internal.pageSize.getWidth(); // 595.28
+      const pdfH = pdf.internal.pageSize.getHeight(); // 841.89
+      const margin = 32;
+
+      if (vazirRegularBase64 && vazirBoldBase64) {
+        pdf.addFileToVFS("Vazirmatn-Regular.ttf", vazirRegularBase64);
+        pdf.addFont("Vazirmatn-Regular.ttf", "Vazirmatn", "normal");
+        pdf.addFileToVFS("Vazirmatn-Bold.ttf", vazirBoldBase64);
+        pdf.addFont("Vazirmatn-Bold.ttf", "Vazirmatn", "bold");
+        pdf.setFont("Vazirmatn", "normal");
+      } else {
+        pdf.setFont("helvetica", "normal");
+      }
+
+      // Helpers
+      const toFaPrice = (n: number) => toPersianPrice(n);
+      const toFaNum = (n: number | string) => toPersianNumber(typeof n === "string" ? parseInt(n) || 0 : n);
+
+      // Determine items to print
+      const itemsToPrint = invoiceItems.length
+        ? invoiceItems
+        : [
+            {
+              id: "single",
+              typeLabel: typeOptions[typeIdx].label,
+              durationLabel: durationOptions[durationIdx].label,
+              countLabel: countOptions[countIdx].label,
+              services: selectedServices,
+              subtotal: price.subtotal,
+              totalPercent: price.totalPercent,
+              total: price.total,
+            } as any,
+          ];
+
+      // --- Header (dark) ---
+      pdf.setFillColor("#0a0a0a");
+      pdf.rect(0, 0, pdfW, 78, "F");
+
+      // Seller logo if exists
+      let logoAdded = false;
+      if (sellerLogo) {
+        try {
+          // sellerLogo is dataURL
+          pdf.addImage(sellerLogo, "PNG", margin, 18, 42, 42, undefined, "FAST");
+          logoAdded = true;
+        } catch {}
+      }
+      if (!logoAdded) {
+        pdf.setFillColor("#ffdf00");
+        // @ts-ignore rounded rect
+        const r = 10;
+        const x = margin;
+        const y = 18;
+        // simple rect with rounded corners via roundedRect if available
+        // fallback to rect
+        try {
+          // @ts-ignore
+          pdf.roundedRect(x, y, 42, 42, r, r, "F");
+        } catch {
+          pdf.rect(x, y, 42, 42, "F");
+        }
+        pdf.setFont("Vazirmatn", "bold");
+        pdf.setFontSize(18);
+        pdf.setTextColor("#0a0a0a");
+        const initial = (sellerInfo.brand || sellerInfo.name || "ب").charAt(0);
+        pdf.text(initial, x + 21, y + 27, { align: "center" });
+      }
+
+      // Seller info left of logo
+      const sellerX = margin + 52;
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(12);
+      pdf.setTextColor("#ffffff");
+      const sellerTitle = sellerInfo.brand || sellerInfo.name || "نام برند شما";
+      pdf.text(sellerTitle, sellerX, 30, { align: "left" } as any);
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor("#9a9a9a");
+      const sellerContact = [sellerInfo.phone, sellerInfo.email].filter(Boolean).join("  •  ") || "شماره تماس  •  ایمیل";
+      if (sellerContact) pdf.text(sellerContact, sellerX, 42, { align: "left" } as any);
+      pdf.setFontSize(7);
+      pdf.setTextColor("#666");
+      pdf.text(invoiceDateFa, sellerX, 54, { align: "left" } as any);
+
+      // Title on right
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(18);
+      pdf.setTextColor("#ffdf00");
+      pdf.text("پیش فاکتور", pdfW - margin, 32, { align: "right" } as any);
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(8);
+      pdf.setTextColor("#9a9a9a");
+      pdf.text("صورتحساب خدمات تدوین ویدیو", pdfW - margin, 46, { align: "right" } as any);
+      pdf.setFontSize(7);
+      pdf.setTextColor("#666");
+      pdf.setFont("helvetica", "normal");
+      pdf.text(invoiceNumber, pdfW - margin, 60, { align: "right" } as any);
+      pdf.setFont("Vazirmatn", "normal");
+
+      // Info bar below header
+      let y = 96;
+      pdf.setFontSize(8);
+      pdf.setTextColor("#666");
+      pdf.setFont("Vazirmatn", "normal");
+      // Use helvetica for invoice number to keep ltr
+      const infoY = y;
+      // Right to left: شماره ... تاریخ ... 
+      // We'll draw 3 columns: شماره (right), تاریخ (center), تعداد آیتم (left) - minimal
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setTextColor("#666");
+      pdf.text("شماره:", pdfW - margin - 120, infoY, { align: "right" } as any);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#0a0a0a");
+      pdf.setFontSize(8);
+      pdf.text(invoiceNumber, pdfW - margin - 122, infoY, { align: "right" } as any);
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(8);
+      pdf.setTextColor("#666");
+      pdf.text("تاریخ:", pdfW / 2 + 30, infoY, { align: "right" } as any);
+      pdf.setTextColor("#0a0a0a");
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.text(invoiceDateFa, pdfW / 2 + 28, infoY, { align: "right" } as any);
+      // left side - تعداد
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setTextColor("#666");
+      pdf.text("تعداد آیتم:", margin + 70, infoY, { align: "right" } as any);
+      pdf.setTextColor("#0a0a0a");
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.text(toFaNum(itemsToPrint.length), margin + 68, infoY, { align: "right" } as any);
+
+      y = infoY + 10;
+      pdf.setDrawColor("#eeeeee");
+      pdf.setLineWidth(0.6);
+      pdf.line(margin, y, pdfW - margin, y);
+      y += 16;
+
+      // Seller / Buyer boxes
+      const boxH = 62;
+      const boxW = (pdfW - margin * 2 - 10) / 2;
+      const boxR = 10;
+      // Seller box (right)
+      const sellerBoxX = pdfW - margin - boxW;
+      const buyerBoxX = margin;
+      // Seller
+      pdf.setFillColor("#f8f8f8");
+      pdf.setDrawColor("#eeeeee");
+      try {
+        // @ts-ignore
+        pdf.roundedRect(sellerBoxX, y, boxW, boxH, boxR, boxR, "FD");
+        // @ts-ignore
+        pdf.roundedRect(buyerBoxX, y, boxW, boxH, boxR, boxR, "FD");
+      } catch {
+        pdf.rect(sellerBoxX, y, boxW, boxH, "FD");
+        pdf.rect(buyerBoxX, y, boxW, boxH, "FD");
+      }
+      // Seller label
+      pdf.setFillColor("#0a0a0a");
+      // small badge
+      pdf.setFontSize(6.5);
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setTextColor("#ffdf00");
+      // badge bg
+      const badgeW = 48;
+      const badgeH = 14;
+      const badgeX = sellerBoxX + boxW - badgeW - 8;
+      const badgeY = y + 8;
+      try {
+        // @ts-ignore
+        pdf.roundedRect(badgeX, badgeY, badgeW, badgeH, 4, 4, "F");
+      } catch {
+        pdf.rect(badgeX, badgeY, badgeW, badgeH, "F");
+      }
+      pdf.text("فروشنده", badgeX + badgeW / 2, badgeY + 9.5, { align: "center" } as any);
+      pdf.setTextColor("#0a0a0a");
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(9);
+      pdf.text(sellerInfo.name || "نام شما", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
+      if (sellerInfo.brand) {
+        pdf.setFont("Vazirmatn", "normal");
+        pdf.setFontSize(8);
+        pdf.setTextColor("#333");
+        pdf.text(sellerInfo.brand, sellerBoxX + boxW - 10, y + 44, { align: "right" } as any);
+      }
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(7);
+      pdf.setTextColor("#666");
+      pdf.text(sellerInfo.phone || "شماره تماس ثبت نشده", sellerBoxX + boxW - 10, y + 54, { align: "right" } as any);
+      if (sellerInfo.email) {
+        pdf.text(sellerInfo.email, sellerBoxX + boxW - 10, y + 62 - (sellerInfo.brand ? 0 : 8), { align: "right" } as any);
+      }
+
+      // Buyer label
+      pdf.setFillColor("#11c69a");
+      const bBadgeX = buyerBoxX + boxW - 48 - 8;
+      try {
+        // @ts-ignore
+        pdf.roundedRect(bBadgeX, badgeY, 48, 14, 4, 4, "F");
+      } catch {
+        pdf.rect(bBadgeX, badgeY, 48, 14, "F");
+      }
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(6.5);
+      pdf.setTextColor("#ffffff");
+      pdf.text("خریدار", bBadgeX + 24, badgeY + 9.5, { align: "center" } as any);
+      pdf.setTextColor("#0a0a0a");
+      pdf.setFontSize(9);
+      pdf.text(buyerInfo.name || "نام مشتری", buyerBoxX + boxW - 10, y + 32, { align: "right" } as any);
+      if (buyerInfo.company) {
+        pdf.setFont("Vazirmatn", "normal");
+        pdf.setFontSize(8);
+        pdf.setTextColor("#333");
+        pdf.text(buyerInfo.company, buyerBoxX + boxW - 10, y + 44, { align: "right" } as any);
+      }
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(7);
+      pdf.setTextColor("#666");
+      pdf.text(buyerInfo.phone || "شماره مشتری", buyerBoxX + boxW - 10, y + 54, { align: "right" } as any);
+      if (buyerInfo.email) {
+        pdf.text(buyerInfo.email, buyerBoxX + boxW - 10, y + 62 - (buyerInfo.company ? 0 : 8), { align: "right" } as any);
+      }
+
+      y += boxH + 18;
+
+      // Items table
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(9);
+      pdf.setTextColor("#0a0a0a");
+      pdf.text("ریز آیتم ها", pdfW - margin, y, { align: "right" } as any);
+      y += 10;
+
+      // Table header
+      const colW = {
+        row: 38,
+        desc: pdfW - margin * 2 - 38 - 56 - 110,
+        count: 56,
+        amount: 110,
+      };
+      const tableX = margin;
+      const headerH = 22;
+      pdf.setFillColor("#0a0a0a");
+      pdf.rect(tableX, y, pdfW - margin * 2, headerH, "F");
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor("#ffffff");
+      const hx = tableX;
+      pdf.text("ردیف", hx + colW.row / 2, y + 14, { align: "center" } as any);
+      pdf.text("شرح پروژه", hx + colW.row + colW.desc / 2, y + 14, { align: "center" } as any);
+      pdf.text("تعداد", hx + colW.row + colW.desc + colW.count / 2, y + 14, { align: "center" } as any);
+      pdf.text("مبلغ (تومان)", hx + colW.row + colW.desc + colW.count + colW.amount / 2, y + 14, { align: "center" } as any);
+      y += headerH;
+
+      // Rows
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(7.5);
+      const rowHPadding = 6;
+      const maxTableY = pdfH - 160; // reserve for summary + footer
+      for (let i = 0; i < itemsToPrint.length; i++) {
+        const it: any = itemsToPrint[i];
+        // Check page break
+        if (y > maxTableY) {
+          pdf.addPage();
+          y = 32;
+        }
+        const servicesText = it.services?.length
+          ? it.services.map((s: any) => `${s.label} (+${toFaNum(s.percent)}%)`).join("، ")
+          : "بدون خدمات اضافی";
+        const title = `${it.typeLabel} • ${it.durationLabel} • ${it.countLabel}`;
+        // Estimate row height based on services text length
+        pdf.setFont("Vazirmatn", "bold");
+        const titleLines = pdf.splitTextToSize(title, colW.desc - 12);
+        pdf.setFont("Vazirmatn", "normal");
+        const svcLines = pdf.splitTextToSize(servicesText, colW.desc - 12);
+        const lines = 1 + svcLines.length;
+        const rowH = Math.max(28, 14 + lines * 9 + rowHPadding);
+
+        if (y + rowH > pdfH - 100) {
+          pdf.addPage();
+          y = 32;
+        }
+
+        // Row bg
+        if (i % 2 === 1) {
+          pdf.setFillColor("#f9f9f9");
+          pdf.rect(tableX, y, pdfW - margin * 2, rowH, "F");
+        }
+        pdf.setDrawColor("#eeeeee");
+        pdf.setLineWidth(0.4);
+        pdf.rect(tableX, y, pdfW - margin * 2, rowH, "S");
+
+        // Vertical dividers
+        const c1 = tableX + colW.row;
+        const c2 = c1 + colW.desc;
+        const c3 = c2 + colW.count;
+        pdf.line(c1, y, c1, y + rowH);
+        pdf.line(c2, y, c2, y + rowH);
+        pdf.line(c3, y, c3, y + rowH);
+
+        // Row content
+        pdf.setTextColor("#0a0a0a");
+        pdf.setFont("Vazirmatn", "bold");
+        pdf.setFontSize(7.5);
+        pdf.text(toFaNum(i + 1), tableX + colW.row / 2, y + 14, { align: "center" } as any);
+
+        // desc - title right aligned
+        pdf.setFontSize(7.5);
+        pdf.text(title, c1 + colW.desc - 6, y + 12, { align: "right" } as any);
+        pdf.setFont("Vazirmatn", "normal");
+        pdf.setFontSize(6.5);
+        pdf.setTextColor("#777");
+        // services - may be multiple lines
+        let sy = y + 22;
+        for (const line of svcLines) {
+          pdf.text(line, c1 + colW.desc - 6, sy, { align: "right" } as any);
+          sy += 8;
+        }
+
+        // count
+        pdf.setFont("Vazirmatn", "bold");
+        pdf.setFontSize(8);
+        pdf.setTextColor("#0a0a0a");
+        const cntNum = it.countLabel ? it.countLabel.replace(/[^0-9]/g, "") || "1" : "1";
+        pdf.text(toFaNum(parseInt(cntNum)), c2 + colW.count / 2, y + rowH / 2 + 2.5, { align: "center" } as any);
+
+        // amount
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(8);
+        pdf.setTextColor("#0a0a0a");
+        // use Vazir for Persian price but keep helvetica for numbers? Use Vazir
+        pdf.setFont("Vazirmatn", "bold");
+        pdf.text(toFaPrice(it.total), c3 + colW.amount / 2, y + rowH / 2 + 2.5, { align: "center" } as any);
+
+        y += rowH;
+      }
+
+      // Summary box (right aligned)
+      const summaryW = 220;
+      const summaryX = pdfW - margin - summaryW;
+      // ensure space
+      if (y + 72 > pdfH - 60) {
+        pdf.addPage();
+        y = 32;
+      }
+      y += 12;
+      // Box
+      pdf.setDrawColor("#eeeeee");
+      pdf.setFillColor("#ffffff");
+      const summaryH = 56;
+      try {
+        // @ts-ignore
+        pdf.roundedRect(summaryX, y, summaryW, summaryH, 8, 8, "FD");
+      } catch {
+        pdf.rect(summaryX, y, summaryW, summaryH, "FD");
+      }
+      // inner dividers
+      pdf.setDrawColor("#f0f0f0");
+      pdf.line(summaryX, y + 18, summaryX + summaryW, y + 18);
+      pdf.line(summaryX, y + 36, summaryX + summaryW, y + 36);
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor("#666");
+      pdf.text("جمع پایه", summaryX + 12, y + 12, { align: "left" } as any);
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setTextColor("#0a0a0a");
+      pdf.text(toFaPrice(invoiceSubtotal) + " تومان", summaryX + summaryW - 12, y + 12, { align: "right" } as any);
+
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setTextColor("#666");
+      pdf.text("میانگین افزایش", summaryX + 12, y + 30, { align: "left" } as any);
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setTextColor("#d68a00");
+      pdf.text(`+${toFaNum(invoiceAvgPercent)}%`, summaryX + summaryW - 12, y + 30, { align: "right" } as any);
+
+      // Total bar
+      pdf.setFillColor("#ffdf00");
+      try {
+        // @ts-ignore - fill bottom part
+        pdf.roundedRect(summaryX, y + 36, summaryW, 20, 0, 0, "F");
+        // need to clip corners bottom only - simple rect for now
+        pdf.rect(summaryX, y + 36, summaryW, 20, "F");
+        // redraw border
+        pdf.setDrawColor("#eeeeee");
+        pdf.rect(summaryX, y, summaryW, summaryH, "S");
+      } catch {
+        pdf.setFillColor("#ffdf00");
+        pdf.rect(summaryX, y + 36, summaryW, 20, "F");
+      }
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(8.5);
+      pdf.setTextColor("#0a0a0a");
+      pdf.text("مبلغ قابل پرداخت", summaryX + 12, y + 49, { align: "left" } as any);
+      pdf.text(toFaPrice(invoiceTotal) + " تومان", summaryX + summaryW - 12, y + 49, { align: "right" } as any);
+
+      y += summaryH + 10;
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(6.5);
+      pdf.setTextColor("#888");
+      pdf.text("قیمت‌ها به تومان • جمع کل " + toFaNum(itemsToPrint.length) + " پروژه با احتساب کلیه خدمات", summaryX + summaryW / 2, y, { align: "center" } as any);
+
+      y += 18;
+      pdf.setDrawColor("#eeeeee");
+      pdf.line(margin, y, pdfW - margin, y);
+      y += 12;
+
+      // Notes - minimal
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor("#0a0a0a");
+      pdf.text("توضیحات:", pdfW - margin, y, { align: "right" } as any);
+      y += 10;
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(6.5);
+      pdf.setTextColor("#777");
+      const notes = [
+        "این پیش فاکتور صرفا برآورد اولیه است و قیمت نهایی پس از بررسی دقیق فایل ها تایید می شود.",
+        "اعتبار این پیش فاکتور ۷ روز از تاریخ صدور می باشد.",
+        "پرداخت ۵۰٪ پیش پرداخت جهت شروع پروژه الزامی است.",
+      ];
+      for (const note of notes) {
+        const lines = pdf.splitTextToSize("• " + note, pdfW - margin * 2);
+        for (const line of lines) {
+          pdf.text(line, pdfW - margin, y, { align: "right" } as any);
+          y += 8;
+        }
+      }
+
+      y += 8;
+      pdf.setDrawColor("#e5e5e5");
+      pdf.setLineDashPattern([3, 3], 0);
+      pdf.line(margin, y, pdfW - margin, y);
+      pdf.setLineDashPattern([], 0);
+      y += 12;
+
+      // Footer - Powered by bumim with logo + link
+      const footerY = y;
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(7);
+      pdf.setTextColor("#999");
+      // Try to add bumim logo
+      try {
+        const logoRes = await fetch("/bumim-transparent.png");
+        if (logoRes.ok) {
+          const logoBuf = await logoRes.arrayBuffer();
+          const logoBytes = new Uint8Array(logoBuf);
+          let binary = "";
+          for (let i = 0; i < logoBytes.length; i += 4096) {
+            binary += String.fromCharCode(...Array.from(logoBytes.subarray(i, i + 4096)));
+          }
+          const logoBase64 = btoa(binary);
+          // png
+          pdf.addImage("data:image/png;base64," + logoBase64, "PNG", margin, footerY - 4, 18, 18);
+        }
+      } catch {}
+      pdf.text("قدرت گرفته از", margin + 22, footerY + 6, { align: "left" } as any);
+      // Bumim link
+      const bumimText = "بومیم";
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setTextColor("#0a0a0a");
+      const bumimX = margin + 22 + pdf.getTextWidth("قدرت گرفته از ") + 2;
+      pdf.text(bumimText, bumimX, footerY + 6, { align: "left" } as any);
+      // link rect
+      const tw = pdf.getTextWidth(bumimText);
+      // @ts-ignore
+      pdf.link(bumimX, footerY - 2, tw, 10, { url: "https://bumims.ir" });
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(6);
+      pdf.setTextColor("#999");
+      pdf.text("bumim.ir", margin + 22, footerY + 14, { align: "left" } as any);
+
+      pdf.setFont("Vazirmatn", "normal");
+      pdf.setFontSize(6.5);
+      pdf.setTextColor("#bbb");
+      pdf.text("با تشکر از اعتماد شما", pdfW / 2, footerY + 10, { align: "center" } as any);
+
+      // File name Farsi with customer name
+      const customerName = buyerInfo.name || buyerInfo.company || "مشتری";
+      const safeCustomer = customerName.replace(/[\/*?:"<>|]/g, "");
+      const fileName = `پیش فاکتور برای ${safeCustomer} - ${invoiceNumber}.pdf`;
       pdf.save(fileName);
     } catch (e) {
       console.error("PDF export failed, fallback to print", e);
@@ -628,7 +1107,7 @@ export default function Page() {
     } finally {
       setIsExporting(false);
     }
-  }, [isExporting, price, invoiceNumber]);
+  }, [isExporting, price, invoiceNumber, invoiceDateFa, sellerInfo, buyerInfo, sellerLogo, invoiceItems, invoiceTotal, invoiceSubtotal, invoiceAvgPercent, typeIdx, durationIdx, countIdx, selectedServices]);
 
   const formattedPrice = useMemo(() => {
     const latin = price.total.toLocaleString("en-US");
