@@ -479,126 +479,94 @@ export default function Page() {
   }, []);
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const invoiceRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  const invoiceNumber = useMemo(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const rnd = Math.floor(1000 + Math.random() * 9000);
+    return `BUM-${y}${m}${day}-${rnd}`;
+  }, []);
+
+  const invoiceDateFa = useMemo(() => {
+    try {
+      return new Date().toLocaleDateString("fa-IR", { year: "numeric", month: "long", day: "numeric" });
+    } catch {
+      return new Date().toLocaleDateString("fa-IR");
+    }
+  }, []);
+
+  const selectedServices = useMemo(() => {
+    const all = [...basicServices, ...advancedServices];
+    return all.filter((s) => (basicServices.some((b) => b.id === s.id) ? basicChecked[s.id] : advChecked[s.id]));
+  }, [basicChecked, advChecked]);
 
   const handleExportPDF = useCallback(async () => {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      const el = cardRef.current;
-      if (!el) throw new Error("card not found");
-
-      // Try high-quality raster export via html2canvas + jsPDF (preserves Persian rendering perfectly)
-      try {
-        const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-          import("html2canvas"),
-          import("jspdf"),
-        ]);
-        const canvas = await html2canvas(el, {
-          scale: 2,
-          backgroundColor: "#141414",
-          useCORS: true,
-          logging: false,
-          windowWidth: el.scrollWidth,
-          windowHeight: el.scrollHeight,
-          // @ts-ignore - html2canvas types miss ignoreElements
-          ignoreElements: (element: Element) => element.getAttribute("data-html2canvas-ignore") === "true",
-        });
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: "a4",
-        });
-        const pdfW = pdf.internal.pageSize.getWidth();
-        const pdfH = pdf.internal.pageSize.getHeight();
-        const margin = 16;
-        const maxW = pdfW - margin * 2;
-        const maxH = pdfH - margin * 2;
-        const imgW = canvas.width;
-        const imgH = canvas.height;
-        const ratio = Math.min(maxW / imgW, maxH / imgH);
-        const renderW = imgW * ratio;
-        const renderH = imgH * ratio;
-        const x = (pdfW - renderW) / 2;
-        const y = margin;
-        pdf.addImage(imgData, "PNG", x, y, renderW, renderH);
-
-        // footer with date
-        const now = new Date();
-        const dateStr = now.toLocaleDateString("fa-IR");
-        pdf.setFontSize(8);
-        pdf.setTextColor("#888888");
-        pdf.text(`بومیم • ${dateStr} • bumim.ir`, pdfW / 2, pdfH - 10, { align: "center" });
-
-        const fileName = `bumim-${typeOptions[typeIdx].label}-${price.total}.pdf`;
-        pdf.save(fileName);
-        setIsExporting(false);
-        return;
-      } catch (e) {
-        console.warn("html2canvas/jsPDF failed, fallback to text PDF", e);
-      }
-
-      // Fallback: text-based PDF (no image) — works even if html2canvas fails
-      const { jsPDF } = await import("jspdf");
+      // Primary: capture hidden پیش‌فاکتور invoice (proper design, perfect Persian via raster)
+      const el = invoiceRef.current;
+      if (!el) throw new Error("invoice not found");
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        logging: false,
+        windowWidth: el.scrollWidth,
+        windowHeight: el.scrollHeight,
+      });
+      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const pdfW = pdf.internal.pageSize.getWidth();
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(18);
-      pdf.setTextColor("#111111");
-      pdf.text("Bumim - Estimate", pdfW / 2, 40, { align: "center" });
-      pdf.setFontSize(11);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor("#333333");
-      let y = 70;
-      const line = (label: string, value: string) => {
-        pdf.setFont("helvetica", "bold");
-        pdf.text(label + ":", 40, y);
-        pdf.setFont("helvetica", "normal");
-        pdf.text(value, 140, y);
-        y += 18;
-      };
-      line("Project", typeOptions[typeIdx].label);
-      line("Duration", durationOptions[durationIdx].label);
-      line("Count", countOptions[countIdx].label);
-      line("Price", `${price.total.toLocaleString("en-US")} Toman`);
-      y += 6;
-      pdf.setFont("helvetica", "bold");
-      pdf.text("Services:", 40, y);
-      y += 16;
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(9);
-      const allServices = [...basicServices, ...advancedServices];
-      const selected = allServices.filter((s) =>
-        basicServices.some((b) => b.id === s.id) ? basicChecked[s.id] : advChecked[s.id]
-      );
-      if (selected.length === 0) {
-        pdf.text("(none)", 40, y);
-        y += 14;
-      } else {
-        for (const s of selected) {
-          pdf.text(`- ${s.label} (+${s.percent}%)`, 48, y);
-          y += 13;
-          if (y > 780) {
-            pdf.addPage();
-            y = 40;
-          }
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const margin = 12;
+      const maxW = pdfW - margin * 2;
+      const maxH = pdfH - margin * 2;
+      const imgW = canvas.width;
+      const imgH = canvas.height;
+      const ratio = Math.min(maxW / imgW, maxH / imgH);
+      const renderW = imgW * ratio;
+      const renderH = imgH * ratio;
+      const x = (pdfW - renderW) / 2;
+      const y = margin;
+      pdf.addImage(imgData, "PNG", x, y, renderW, renderH);
+      const fileName = `pishfactor-bumim-${invoiceNumber}.pdf`;
+      pdf.save(fileName);
+    } catch (e) {
+      console.error("PDF export failed, fallback to print", e);
+      // Fallback: try card capture
+      try {
+        const fallbackEl = cardRef.current;
+        if (fallbackEl) {
+          const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
+          const canvas = await html2canvas(fallbackEl, { scale: 2, backgroundColor: "#141414", useCORS: true, logging: false });
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+          const pdfW = pdf.internal.pageSize.getWidth();
+          const pdfH = pdf.internal.pageSize.getHeight();
+          const margin = 12;
+          const maxW = pdfW - margin * 2;
+          const maxH = pdfH - margin * 2;
+          const imgW = canvas.width;
+          const imgH = canvas.height;
+          const ratio = Math.min(maxW / imgW, maxH / imgH);
+          const renderW = imgW * ratio;
+          const renderH = imgH * ratio;
+          pdf.addImage(imgData, "PNG", (pdfW - renderW) / 2, margin, renderW, renderH);
+          pdf.save(`bumim-${price.total}.pdf`);
+          return;
         }
-      }
-      y += 10;
-      pdf.setFontSize(13);
-      pdf.setFont("helvetica", "bold");
-      pdf.setTextColor("#111111");
-      pdf.text(`Total: ${price.total.toLocaleString("en-US")} Toman`, pdfW / 2, y, { align: "center" });
-      pdf.save(`bumim-${price.total}.pdf`);
-    } catch (err) {
-      console.error(err);
-      // ultimate fallback: print dialog
+      } catch {}
       window.print();
     } finally {
       setIsExporting(false);
     }
-  }, [isExporting, typeIdx, durationIdx, countIdx, price, basicChecked, advChecked]);
+  }, [isExporting, price, invoiceNumber]);
 
   const formattedPrice = useMemo(() => {
     const latin = price.total.toLocaleString("en-US");
@@ -607,10 +575,11 @@ export default function Page() {
   }, [price.total]);
 
   return (
-    <main
-      suppressHydrationWarning
-      className="w-full h-[100dvh] h-[100svh] overflow-hidden flex flex-col items-center justify-center px-4 md:px-6 py-3 md:py-4 bg-[#0a0a0a] relative selection:bg-[#ffdf00]/30"
-    >
+    <>
+      <main
+        suppressHydrationWarning
+        className="w-full h-[100dvh] h-[100svh] overflow-hidden flex flex-col items-center justify-center px-4 md:px-6 py-3 md:py-4 bg-[#0a0a0a] relative selection:bg-[#ffdf00]/30"
+      >
       {/* lightweight: no radial blur layers on budget phones */}
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
@@ -712,6 +681,180 @@ export default function Page() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+
+      {/* Hidden پیش‌فاکتور invoice - perfect Persian, captured via html2canvas -> jsPDF */}
+      <div
+        ref={invoiceRef}
+        dir="rtl"
+        style={{
+          position: "fixed",
+          left: "-9999px",
+          top: 0,
+          width: "794px",
+          background: "#ffffff",
+          color: "#0a0a0a",
+          fontFamily: "var(--font-vazir), Tahoma, sans-serif",
+          direction: "rtl",
+          overflow: "hidden",
+        }}
+        aria-hidden
+      >
+        <div style={{ background: "#0a0a0a", color: "#ffffff", padding: "28px 36px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ textAlign: "right" as const }}>
+            <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffdf00", letterSpacing: "-0.02em" }}>پیش‌فاکتور</div>
+            <div style={{ fontSize: "11px", color: "#9a9a9a", marginTop: "4px" }}>برآورد دستمزد تدوین ویدیو</div>
+            <div style={{ fontSize: "9px", color: "#666", marginTop: "8px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{invoiceNumber}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ textAlign: "left" as const }}>
+              <div style={{ fontSize: "15px", fontWeight: 900, color: "#ffffff" }}>بومیم</div>
+              <div style={{ fontSize: "10px", color: "#9a9a9a", fontFamily: "monospace", letterSpacing: "0.04em" }}>bumim.ir</div>
+              <div style={{ fontSize: "9px", color: "#888", marginTop: "2px" }}>{invoiceDateFa}</div>
+            </div>
+            <div
+              style={{
+                width: "42px",
+                height: "42px",
+                background: "#ffdf00",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 900,
+                color: "#0a0a0a",
+                fontSize: "18px",
+                flexShrink: 0,
+              }}
+            >
+              ب
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding: "22px 32px 16px", background: "#ffffff" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "11px",
+              color: "#666",
+              borderBottom: "1px solid #eeeeee",
+              paddingBottom: "14px",
+              gap: "12px",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              شماره:{" "}
+              <span style={{ fontWeight: 700, color: "#0a0a0a", fontFamily: "monospace", direction: "ltr", display: "inline-block" }}>{invoiceNumber}</span>
+            </div>
+            <div>
+              تاریخ: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>{invoiceDateFa}</span>
+            </div>
+            <div>
+              اعتبار: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>۷ روز</span>
+            </div>
+            <div>
+              مشتری: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>کاربر گرامی</span>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "18px", background: "#f8f8f8", border: "1px solid #eeeeee", borderRadius: "16px", padding: "16px 18px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 900, marginBottom: "12px", color: "#0a0a0a" }}>مشخصات پروژه</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", fontSize: "12px" }}>
+              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
+                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>نوع پروژه</div>
+                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{typeOptions[typeIdx].label}</div>
+              </div>
+              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
+                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>مدت زمان</div>
+                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{durationOptions[durationIdx].label}</div>
+              </div>
+              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
+                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>تعداد ویدیو</div>
+                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{countOptions[countIdx].label}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "18px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 900, marginBottom: "8px", color: "#0a0a0a" }}>ریز خدمات انتخابی</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11.5px", border: "1px solid #eeeeee", borderRadius: "12px", overflow: "hidden" }}>
+              <thead>
+                <tr style={{ background: "#0a0a0a", color: "#ffffff" }}>
+                  <th style={{ padding: "11px 8px", textAlign: "center", width: "48px", fontWeight: 800, fontSize: "11px" }}>ردیف</th>
+                  <th style={{ padding: "11px 12px", textAlign: "right", fontWeight: 800, fontSize: "11px" }}>شرح خدمت</th>
+                  <th style={{ padding: "11px 8px", textAlign: "center", width: "88px", fontWeight: 800, fontSize: "11px" }}>درصد</th>
+                  <th style={{ padding: "11px 12px", textAlign: "center", width: "140px", fontWeight: 800, fontSize: "11px" }}>مبلغ (تومان)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedServices.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} style={{ padding: "18px", textAlign: "center", color: "#999", fontSize: "11px" }}>
+                      خدماتی انتخاب نشده — فقط مبلغ پایه محاسبه شده
+                    </td>
+                  </tr>
+                ) : (
+                  selectedServices.map((s, i) => {
+                    const rowPrice = Math.round(price.subtotal * (s.percent / 100));
+                    return (
+                      <tr key={s.id} style={{ background: i % 2 === 0 ? "#ffffff" : "#f9f9f9", borderTop: "1px solid #eeeeee" }}>
+                        <td style={{ padding: "10px 8px", textAlign: "center", color: "#0a0a0a", fontWeight: 700 }}>{toPersianNumber(i + 1)}</td>
+                        <td style={{ padding: "10px 12px", textAlign: "right", color: "#1a1a1a", fontWeight: 700 }}>{s.label}</td>
+                        <td style={{ padding: "10px 8px", textAlign: "center", color: "#d68a00", fontWeight: 800, fontFamily: "monospace" }}>{`+${toPersianNumber(s.percent)}%`}</td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", color: "#0a0a0a", fontWeight: 700, fontFamily: "monospace" }}>{toPersianPrice(rowPrice)}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ width: "340px", border: "1px solid #eeeeee", borderRadius: "14px", overflow: "hidden", background: "#ffffff" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "11px 16px", fontSize: "12px", borderBottom: "1px solid #f0f0f0" }}>
+                <span style={{ color: "#666" }}>مبلغ پایه</span>
+                <span style={{ fontWeight: 800, color: "#0a0a0a", fontFamily: "monospace" }}>{toPersianPrice(price.subtotal)} تومان</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "11px 16px", fontSize: "12px", borderBottom: "1px solid #f0f0f0" }}>
+                <span style={{ color: "#666" }}>مجموع افزایش خدمات</span>
+                <span style={{ fontWeight: 800, color: "#d68a00", fontFamily: "monospace" }}>{`+${toPersianNumber(price.totalPercent)}%`}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 16px", background: "#ffdf00", fontSize: "13px", fontWeight: 900, color: "#0a0a0a" }}>
+                <span>مبلغ قابل پرداخت</span>
+                <span style={{ fontFamily: "monospace" }}>{formattedPrice} تومان</span>
+              </div>
+              <div style={{ padding: "8px 16px", fontSize: "9px", color: "#888", textAlign: "center", background: "#fffde7", borderTop: "1px solid #ffec99" }}>
+                قیمت‌ها به تومان و با احتساب کلیه خدمات انتخابی می‌باشد
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "20px", fontSize: "10px", color: "#777", lineHeight: 1.8, borderTop: "1px solid #eeeeee", paddingTop: "14px" }}>
+            <div style={{ fontWeight: 800, color: "#0a0a0a", marginBottom: "6px", fontSize: "11px" }}>توضیحات:</div>
+            <div>• این پیش‌فاکتور صرفاً برآورد اولیه است و قیمت نهایی پس از بررسی دقیق فایل‌ها و جزئیات پروژه تأیید می‌شود.</div>
+            <div>• اعتبار این پیش‌فاکتور ۷ روز از تاریخ صدور می‌باشد.</div>
+            <div>• پرداخت ۵۰٪ پیش‌پرداخت جهت شروع پروژه الزامی است و مابقی پس از تحویل تسویه می‌گردد.</div>
+            <div>• هرگونه خدمات خارج از لیست فوق، به صورت جداگانه محاسبه خواهد شد.</div>
+          </div>
+
+          <div style={{ marginTop: "18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed #e5e5e5", paddingTop: "14px" }}>
+            <div style={{ fontSize: "10px", color: "#999" }}>
+              <div>بومیم — bumim.ir</div>
+              <div style={{ fontFamily: "monospace", fontSize: "9px", marginTop: "2px" }}>support@bumim.ir</div>
+            </div>
+            <div style={{ textAlign: "center" as const }}>
+              <div style={{ fontSize: "10px", color: "#aaa" }}>امضا و مهر</div>
+              <div style={{ marginTop: "22px", width: "140px", borderTop: "1px solid #ccc" }} />
+            </div>
+          </div>
+
+          <div style={{ marginTop: "14px", textAlign: "center", fontSize: "10px", color: "#bbb" }}>با تشکر از اعتماد شما — بومیم</div>
+        </div>
+      </div>
+    </>
   );
 }
