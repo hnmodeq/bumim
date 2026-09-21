@@ -482,6 +482,11 @@ export default function Page() {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Seller / Buyer info (standard)
+  const [sellerInfo, setSellerInfo] = useState({ name: "", brand: "", phone: "", email: "" });
+  const [buyerInfo, setBuyerInfo] = useState({ name: "", company: "", phone: "", email: "" });
+  const [sellerLogo, setSellerLogo] = useState<string | null>(null);
+
   const invoiceNumber = useMemo(() => {
     const d = new Date();
     const y = d.getFullYear();
@@ -504,11 +509,69 @@ export default function Page() {
     return all.filter((s) => (basicServices.some((b) => b.id === s.id) ? basicChecked[s.id] : advChecked[s.id]));
   }, [basicChecked, advChecked]);
 
+  // Multi-project invoice items (add_button flow)
+  type InvoiceItem = {
+    id: string;
+    typeLabel: string;
+    durationLabel: string;
+    countLabel: string;
+    services: Service[];
+    subtotal: number;
+    totalPercent: number;
+    total: number;
+  };
+  const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
+
+  const handleAddToInvoice = useCallback(() => {
+    const item: InvoiceItem = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      typeLabel: typeOptions[typeIdx].label,
+      durationLabel: durationOptions[durationIdx].label,
+      countLabel: countOptions[countIdx].label,
+      services: [...selectedServices],
+      subtotal: price.subtotal,
+      totalPercent: price.totalPercent,
+      total: price.total,
+    };
+    setInvoiceItems((prev) => [...prev, item]);
+  }, [typeIdx, durationIdx, countIdx, selectedServices, price]);
+
+  const handleRemoveItem = useCallback((id: string) => {
+    setInvoiceItems((prev) => prev.filter((x) => x.id !== id));
+  }, []);
+
+  const invoiceTotal = useMemo(() => {
+    if (invoiceItems.length === 0) return price.total;
+    return invoiceItems.reduce((sum, it) => sum + it.total, 0);
+  }, [invoiceItems, price.total]);
+
+  const invoiceSubtotal = useMemo(() => {
+    if (invoiceItems.length === 0) return price.subtotal;
+    return invoiceItems.reduce((sum, it) => sum + it.subtotal, 0);
+  }, [invoiceItems, price.subtotal]);
+
+  const invoiceAvgPercent = useMemo(() => {
+    if (invoiceItems.length === 0) return price.totalPercent;
+    const avg = invoiceItems.reduce((s, it) => s + it.totalPercent, 0) / invoiceItems.length;
+    return Math.round(avg);
+  }, [invoiceItems, price.totalPercent]);
+
+  const handleLogoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => setSellerLogo(reader.result as string);
+    reader.readAsDataURL(f);
+  }, []);
+
   const handleExportPDF = useCallback(async () => {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      // Primary: capture hidden پیش‌فاکتور invoice (proper design, perfect Persian via raster)
+      // wait for fonts to be ready for perfect Persian
+      // @ts-ignore
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise((r) => setTimeout(r, 120));
       const el = invoiceRef.current;
       if (!el) throw new Error("invoice not found");
       const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
@@ -524,7 +587,7 @@ export default function Page() {
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const pdfW = pdf.internal.pageSize.getWidth();
       const pdfH = pdf.internal.pageSize.getHeight();
-      const margin = 12;
+      const margin = 10;
       const maxW = pdfW - margin * 2;
       const maxH = pdfH - margin * 2;
       const imgW = canvas.width;
@@ -535,11 +598,10 @@ export default function Page() {
       const x = (pdfW - renderW) / 2;
       const y = margin;
       pdf.addImage(imgData, "PNG", x, y, renderW, renderH);
-      const fileName = `pishfactor-bumim-${invoiceNumber}.pdf`;
+      const fileName = `pishfactor-${invoiceNumber}.pdf`;
       pdf.save(fileName);
     } catch (e) {
       console.error("PDF export failed, fallback to print", e);
-      // Fallback: try card capture
       try {
         const fallbackEl = cardRef.current;
         if (fallbackEl) {
@@ -653,12 +715,77 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Export PDF - big primary button below price - excluded from PDF capture */}
+            {/* Add to invoice - for multi-project */}
+            <button
+              onClick={handleAddToInvoice}
+              className="w-full max-w-[860px] mx-auto flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-xl border-2 border-[#ffdf00] bg-transparent hover:bg-[#ffdf00]/10 text-[#ffdf00] text-[13px] md:text-[14px] font-black tracking-tight transition-all duration-200 mt-3"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              افزودن این پروژه به فاکتور ({formattedPrice} تومان)
+            </button>
+
+            {/* Seller / Buyer info - standard */}
+            <div className="w-full max-w-[860px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4">
+                <div className="text-[12px] font-black text-[#ffdf00] mb-3 tracking-wide">فروشنده (شما)</div>
+                <div className="space-y-2.5">
+                  <input value={sellerInfo.name} onChange={(e)=>setSellerInfo(s=>({...s, name:e.target.value}))} placeholder="نام و نام خانوادگی *" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50" />
+                  <input value={sellerInfo.brand} onChange={(e)=>setSellerInfo(s=>({...s, brand:e.target.value}))} placeholder="نام برند / شرکت (اختیاری)" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50" />
+                  <input value={sellerInfo.phone} onChange={(e)=>setSellerInfo(s=>({...s, phone:e.target.value}))} placeholder="شماره تماس" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50 text-left" />
+                  <input value={sellerInfo.email} onChange={(e)=>setSellerInfo(s=>({...s, email:e.target.value}))} placeholder="ایمیل" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50 text-left" />
+                  <label className="flex items-center gap-2 text-[11px] text-[#9a9a9a] cursor-pointer hover:text-white">
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" id="logo-upload" />
+                    <span className="px-3 py-1.5 rounded-lg bg-[#242424] border border-[#2a2a2a] text-[11px] font-bold">آپلود لوگو</span>
+                    <span className="truncate">{sellerLogo ? "لوگو انتخاب شد ✓" : "اختیاری — در فاکتور نمایش داده می‌شود"}</span>
+                  </label>
+                  {sellerLogo && <img src={sellerLogo} alt="logo" className="w-12 h-12 rounded-xl object-cover border border-[#2a2a2a]" />}
+                </div>
+              </div>
+              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4">
+                <div className="text-[12px] font-black text-[#11ffba] mb-3 tracking-wide">خریدار (مشتری)</div>
+                <div className="space-y-2.5">
+                  <input value={buyerInfo.name} onChange={(e)=>setBuyerInfo(s=>({...s, name:e.target.value}))} placeholder="نام و نام خانوادگی مشتری *" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50" />
+                  <input value={buyerInfo.company} onChange={(e)=>setBuyerInfo(s=>({...s, company:e.target.value}))} placeholder="نام شرکت / مجموعه (اختیاری)" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50" />
+                  <input value={buyerInfo.phone} onChange={(e)=>setBuyerInfo(s=>({...s, phone:e.target.value}))} placeholder="شماره تماس مشتری" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50 text-left" />
+                  <input value={buyerInfo.email} onChange={(e)=>setBuyerInfo(s=>({...s, email:e.target.value}))} placeholder="ایمیل مشتری" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50 text-left" />
+                </div>
+              </div>
+            </div>
+
+            {/* Invoice items preview */}
+            {invoiceItems.length > 0 && (
+              <div className="w-full max-w-[860px] mx-auto mt-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[12px] font-black text-white">آیتم‌های فاکتور ({toPersianNumber(invoiceItems.length)})</span>
+                  <button onClick={()=>setInvoiceItems([])} className="text-[11px] text-[#ff5555] hover:text-[#ff7777] font-bold">حذف همه</button>
+                </div>
+                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                  {invoiceItems.map((it, idx)=>(
+                    <div key={it.id} className="flex items-center gap-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3 py-2.5">
+                      <span className="text-[11px] font-mono text-[#666] min-w-[18px]">{toPersianNumber(idx+1)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[12px] font-bold text-white truncate">{it.typeLabel} • {it.durationLabel} • {it.countLabel}</div>
+                        <div className="text-[10px] text-[#9a9a9a] truncate">{it.services.length ? it.services.map(s=>s.label).join("، ") : "بدون خدمات اضافی"} • {`+${toPersianNumber(it.totalPercent)}%`}</div>
+                      </div>
+                      <span className="text-[12px] font-black text-[#ffdf00] whitespace-nowrap">{toPersianPrice(it.total)} ت</span>
+                      <button onClick={()=>handleRemoveItem(it.id)} className="w-7 h-7 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] text-[#9a9a9a] hover:text-[#ff5555] hover:border-[#ff5555]/30 flex items-center justify-center">×</button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 pt-3 border-t border-[#2a2a2a] flex items-center justify-between">
+                  <span className="text-[12px] font-bold text-[#9a9a9a]">جمع کل فاکتور</span>
+                  <span className="text-[16px] font-black text-[#ffdf00]">{toPersianPrice(invoiceTotal)} تومان</span>
+                </div>
+                <div className="text-[10px] text-[#666] mt-1">پایه: {toPersianPrice(invoiceSubtotal)} • میانگین افزایش: +{toPersianNumber(invoiceAvgPercent)}%</div>
+              </div>
+            )}
+
+            {/* Export PDF - big primary button */}
             <button
               data-html2canvas-ignore="true"
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="w-full max-w-[860px] mx-auto flex items-center justify-center gap-2.5 py-4 md:py-5 rounded-2xl bg-[#ffdf00] hover:bg-[#ffeb3b] active:bg-[#ffd600] text-[#0a0a0a] text-[14px] md:text-[15px] font-black tracking-tight shadow-[0_8px_24px_rgba(255,223,0,0.22)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mt-2 md:mt-3"
+              className="w-full max-w-[860px] mx-auto flex items-center justify-center gap-2.5 py-4 md:py-5 rounded-2xl bg-[#ffdf00] hover:bg-[#ffeb3b] active:bg-[#ffd600] text-[#0a0a0a] text-[14px] md:text-[15px] font-black tracking-tight shadow-[0_8px_24px_rgba(255,223,0,0.22)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mt-4"
             >
               {isExporting ? (
                 <span className="flex items-center gap-2">
@@ -674,7 +801,7 @@ export default function Page() {
                     <line x1="16" y1="17" x2="8" y2="17" />
                     <polyline points="10 9 9 9 8 9" />
                   </svg>
-                  خروجی PDF
+                  {invoiceItems.length ? `خروجی PDF فاکتور (${toPersianNumber(invoiceItems.length)} آیتم)` : "خروجی PDF"}
                 </>
               )}
             </button>
@@ -683,7 +810,7 @@ export default function Page() {
       </div>
       </main>
 
-      {/* Hidden پیش‌فاکتور invoice - perfect Persian, captured via html2canvas -> jsPDF */}
+      {/* Hidden پیش فاکتور invoice - professional dark_gold, seller/buyer, multi-items */}
       <div
         ref={invoiceRef}
         dir="rtl"
@@ -702,21 +829,21 @@ export default function Page() {
       >
         <div style={{ background: "#0a0a0a", color: "#ffffff", padding: "28px 36px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ textAlign: "right" as const }}>
-            <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffdf00", letterSpacing: "-0.02em" }}>پیش‌فاکتور</div>
-            <div style={{ fontSize: "11px", color: "#9a9a9a", marginTop: "4px" }}>برآورد دستمزد تدوین ویدیو</div>
+            <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffdf00", letterSpacing: "-0.02em" }}>پیش فاکتور</div>
+            <div style={{ fontSize: "11px", color: "#9a9a9a", marginTop: "4px" }}>صورتحساب خدمات تدوین ویدیو</div>
             <div style={{ fontSize: "9px", color: "#666", marginTop: "8px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{invoiceNumber}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ textAlign: "left" as const }}>
-              <div style={{ fontSize: "15px", fontWeight: 900, color: "#ffffff" }}>بومیم</div>
-              <div style={{ fontSize: "10px", color: "#9a9a9a", fontFamily: "monospace", letterSpacing: "0.04em" }}>bumim.ir</div>
+              <div style={{ fontSize: "15px", fontWeight: 900, color: "#ffffff" }}>{sellerInfo.brand || sellerInfo.name || "نام برند شما"}</div>
+              <div style={{ fontSize: "9px", color: "#9a9a9a", marginTop: "2px" }}>{sellerInfo.phone || "شماره تماس"} {sellerInfo.email ? `• ${sellerInfo.email}` : ""}</div>
               <div style={{ fontSize: "9px", color: "#888", marginTop: "2px" }}>{invoiceDateFa}</div>
             </div>
             <div
               style={{
                 width: "42px",
                 height: "42px",
-                background: "#ffdf00",
+                background: sellerLogo ? "transparent" : "#ffdf00",
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
@@ -725,9 +852,11 @@ export default function Page() {
                 color: "#0a0a0a",
                 fontSize: "18px",
                 flexShrink: 0,
+                overflow: "hidden",
+                border: sellerLogo ? "1px solid #2a2a2a" : "none",
               }}
             >
-              ب
+              {sellerLogo ? <img src={sellerLogo} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : sellerInfo.brand ? sellerInfo.brand.charAt(0) : sellerInfo.name ? sellerInfo.name.charAt(0) : "ب"}
             </div>
           </div>
         </div>
@@ -756,59 +885,54 @@ export default function Page() {
               اعتبار: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>۷ روز</span>
             </div>
             <div>
-              مشتری: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>کاربر گرامی</span>
+              تعداد آیتم: <span style={{ fontWeight: 700, color: "#0a0a0a" }}>{toPersianNumber(invoiceItems.length || 1)}</span>
             </div>
           </div>
 
-          <div style={{ marginTop: "18px", background: "#f8f8f8", border: "1px solid #eeeeee", borderRadius: "16px", padding: "16px 18px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 900, marginBottom: "12px", color: "#0a0a0a" }}>مشخصات پروژه</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", fontSize: "12px" }}>
-              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
-                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>نوع پروژه</div>
-                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{typeOptions[typeIdx].label}</div>
-              </div>
-              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
-                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>مدت زمان</div>
-                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{durationOptions[durationIdx].label}</div>
-              </div>
-              <div style={{ background: "#ffffff", border: "1px solid #eeeeee", borderRadius: "10px", padding: "10px 12px", textAlign: "right" as const }}>
-                <div style={{ color: "#888", fontSize: "10px", marginBottom: "4px" }}>تعداد ویدیو</div>
-                <div style={{ fontWeight: 800, color: "#0a0a0a", fontSize: "12px" }}>{countOptions[countIdx].label}</div>
-              </div>
+          <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div style={{ background: "#f8f8f8", border: "1px solid #eeeeee", borderRadius: "12px", padding: "12px 14px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 800, color: "#ffdf00", background: "#0a0a0a", display: "inline-block", padding: "2px 8px", borderRadius: "6px", marginBottom: "8px" }}>فروشنده</div>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{sellerInfo.name || "نام شما"}</div>
+              {sellerInfo.brand && <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{sellerInfo.brand}</div>}
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{sellerInfo.phone || "شماره تماس ثبت نشده"} </div>
+              <div style={{ fontSize: "11px", color: "#666", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{sellerInfo.email || "ایمیل ثبت نشده"}</div>
+            </div>
+            <div style={{ background: "#f0faf8", border: "1px solid #d1f0e8", borderRadius: "12px", padding: "12px 14px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 800, color: "#ffffff", background: "#11c69a", display: "inline-block", padding: "2px 8px", borderRadius: "6px", marginBottom: "8px" }}>خریدار</div>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{buyerInfo.name || "نام مشتری"}</div>
+              {buyerInfo.company && <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{buyerInfo.company}</div>}
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{buyerInfo.phone || "شماره مشتری"} </div>
+              <div style={{ fontSize: "11px", color: "#666", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{buyerInfo.email || "ایمیل مشتری"}</div>
             </div>
           </div>
 
+          {(invoiceItems.length ? (
+            (() => null)()
+          ) : null)}
+          {/* Items table - multi or single */}
           <div style={{ marginTop: "18px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 900, marginBottom: "8px", color: "#0a0a0a" }}>ریز خدمات انتخابی</div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11.5px", border: "1px solid #eeeeee", borderRadius: "12px", overflow: "hidden" }}>
+            <div style={{ fontSize: "12px", fontWeight: 900, marginBottom: "8px", color: "#0a0a0a" }}>ریز آیتم ها</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px", border: "1px solid #eeeeee", borderRadius: "12px", overflow: "hidden" }}>
               <thead>
                 <tr style={{ background: "#0a0a0a", color: "#ffffff" }}>
-                  <th style={{ padding: "11px 8px", textAlign: "center", width: "48px", fontWeight: 800, fontSize: "11px" }}>ردیف</th>
-                  <th style={{ padding: "11px 12px", textAlign: "right", fontWeight: 800, fontSize: "11px" }}>شرح خدمت</th>
-                  <th style={{ padding: "11px 8px", textAlign: "center", width: "88px", fontWeight: 800, fontSize: "11px" }}>درصد</th>
-                  <th style={{ padding: "11px 12px", textAlign: "center", width: "140px", fontWeight: 800, fontSize: "11px" }}>مبلغ (تومان)</th>
+                  <th style={{ padding: "11px 8px", textAlign: "center", width: "42px", fontWeight: 800, fontSize: "11px" }}>ردیف</th>
+                  <th style={{ padding: "11px 12px", textAlign: "right", fontWeight: 800, fontSize: "11px" }}>شرح پروژه</th>
+                  <th style={{ padding: "11px 8px", textAlign: "center", width: "62px", fontWeight: 800, fontSize: "11px" }}>تعداد</th>
+                  <th style={{ padding: "11px 12px", textAlign: "center", width: "132px", fontWeight: 800, fontSize: "11px" }}>مبلغ (تومان)</th>
                 </tr>
               </thead>
               <tbody>
-                {selectedServices.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ padding: "18px", textAlign: "center", color: "#999", fontSize: "11px" }}>
-                      خدماتی انتخاب نشده — فقط مبلغ پایه محاسبه شده
+                {(invoiceItems.length ? invoiceItems : [{ id: "single", typeLabel: typeOptions[typeIdx].label, durationLabel: durationOptions[durationIdx].label, countLabel: countOptions[countIdx].label, services: selectedServices, total: price.total } as any]).map((it: any, i: number) => (
+                  <tr key={it.id} style={{ background: i % 2 === 0 ? "#ffffff" : "#f9f9f9", borderTop: "1px solid #eeeeee" }}>
+                    <td style={{ padding: "10px 8px", textAlign: "center", color: "#0a0a0a", fontWeight: 700 }}>{toPersianNumber(i + 1)}</td>
+                    <td style={{ padding: "10px 12px", textAlign: "right", color: "#1a1a1a" }}>
+                      <div style={{ fontWeight: 700, fontSize: "11.5px", color: "#0a0a0a" }}>{it.typeLabel} • {it.durationLabel} • {it.countLabel}</div>
+                      <div style={{ fontSize: "10px", color: "#888", marginTop: "3px", lineHeight: 1.5 }}>{it.services?.length ? it.services.map((s: Service) => `${s.label} (+${toPersianNumber(s.percent)}%)`).join("، ") : "بدون خدمات اضافی"}</div>
                     </td>
+                    <td style={{ padding: "10px 8px", textAlign: "center", color: "#0a0a0a", fontWeight: 700 }}>{toPersianNumber(parseInt(it.countLabel?.replace(/[^0-9]/g, "") || "1"))}</td>
+                    <td style={{ padding: "10px 12px", textAlign: "center", color: "#0a0a0a", fontWeight: 800, fontFamily: "monospace" }}>{toPersianPrice(it.total)}</td>
                   </tr>
-                ) : (
-                  selectedServices.map((s, i) => {
-                    const rowPrice = Math.round(price.subtotal * (s.percent / 100));
-                    return (
-                      <tr key={s.id} style={{ background: i % 2 === 0 ? "#ffffff" : "#f9f9f9", borderTop: "1px solid #eeeeee" }}>
-                        <td style={{ padding: "10px 8px", textAlign: "center", color: "#0a0a0a", fontWeight: 700 }}>{toPersianNumber(i + 1)}</td>
-                        <td style={{ padding: "10px 12px", textAlign: "right", color: "#1a1a1a", fontWeight: 700 }}>{s.label}</td>
-                        <td style={{ padding: "10px 8px", textAlign: "center", color: "#d68a00", fontWeight: 800, fontFamily: "monospace" }}>{`+${toPersianNumber(s.percent)}%`}</td>
-                        <td style={{ padding: "10px 12px", textAlign: "center", color: "#0a0a0a", fontWeight: 700, fontFamily: "monospace" }}>{toPersianPrice(rowPrice)}</td>
-                      </tr>
-                    );
-                  })
-                )}
+                ))}
               </tbody>
             </table>
           </div>
@@ -816,43 +940,43 @@ export default function Page() {
           <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
             <div style={{ width: "340px", border: "1px solid #eeeeee", borderRadius: "14px", overflow: "hidden", background: "#ffffff" }}>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "11px 16px", fontSize: "12px", borderBottom: "1px solid #f0f0f0" }}>
-                <span style={{ color: "#666" }}>مبلغ پایه</span>
-                <span style={{ fontWeight: 800, color: "#0a0a0a", fontFamily: "monospace" }}>{toPersianPrice(price.subtotal)} تومان</span>
+                <span style={{ color: "#666" }}>جمع پایه</span>
+                <span style={{ fontWeight: 800, color: "#0a0a0a", fontFamily: "monospace" }}>{toPersianPrice(invoiceSubtotal)} تومان</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "11px 16px", fontSize: "12px", borderBottom: "1px solid #f0f0f0" }}>
-                <span style={{ color: "#666" }}>مجموع افزایش خدمات</span>
-                <span style={{ fontWeight: 800, color: "#d68a00", fontFamily: "monospace" }}>{`+${toPersianNumber(price.totalPercent)}%`}</span>
+                <span style={{ color: "#666" }}>میانگین افزایش</span>
+                <span style={{ fontWeight: 800, color: "#d68a00", fontFamily: "monospace" }}>{`+${toPersianNumber(invoiceAvgPercent)}%`}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 16px", background: "#ffdf00", fontSize: "13px", fontWeight: 900, color: "#0a0a0a" }}>
                 <span>مبلغ قابل پرداخت</span>
-                <span style={{ fontFamily: "monospace" }}>{formattedPrice} تومان</span>
+                <span style={{ fontFamily: "monospace" }}>{toPersianPrice(invoiceTotal)} تومان</span>
               </div>
               <div style={{ padding: "8px 16px", fontSize: "9px", color: "#888", textAlign: "center", background: "#fffde7", borderTop: "1px solid #ffec99" }}>
-                قیمت‌ها به تومان و با احتساب کلیه خدمات انتخابی می‌باشد
+                قیمت‌ها به تومان • جمع کل {invoiceItems.length ? `${toPersianNumber(invoiceItems.length)} پروژه` : "یک پروژه"} با احتساب کلیه خدمات
               </div>
             </div>
           </div>
 
           <div style={{ marginTop: "20px", fontSize: "10px", color: "#777", lineHeight: 1.8, borderTop: "1px solid #eeeeee", paddingTop: "14px" }}>
             <div style={{ fontWeight: 800, color: "#0a0a0a", marginBottom: "6px", fontSize: "11px" }}>توضیحات:</div>
-            <div>• این پیش‌فاکتور صرفاً برآورد اولیه است و قیمت نهایی پس از بررسی دقیق فایل‌ها و جزئیات پروژه تأیید می‌شود.</div>
-            <div>• اعتبار این پیش‌فاکتور ۷ روز از تاریخ صدور می‌باشد.</div>
-            <div>• پرداخت ۵۰٪ پیش‌پرداخت جهت شروع پروژه الزامی است و مابقی پس از تحویل تسویه می‌گردد.</div>
-            <div>• هرگونه خدمات خارج از لیست فوق، به صورت جداگانه محاسبه خواهد شد.</div>
+            <div>• این پیش فاکتور صرفا برآورد اولیه است و قیمت نهایی پس از بررسی دقیق فایل ها و جزئیات پروژه تایید می شود.</div>
+            <div>• اعتبار این پیش فاکتور ۷ روز از تاریخ صدور می باشد.</div>
+            <div>• پرداخت ۵۰٪ پیش پرداخت جهت شروع پروژه الزامی است و مابقی پس از تحویل تسویه می گردد.</div>
+            <div>• هرگونه خدمات خارج از لیست فوق، جداگانه محاسبه خواهد شد.</div>
           </div>
 
           <div style={{ marginTop: "18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed #e5e5e5", paddingTop: "14px" }}>
             <div style={{ fontSize: "10px", color: "#999" }}>
-              <div>بومیم — bumim.ir</div>
-              <div style={{ fontFamily: "monospace", fontSize: "9px", marginTop: "2px" }}>support@bumim.ir</div>
+              <div>Powered by bumim — bumim.ir</div>
+              <div style={{ fontFamily: "monospace", fontSize: "9px", marginTop: "2px" }}>برای تدوینگران حرفه ای</div>
             </div>
             <div style={{ textAlign: "center" as const }}>
-              <div style={{ fontSize: "10px", color: "#aaa" }}>امضا و مهر</div>
+              <div style={{ fontSize: "10px", color: "#aaa" }}>امضا و مهر فروشنده</div>
               <div style={{ marginTop: "22px", width: "140px", borderTop: "1px solid #ccc" }} />
             </div>
           </div>
 
-          <div style={{ marginTop: "14px", textAlign: "center", fontSize: "10px", color: "#bbb" }}>با تشکر از اعتماد شما — بومیم</div>
+          <div style={{ marginTop: "10px", textAlign: "center", fontSize: "9px", color: "#bbb" }}>با تشکر از اعتماد شما</div>
         </div>
       </div>
     </>
