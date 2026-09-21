@@ -298,15 +298,15 @@ function WheelPicker({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[220px] md:h-[260px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden"
+      className="relative w-full h-[170px] md:h-[200px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden"
     >
       {/* simple side ticks – no shadow, no 3D, no blur – avoids GPU glitches */}
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* fades - hide 92px empty centering gap at ends */}
-      <div className="absolute inset-x-0 top-0 h-[88px] bg-gradient-to-b from-[#141414] via-[#141414] to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-[88px] bg-gradient-to-t from-[#141414] via-[#141414] to-transparent pointer-events-none z-10" />
+      {/* fades - smaller to reduce perceived empty */}
+      <div className="absolute inset-x-0 top-0 h-[56px] bg-gradient-to-b from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[56px] bg-gradient-to-t from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
       {/* center highlight - simple, no blur/shadow */}
       <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl pointer-events-none z-0" />
 
@@ -392,37 +392,33 @@ function ServiceItem({
 }) {
   return (
     <button
+      dir="ltr"
       onClick={onToggle}
-      className={`w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl cursor-pointer select-none border ${
+      className={`w-full flex items-center gap-2 py-2 px-3 rounded-xl cursor-pointer select-none border min-w-0 ${
         checked ? "bg-[#242424] border-[#ffdf00]/50" : "bg-[#1a1a1a] border-[#2a2a2a]"
       }`}
     >
-      <span
-        className={`text-[13px] md:text-[14px] font-bold text-right flex-1 ${checked ? "text-white" : "text-[#ededed]/90"}`}
-      >
-        {service.label}
+      <span className={`text-[11px] md:text-[12px] font-black tracking-tight min-w-[38px] md:min-w-[44px] text-left font-mono shrink-0 ${checked ? "text-[#ffdf00]" : "text-[#9a9a9a]/70"}`}>
+        +{toPersianNumber(service.percent)}%
       </span>
-
       <span
-        className={`relative inline-flex items-center justify-center w-[20px] h-[20px] md:w-[22px] md:h-[22px] rounded-[6px] border-[1.8px] shrink-0 ${checked ? "bg-[#ffdf00] border-[#ffdf00]" : "bg-transparent border-[#2a2a2a]"}`}
+        className={`relative inline-flex items-center justify-center w-[18px] h-[18px] md:w-[20px] md:h-[20px] rounded-[6px] border-[1.5px] shrink-0 ${checked ? "bg-[#ffdf00] border-[#ffdf00]" : "bg-transparent border-[#2a2a2a]"}`}
       >
         {checked && (
-          <svg width="14" height="14" viewBox="0 0 14 14" className="text-[#0a0a0a]">
+          <svg width="12" height="12" viewBox="0 0 14 14" className="text-[#0a0a0a]">
             <path
               d="M2.8 7 L5.6 9.8 L11.2 3.5"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth="2.4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
         )}
       </span>
-
-      <span className={`text-[12px] md:text-[13px] font-black tracking-tight min-w-[44px] text-left font-mono ${checked ? "text-[#ffdf00]" : "text-[#9a9a9a]/60"}`}
-      >
-        +{toPersianNumber(service.percent)}%
+      <span className={`flex-1 min-w-0 text-right truncate whitespace-nowrap overflow-hidden text-ellipsis text-[12px] md:text-[13px] font-bold ${checked ? "text-white" : "text-[#ededed]/90"}`}>
+        {service.label}
       </span>
     </button>
   );
@@ -513,8 +509,8 @@ export default function Page() {
               چقدر دستمزد بگیرم؟
             </h2>
 
-            {/* Wheels - stacked vertically on mobile (1 column), 3 columns on desktop */}
-            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto">
+            {/* Wheels - reduced empty space */}
+            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2 items-start justify-items-center max-w-[1020px] mx-auto">
               <div className="w-full">
                 <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
               </div>
@@ -538,8 +534,8 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Price + buttons - more breathing room per request */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-3 min-h-[64px] pt-8 md:pt-8 pb-6 md:pb-6">
+            {/* Price + buttons - more gap to checkboxes and card edge */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-4 min-h-[64px] pt-10 md:pt-10 pb-8 md:pb-8 mt-4 md:mt-6">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
