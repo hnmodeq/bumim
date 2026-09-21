@@ -298,15 +298,15 @@ function WheelPicker({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[170px] md:h-[200px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden"
+      className="relative w-full h-[140px] md:h-[180px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden"
     >
       {/* simple side ticks – no shadow, no 3D, no blur – avoids GPU glitches */}
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* fades - smaller to reduce perceived empty */}
-      <div className="absolute inset-x-0 top-0 h-[56px] bg-gradient-to-b from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-[56px] bg-gradient-to-t from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
+      {/* fades - minimal to reduce perceived empty between wheels */}
+      <div className="absolute inset-x-0 top-0 h-[36px] bg-gradient-to-b from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[36px] bg-gradient-to-t from-[#141414] via-[#141414]/80 to-transparent pointer-events-none z-10" />
       {/* center highlight - simple, no blur/shadow */}
       <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl pointer-events-none z-0" />
 
@@ -509,8 +509,8 @@ export default function Page() {
               چقدر دستمزد بگیرم؟
             </h2>
 
-            {/* Wheels - reduced empty space - tight on mobile */}
-            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-2 items-start justify-items-center max-w-[1020px] mx-auto">
+            {/* Wheels - ultra-tight on mobile - minimal gap */}
+            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-2 items-start justify-items-center max-w-[1020px] mx-auto [&>div+div]:-mt-1 md:[&>div+div]:mt-0">
               <div className="w-full">
                 <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
               </div>
@@ -534,8 +534,8 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Price + buttons - more breathing room */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-6 min-h-[64px] pt-12 md:pt-12 pb-10 md:pb-10 mt-6 md:mt-8">
+            {/* Price + buttons - extra bottom padding */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-6 min-h-[64px] pt-12 md:pt-14 pb-14 md:pb-16 mt-6 md:mt-8">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
