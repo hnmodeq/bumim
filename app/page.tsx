@@ -304,9 +304,9 @@ function WheelPicker({
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* fades - minimal */}
-      <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-[#141414] to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#141414] to-transparent pointer-events-none z-10" />
+      {/* fades - hide 92px empty centering gap at ends */}
+      <div className="absolute inset-x-0 top-0 h-[88px] bg-gradient-to-b from-[#141414] via-[#141414] to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[88px] bg-gradient-to-t from-[#141414] via-[#141414] to-transparent pointer-events-none z-10" />
       {/* center highlight - simple, no blur/shadow */}
       <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl pointer-events-none z-0" />
 
@@ -324,8 +324,6 @@ function WheelPicker({
             const liveIdx = selected - dragOffset / ITEM_PX;
             const liveDist = idx - liveIdx;
             const absLive = Math.abs(liveDist);
-            // windowing: skip far items (32 -> ~9) - huge win on low-end
-            if (absLive > 4.5 && Math.abs(idx - selected) > 4) return null;
             const roundedDist = Math.round(absLive);
             const isSelected = absLive < 0.5;
             const abs = isDragging ? roundedDist : Math.abs(idx - selected);
