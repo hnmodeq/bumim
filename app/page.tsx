@@ -674,12 +674,12 @@ export default function Page() {
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(12);
       pdf.setTextColor("#ffffff");
-      const sellerTitle = sellerInfo.brand || sellerInfo.name || "نام برند شما";
+      const sellerTitle = sellerInfo.brand || sellerInfo.name || "نام برند ویدیو ادیتور ثبت نشده";
       pdf.text(sellerTitle, sellerX, 30, { align: "left" } as any);
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7.5);
       pdf.setTextColor("#9a9a9a");
-      const sellerContact = [sellerInfo.phone, sellerInfo.email].filter(Boolean).join("  •  ") || "شماره تماس  •  ایمیل";
+      const sellerContact = sellerInfo.email || "پست الکترونیکی ویدیو ادیتور ثبت نشده";
       if (sellerContact) pdf.text(sellerContact, sellerX, 42, { align: "left" } as any);
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
@@ -693,50 +693,12 @@ export default function Page() {
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(8);
       pdf.setTextColor("#9a9a9a");
-      pdf.text("صورتحساب خدمات تدوین ویدیو", pdfW - margin, 46, { align: "right" } as any);
+      pdf.text("صورتحساب خدمات ادیت ویدیو", pdfW - margin, 46, { align: "right" } as any);
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
-      pdf.setFont("helvetica", "normal");
-      pdf.text(invoiceNumber, pdfW - margin, 60, { align: "right" } as any);
       pdf.setFont("Vazirmatn", "normal");
 
-      // Info bar below header
-      let y = 96;
-      pdf.setFontSize(8);
-      pdf.setTextColor("#666");
-      pdf.setFont("Vazirmatn", "normal");
-      // Use helvetica for invoice number to keep ltr
-      const infoY = y;
-      // Right to left: شماره ... تاریخ ... 
-      // We'll draw 3 columns: شماره (right), تاریخ (center), تعداد آیتم (left) - minimal
-      pdf.setFont("Vazirmatn", "normal");
-      pdf.setTextColor("#666");
-      pdf.text("شماره:", pdfW - margin - 120, infoY, { align: "right" } as any);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor("#0a0a0a");
-      pdf.setFontSize(8);
-      pdf.text(invoiceNumber, pdfW - margin - 122, infoY, { align: "right" } as any);
-      pdf.setFont("Vazirmatn", "normal");
-      pdf.setFontSize(8);
-      pdf.setTextColor("#666");
-      pdf.text("تاریخ:", pdfW / 2 + 30, infoY, { align: "right" } as any);
-      pdf.setTextColor("#0a0a0a");
-      pdf.setFont("Vazirmatn", "bold");
-      pdf.text(invoiceDateFa, pdfW / 2 + 28, infoY, { align: "right" } as any);
-      // left side - تعداد
-      pdf.setFont("Vazirmatn", "normal");
-      pdf.setTextColor("#666");
-      pdf.text("تعداد آیتم:", margin + 70, infoY, { align: "right" } as any);
-      pdf.setTextColor("#0a0a0a");
-      pdf.setFont("Vazirmatn", "bold");
-      pdf.text(toFaNum(itemsToPrint.length), margin + 68, infoY, { align: "right" } as any);
-
-      y = infoY + 10;
-      pdf.setDrawColor("#eeeeee");
-      pdf.setLineWidth(0.6);
-      pdf.line(margin, y, pdfW - margin, y);
-      y += 16;
-
+      let y = 90;
       // Seller / Buyer boxes
       const boxH = 62;
       const boxW = (pdfW - margin * 2 - 10) / 2;
@@ -777,7 +739,7 @@ export default function Page() {
       pdf.setTextColor("#0a0a0a");
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(9);
-      pdf.text(sellerInfo.name || "نام شما", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
+      pdf.text(sellerInfo.name || "نام ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
       if (sellerInfo.brand) {
         pdf.setFont("Vazirmatn", "normal");
         pdf.setFontSize(8);
@@ -788,7 +750,7 @@ export default function Page() {
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
       // Use Vazir for Persian fallback, keep LTR for actual phone/email but Vazir supports both
-      pdf.text(sellerInfo.phone || "شماره تماس ثبت نشده", sellerBoxX + boxW - 10, y + 54, { align: "right" } as any);
+      pdf.text(sellerInfo.phone || "تلفن تماس ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 54, { align: "right" } as any);
       if (sellerInfo.email) {
         pdf.setFont("Vazirmatn", "normal");
         pdf.text(sellerInfo.email, sellerBoxX + boxW - 10, y + 62 - (sellerInfo.brand ? 0 : 8), { align: "right" } as any);
@@ -809,7 +771,7 @@ export default function Page() {
       pdf.text("خریدار", bBadgeX + 24, badgeY + 9.5, { align: "center" } as any);
       pdf.setTextColor("#0a0a0a");
       pdf.setFontSize(9);
-      pdf.text(buyerInfo.name || "نام مشتری", buyerBoxX + boxW - 10, y + 32, { align: "right" } as any);
+      pdf.text(buyerInfo.name || "نام مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 32, { align: "right" } as any);
       if (buyerInfo.company) {
         pdf.setFont("Vazirmatn", "normal");
         pdf.setFontSize(8);
@@ -819,7 +781,7 @@ export default function Page() {
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
-      pdf.text(buyerInfo.phone || "شماره مشتری", buyerBoxX + boxW - 10, y + 54, { align: "right" } as any);
+      pdf.text(buyerInfo.phone || "تلفن تماس مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 54, { align: "right" } as any);
       if (buyerInfo.email) {
         pdf.setFont("Vazirmatn", "normal");
         pdf.text(buyerInfo.email, buyerBoxX + boxW - 10, y + 62 - (buyerInfo.company ? 0 : 8), { align: "right" } as any);
@@ -870,7 +832,38 @@ export default function Page() {
         const servicesText = it.services?.length
           ? it.services.map((s: any) => s.label).join("، ")
           : "بدون خدمات اضافی";
-        const title = `${it.typeLabel} • ${it.durationLabel} • ${it.countLabel}`;
+        // Move numbers to right side: "ثانیه ۱۰" -> "۱۰ ثانیه", "ویدیو ۱" -> "۱ ویدیو"
+        function flipNumberToFront(label: string): string {
+          const parts = label.trim().split(/\s+/);
+          if (parts.length >= 2 && /^\d+$/.test(parts[parts.length - 1].replace(/[^0-9]/g, "")) === false) {
+            // Check if last part is number (Persian or Latin)
+            const last = parts[parts.length - 1];
+            const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+            const isNumber = /^[0-9۰-۹]+$/.test(last);
+            if (!isNumber) return label;
+          }
+          // Simple: if label is like "ثانیه ۱۰" or "ویدیو ۱", move last token to front
+          const tokens = label.split(" ");
+          if (tokens.length === 2) {
+            const first = tokens[0];
+            const second = tokens[1];
+            // If second is number, flip
+            if (/^[0-9۰-۹]+$/.test(second)) {
+              return `${second} ${first}`;
+            }
+          }
+          // For "دقیقه ۱۵" etc.
+          if (label.includes(" ")) {
+            const lastSpace = label.lastIndexOf(" ");
+            const prefix = label.substring(0, lastSpace);
+            const suffix = label.substring(lastSpace + 1);
+            if (/^[0-9۰-۹]+$/.test(suffix)) {
+              return `${suffix} ${prefix}`;
+            }
+          }
+          return label;
+        }
+        const title = `${it.typeLabel} • ${flipNumberToFront(it.durationLabel)} • ${flipNumberToFront(it.countLabel)}`;
         // Estimate row height based on services text length
         pdf.setFont("Vazirmatn", "bold");
         const titleLines = pdf.splitTextToSize(title, colW.desc - 12);
@@ -947,20 +940,19 @@ export default function Page() {
         y = 32;
       }
       y += 12;
-      // Box
+      // Box (without میانگین افزایش)
       pdf.setDrawColor("#eeeeee");
       pdf.setFillColor("#ffffff");
-      const summaryH = 56;
+      const summaryH = 38;
       try {
         // @ts-ignore
         pdf.roundedRect(summaryX, y, summaryW, summaryH, 8, 8, "FD");
       } catch {
         pdf.rect(summaryX, y, summaryW, summaryH, "FD");
       }
-      // inner dividers
+      // inner divider (only one)
       pdf.setDrawColor("#f0f0f0");
       pdf.line(summaryX, y + 18, summaryX + summaryW, y + 18);
-      pdf.line(summaryX, y + 36, summaryX + summaryW, y + 36);
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7.5);
       pdf.setTextColor("#666");
@@ -969,32 +961,25 @@ export default function Page() {
       pdf.setTextColor("#0a0a0a");
       pdf.text(toFaPrice(invoiceSubtotal) + " تومان", summaryX + summaryW - 12, y + 12, { align: "right" } as any);
 
-      pdf.setFont("Vazirmatn", "normal");
-      pdf.setTextColor("#666");
-      pdf.text("میانگین افزایش", summaryX + 12, y + 30, { align: "left" } as any);
-      pdf.setFont("Vazirmatn", "bold");
-      pdf.setTextColor("#d68a00");
-      pdf.text(`+${toFaNum(invoiceAvgPercent)}%`, summaryX + summaryW - 12, y + 30, { align: "right" } as any);
+      // میانگین افزایش removed per request
 
-      // Total bar
+      // Total bar (now second row)
       pdf.setFillColor("#ffdf00");
       try {
         // @ts-ignore - fill bottom part
-        pdf.roundedRect(summaryX, y + 36, summaryW, 20, 0, 0, "F");
-        // need to clip corners bottom only - simple rect for now
-        pdf.rect(summaryX, y + 36, summaryW, 20, "F");
-        // redraw border
+        pdf.roundedRect(summaryX, y + 18, summaryW, 20, 0, 0, "F");
+        pdf.rect(summaryX, y + 18, summaryW, 20, "F");
         pdf.setDrawColor("#eeeeee");
         pdf.rect(summaryX, y, summaryW, summaryH, "S");
       } catch {
         pdf.setFillColor("#ffdf00");
-        pdf.rect(summaryX, y + 36, summaryW, 20, "F");
+        pdf.rect(summaryX, y + 18, summaryW, 20, "F");
       }
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(8.5);
       pdf.setTextColor("#0a0a0a");
-      pdf.text("مبلغ قابل پرداخت", summaryX + 12, y + 49, { align: "left" } as any);
-      pdf.text(toFaPrice(invoiceTotal) + " تومان", summaryX + summaryW - 12, y + 49, { align: "right" } as any);
+      pdf.text("مبلغ قابل پرداخت", summaryX + 12, y + 31, { align: "left" } as any);
+      pdf.text(toFaPrice(invoiceTotal) + " تومان", summaryX + summaryW - 12, y + 31, { align: "right" } as any);
 
       y += summaryH + 10;
       pdf.setFont("Vazirmatn", "normal");
@@ -1041,7 +1026,14 @@ export default function Page() {
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7);
       pdf.setTextColor("#999");
+      // Centered Powered by with logo on left of text, بومیم on left side of phrase as requested
+      // For RTL, we want "بومیم" to appear left of "قدرت گرفته از"
+      // So we draw centered as: [logo]  قدرت گرفته از بومیم
+      // To have بومیم on left, we draw the whole phrase centered and link بومیم
+      let footerLogoSize = 14;
+      let footerText = "قدرت گرفته از بومیم";
       // Try to add bumim logo
+      let logoX = 0;
       try {
         const logoRes = await fetch("/bumim-transparent.png");
         if (logoRes.ok) {
@@ -1052,30 +1044,41 @@ export default function Page() {
             binary += String.fromCharCode(...Array.from(logoBytes.subarray(i, i + 4096)));
           }
           const logoBase64 = btoa(binary);
-          // png
-          pdf.addImage("data:image/png;base64," + logoBase64, "PNG", margin, footerY - 4, 18, 18);
+          // Center logo + text: calculate total width
+          pdf.setFont("Vazirmatn", "normal");
+          pdf.setFontSize(7);
+          const textW = pdf.getTextWidth(footerText);
+          const totalW = textW + footerLogoSize + 4;
+          logoX = pdfW / 2 - totalW / 2;
+          pdf.addImage("data:image/png;base64," + logoBase64, "PNG", logoX, footerY - 3, footerLogoSize, footerLogoSize);
+          // Draw text to the right of logo
+          pdf.text(footerText, logoX + footerLogoSize + 4, footerY + 6, { align: "left" } as any);
+          // Link for "بومیم" - it's at the end (left side in RTL). For left-aligned, بومیم is at rightmost end of text?
+          // In the string "قدرت گرفته از بومیم", بومیم is the last word (leftmost visually in RTL, but in LTR string it's at end)
+          // For simplicity, link the last word position: estimate
+          const prefixW = pdf.getTextWidth("قدرت گرفته از ");
+          const bumimX2 = logoX + footerLogoSize + 4 + prefixW;
+          const bumimW = pdf.getTextWidth("بومیم");
+          // @ts-ignore
+          pdf.link(bumimX2, footerY - 2, bumimW, 10, { url: "https://bumims.ir" });
+        } else {
+          pdf.text(footerText, pdfW / 2, footerY + 6, { align: "center" } as any);
+          const textW = pdf.getTextWidth(footerText);
+          const prefixW = pdf.getTextWidth("قدرت گرفته از ");
+          const bumimX2 = pdfW / 2 - textW / 2 + prefixW;
+          const bumimW = pdf.getTextWidth("بومیم");
+          // @ts-ignore
+          pdf.link(bumimX2, footerY - 2, bumimW, 10, { url: "https://bumims.ir" });
         }
-      } catch {}
-      pdf.text("قدرت گرفته از", margin + 22, footerY + 6, { align: "left" } as any);
-      // Bumim link
-      const bumimText = "بومیم";
-      pdf.setFont("Vazirmatn", "bold");
-      pdf.setTextColor("#0a0a0a");
-      const bumimX = margin + 22 + pdf.getTextWidth("قدرت گرفته از ") + 2;
-      pdf.text(bumimText, bumimX, footerY + 6, { align: "left" } as any);
-      // link rect
-      const tw = pdf.getTextWidth(bumimText);
-      // @ts-ignore
-      pdf.link(bumimX, footerY - 2, tw, 10, { url: "https://bumims.ir" });
+      } catch {
+        pdf.text(footerText, pdfW / 2, footerY + 6, { align: "center" } as any);
+      }
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(6);
       pdf.setTextColor("#999");
-      pdf.text("bumim.ir", margin + 22, footerY + 14, { align: "left" } as any);
+      pdf.text("bumims.ir", pdfW / 2, footerY + 14, { align: "center" } as any);
 
-      pdf.setFont("Vazirmatn", "normal");
-      pdf.setFontSize(6.5);
-      pdf.setTextColor("#bbb");
-      pdf.text("با تشکر از اعتماد شما", pdfW / 2, footerY + 10, { align: "center" } as any);
+      // با تشکر removed, powered by moved to center (handled below)
 
       // File name Farsi with customer name
       const customerName = buyerInfo.name || buyerInfo.company || "مشتری";
@@ -1211,9 +1214,9 @@ export default function Page() {
               <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4">
                 <div className="text-[12px] font-black text-[#ffdf00] mb-3 tracking-wide">فروشنده (شما)</div>
                 <div className="space-y-2.5">
-                  <input value={sellerInfo.name} onChange={(e)=>setSellerInfo(s=>({...s, name:e.target.value}))} placeholder="نام و نام خانوادگی *" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50" />
+                  <input value={sellerInfo.name} onChange={(e)=>setSellerInfo(s=>({...s, name:e.target.value}))} placeholder="نام ویدیو ادیتور" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50" />
                   <input value={sellerInfo.brand} onChange={(e)=>setSellerInfo(s=>({...s, brand:e.target.value}))} placeholder="نام برند / شرکت (اختیاری)" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50" />
-                  <input value={sellerInfo.phone} onChange={(e)=>setSellerInfo(s=>({...s, phone:e.target.value}))} placeholder="شماره تماس" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50 text-left" />
+                  <input value={sellerInfo.phone} onChange={(e)=>setSellerInfo(s=>({...s, phone:e.target.value}))} placeholder="تلفن تماس ویدیو ادیتور" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50 text-left" />
                   <input value={sellerInfo.email} onChange={(e)=>setSellerInfo(s=>({...s, email:e.target.value}))} placeholder="ایمیل" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#ffdf00]/50 text-left" />
                   <label className="flex items-center gap-2 text-[11px] text-[#9a9a9a] cursor-pointer hover:text-white">
                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" id="logo-upload" />
@@ -1226,9 +1229,9 @@ export default function Page() {
               <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4">
                 <div className="text-[12px] font-black text-[#11ffba] mb-3 tracking-wide">خریدار (مشتری)</div>
                 <div className="space-y-2.5">
-                  <input value={buyerInfo.name} onChange={(e)=>setBuyerInfo(s=>({...s, name:e.target.value}))} placeholder="نام و نام خانوادگی مشتری *" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50" />
+                  <input value={buyerInfo.name} onChange={(e)=>setBuyerInfo(s=>({...s, name:e.target.value}))} placeholder="نام مشتری" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50" />
                   <input value={buyerInfo.company} onChange={(e)=>setBuyerInfo(s=>({...s, company:e.target.value}))} placeholder="نام شرکت / مجموعه (اختیاری)" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50" />
-                  <input value={buyerInfo.phone} onChange={(e)=>setBuyerInfo(s=>({...s, phone:e.target.value}))} placeholder="شماره تماس مشتری" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50 text-left" />
+                  <input value={buyerInfo.phone} onChange={(e)=>setBuyerInfo(s=>({...s, phone:e.target.value}))} placeholder="تلفن تماس مشتری" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50 text-left" />
                   <input value={buyerInfo.email} onChange={(e)=>setBuyerInfo(s=>({...s, email:e.target.value}))} placeholder="ایمیل مشتری" dir="ltr" className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-3.5 py-2.5 text-[13px] text-white placeholder:text-[#666] focus:outline-none focus:border-[#11ffba]/50 text-left" />
                 </div>
               </div>
@@ -1312,12 +1315,12 @@ export default function Page() {
         <div style={{ background: "#0a0a0a", color: "#ffffff", padding: "28px 36px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ textAlign: "right" as const }}>
             <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffdf00", letterSpacing: "-0.02em" }}>پیش فاکتور</div>
-            <div style={{ fontSize: "11px", color: "#9a9a9a", marginTop: "4px" }}>صورتحساب خدمات تدوین ویدیو</div>
+            <div style={{ fontSize: "11px", color: "#9a9a9a", marginTop: "4px" }}>صورتحساب خدمات ادیت ویدیو</div>
             <div style={{ fontSize: "9px", color: "#666", marginTop: "8px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{invoiceNumber}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ textAlign: "left" as const }}>
-              <div style={{ fontSize: "15px", fontWeight: 900, color: "#ffffff" }}>{sellerInfo.brand || sellerInfo.name || "نام برند شما"}</div>
+              <div style={{ fontSize: "15px", fontWeight: 900, color: "#ffffff" }}>{sellerInfo.brand || sellerInfo.name || "نام برند ویدیو ادیتور ثبت نشده"}</div>
               <div style={{ fontSize: "9px", color: "#9a9a9a", marginTop: "2px" }}>{sellerInfo.phone || "شماره تماس"} {sellerInfo.email ? `• ${sellerInfo.email}` : ""}</div>
               <div style={{ fontSize: "9px", color: "#888", marginTop: "2px" }}>{invoiceDateFa}</div>
             </div>
@@ -1374,16 +1377,16 @@ export default function Page() {
           <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div style={{ background: "#f8f8f8", border: "1px solid #eeeeee", borderRadius: "12px", padding: "12px 14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 800, color: "#ffdf00", background: "#0a0a0a", display: "inline-block", padding: "2px 8px", borderRadius: "6px", marginBottom: "8px" }}>فروشنده</div>
-              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{sellerInfo.name || "نام شما"}</div>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{sellerInfo.name || "نام ویدیو ادیتور ثبت نشده"}</div>
               {sellerInfo.brand && <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{sellerInfo.brand}</div>}
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{sellerInfo.phone || "شماره تماس ثبت نشده"} </div>
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{sellerInfo.phone || "تلفن تماس ویدیو ادیتور ثبت نشده"} </div>
               <div style={{ fontSize: "11px", color: "#666", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{sellerInfo.email || "ایمیل ثبت نشده"}</div>
             </div>
             <div style={{ background: "#f0faf8", border: "1px solid #d1f0e8", borderRadius: "12px", padding: "12px 14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 800, color: "#ffffff", background: "#11c69a", display: "inline-block", padding: "2px 8px", borderRadius: "6px", marginBottom: "8px" }}>خریدار</div>
-              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{buyerInfo.name || "نام مشتری"}</div>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#0a0a0a" }}>{buyerInfo.name || "نام مشتری ثبت نشده"}</div>
               {buyerInfo.company && <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{buyerInfo.company}</div>}
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{buyerInfo.phone || "شماره مشتری"} </div>
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "6px", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{buyerInfo.phone || "تلفن تماس مشتری ثبت نشده"} </div>
               <div style={{ fontSize: "11px", color: "#666", fontFamily: "monospace", direction: "ltr", textAlign: "right" as const }}>{buyerInfo.email || "ایمیل مشتری"}</div>
             </div>
           </div>
