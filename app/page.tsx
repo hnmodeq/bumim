@@ -784,11 +784,13 @@ export default function Page() {
         pdf.setTextColor("#333");
         pdf.text(sellerInfo.brand, sellerBoxX + boxW - 10, y + 44, { align: "right" } as any);
       }
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
+      // Use Vazir for Persian fallback, keep LTR for actual phone/email but Vazir supports both
       pdf.text(sellerInfo.phone || "شماره تماس ثبت نشده", sellerBoxX + boxW - 10, y + 54, { align: "right" } as any);
       if (sellerInfo.email) {
+        pdf.setFont("Vazirmatn", "normal");
         pdf.text(sellerInfo.email, sellerBoxX + boxW - 10, y + 62 - (sellerInfo.brand ? 0 : 8), { align: "right" } as any);
       }
 
@@ -814,11 +816,12 @@ export default function Page() {
         pdf.setTextColor("#333");
         pdf.text(buyerInfo.company, buyerBoxX + boxW - 10, y + 44, { align: "right" } as any);
       }
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
       pdf.text(buyerInfo.phone || "شماره مشتری", buyerBoxX + boxW - 10, y + 54, { align: "right" } as any);
       if (buyerInfo.email) {
+        pdf.setFont("Vazirmatn", "normal");
         pdf.text(buyerInfo.email, buyerBoxX + boxW - 10, y + 62 - (buyerInfo.company ? 0 : 8), { align: "right" } as any);
       }
 
@@ -865,7 +868,7 @@ export default function Page() {
           y = 32;
         }
         const servicesText = it.services?.length
-          ? it.services.map((s: any) => `${s.label} (+${toFaNum(s.percent)}%)`).join("، ")
+          ? it.services.map((s: any) => s.label).join("، ")
           : "بدون خدمات اضافی";
         const title = `${it.typeLabel} • ${it.durationLabel} • ${it.countLabel}`;
         // Estimate row height based on services text length
