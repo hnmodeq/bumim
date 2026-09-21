@@ -478,6 +478,128 @@ export default function Page() {
     setAdvChecked(Object.fromEntries(advancedServices.map((s) => [s.id, false])));
   }, []);
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPDF = useCallback(async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const el = cardRef.current;
+      if (!el) throw new Error("card not found");
+
+      // Try high-quality raster export via html2canvas + jsPDF (preserves Persian rendering perfectly)
+      try {
+        const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+          import("html2canvas"),
+          import("jspdf"),
+        ]);
+        const canvas = await html2canvas(el, {
+          scale: 2,
+          backgroundColor: "#141414",
+          useCORS: true,
+          logging: false,
+          windowWidth: el.scrollWidth,
+          windowHeight: el.scrollHeight,
+          // @ts-ignore - html2canvas types miss ignoreElements
+          ignoreElements: (element: Element) => element.getAttribute("data-html2canvas-ignore") === "true",
+        });
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4",
+        });
+        const pdfW = pdf.internal.pageSize.getWidth();
+        const pdfH = pdf.internal.pageSize.getHeight();
+        const margin = 16;
+        const maxW = pdfW - margin * 2;
+        const maxH = pdfH - margin * 2;
+        const imgW = canvas.width;
+        const imgH = canvas.height;
+        const ratio = Math.min(maxW / imgW, maxH / imgH);
+        const renderW = imgW * ratio;
+        const renderH = imgH * ratio;
+        const x = (pdfW - renderW) / 2;
+        const y = margin;
+        pdf.addImage(imgData, "PNG", x, y, renderW, renderH);
+
+        // footer with date
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("fa-IR");
+        pdf.setFontSize(8);
+        pdf.setTextColor("#888888");
+        pdf.text(`بومیم • ${dateStr} • bumim.ir`, pdfW / 2, pdfH - 10, { align: "center" });
+
+        const fileName = `bumim-${typeOptions[typeIdx].label}-${price.total}.pdf`;
+        pdf.save(fileName);
+        setIsExporting(false);
+        return;
+      } catch (e) {
+        console.warn("html2canvas/jsPDF failed, fallback to text PDF", e);
+      }
+
+      // Fallback: text-based PDF (no image) — works even if html2canvas fails
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(18);
+      pdf.setTextColor("#111111");
+      pdf.text("Bumim - Estimate", pdfW / 2, 40, { align: "center" });
+      pdf.setFontSize(11);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#333333");
+      let y = 70;
+      const line = (label: string, value: string) => {
+        pdf.setFont("helvetica", "bold");
+        pdf.text(label + ":", 40, y);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(value, 140, y);
+        y += 18;
+      };
+      line("Project", typeOptions[typeIdx].label);
+      line("Duration", durationOptions[durationIdx].label);
+      line("Count", countOptions[countIdx].label);
+      line("Price", `${price.total.toLocaleString("en-US")} Toman`);
+      y += 6;
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Services:", 40, y);
+      y += 16;
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(9);
+      const allServices = [...basicServices, ...advancedServices];
+      const selected = allServices.filter((s) =>
+        basicServices.some((b) => b.id === s.id) ? basicChecked[s.id] : advChecked[s.id]
+      );
+      if (selected.length === 0) {
+        pdf.text("(none)", 40, y);
+        y += 14;
+      } else {
+        for (const s of selected) {
+          pdf.text(`- ${s.label} (+${s.percent}%)`, 48, y);
+          y += 13;
+          if (y > 780) {
+            pdf.addPage();
+            y = 40;
+          }
+        }
+      }
+      y += 10;
+      pdf.setFontSize(13);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor("#111111");
+      pdf.text(`Total: ${price.total.toLocaleString("en-US")} Toman`, pdfW / 2, y, { align: "center" });
+      pdf.save(`bumim-${price.total}.pdf`);
+    } catch (err) {
+      console.error(err);
+      // ultimate fallback: print dialog
+      window.print();
+    } finally {
+      setIsExporting(false);
+    }
+  }, [isExporting, typeIdx, durationIdx, countIdx, price, basicChecked, advChecked]);
+
   const formattedPrice = useMemo(() => {
     const latin = price.total.toLocaleString("en-US");
     const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
@@ -494,7 +616,7 @@ export default function Page() {
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
         {/* Pack centered, no outer scroll */}
         <div className="w-full flex flex-col justify-center items-center min-h-0">
-          <div className="w-full max-w-[980px] bg-[#141414] border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div ref={cardRef} className="w-full max-w-[980px] bg-[#141414] border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {/* Pack header: logo + name top-right inside card */}
             <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
@@ -534,8 +656,8 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Price + buttons - extra bottom padding */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-6 min-h-[64px] pt-12 md:pt-14 pb-14 md:pb-16 mt-6 md:mt-8">
+            {/* Price + buttons - extra bottom padding + ghost controls */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-6 min-h-[64px] pt-12 md:pt-14 pb-6 md:pb-8 mt-6 md:mt-8">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
@@ -549,18 +671,44 @@ export default function Page() {
               <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
                 <button
                   onClick={handleSelectAll}
-                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_14px_rgba(255,223,0,0.28)] transition-all duration-200"
+                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#2a2a2a] bg-transparent hover:bg-[#1e1e1e] hover:border-[#333333] text-[#9a9a9a] hover:text-white transition-all duration-200"
                 >
                   انتخاب همه
                 </button>
                 <button
                   onClick={handleReset}
-                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#2a2a2a] bg-transparent hover:bg-[#1e1e1e] hover:border-[#333333] text-[#9a9a9a] hover:text-white transition-all duration-200"
                 >
                   بازنشانی
                 </button>
               </div>
             </div>
+
+            {/* Export PDF - big primary button below price - excluded from PDF capture */}
+            <button
+              data-html2canvas-ignore="true"
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="w-full max-w-[860px] mx-auto flex items-center justify-center gap-2.5 py-4 md:py-5 rounded-2xl bg-[#ffdf00] hover:bg-[#ffeb3b] active:bg-[#ffd600] text-[#0a0a0a] text-[14px] md:text-[15px] font-black tracking-tight shadow-[0_8px_24px_rgba(255,223,0,0.22)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mt-2 md:mt-3"
+            >
+              {isExporting ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-[#0a0a0a]/30 border-t-[#0a0a0a] rounded-full animate-spin" />
+                  در حال ساخت PDF...
+                </span>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  خروجی PDF
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
