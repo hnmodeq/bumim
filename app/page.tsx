@@ -213,18 +213,11 @@ function WheelPicker({
     (e: React.PointerEvent) => {
       if (!isDraggingRef.current) return;
       const dy = e.clientY - startYRef.current;
-      // rubber-band at edges (iOS bounce feel without leaving bounds)
-      let dampedDy = dy;
+      // clamp strictly - no invisible empty after last item (bug fix)
       const start = startSelectedRef.current;
-      const estIdx = start - dy / ITEM_PX;
-      if (estIdx < 0) {
-        const over = -estIdx;
-        dampedDy = start * ITEM_PX + (dy - start * ITEM_PX) * (1 / (1 + over * 0.35));
-      } else if (estIdx > options.length - 1) {
-        const over = estIdx - (options.length - 1);
-        const maxDy = (start - (options.length - 1)) * ITEM_PX;
-        dampedDy = maxDy + (dy - maxDy) * (1 / (1 + over * 0.35));
-      }
+      const minDy = (start - (options.length - 1)) * ITEM_PX;
+      const maxDy = start * ITEM_PX;
+      const dampedDy = Math.max(minDy, Math.min(maxDy, dy));
       dragOffsetRef.current = dampedDy;
       // rAF throttle: one React render per frame max (budget phones)
       if (rafRef.current == null) {
@@ -522,15 +515,15 @@ export default function Page() {
               چقدر دستمزد بگیرم؟
             </h2>
 
-            {/* Wheels - horizontal swipe on mobile to save vertical space, grid on desktop */}
-            <div dir="ltr" className="w-full flex md:grid md:grid-cols-3 gap-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-2 md:pb-0 scrollbar-hide scroll-smooth max-w-[1020px] mx-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
+            {/* Wheels - stacked vertically on mobile (1 column), 3 columns on desktop */}
+            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 items-start justify-items-center max-w-[1020px] mx-auto">
+              <div className="w-full">
                 <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
               </div>
-              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
+              <div className="w-full">
                 <WheelPicker ariaLabel="مدت زمان" options={durationOptions} selected={durationIdx} onSelect={setDurationIdx} />
               </div>
-              <div className="w-[88vw] max-w-[300px] md:w-full md:max-w-none flex-shrink-0 snap-center">
+              <div className="w-full">
                 <WheelPicker ariaLabel="نوع پروژه" options={typeOptions} selected={typeIdx} onSelect={setTypeIdx} />
               </div>
             </div>
