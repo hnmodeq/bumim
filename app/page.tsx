@@ -146,6 +146,7 @@ function WheelPicker({
 
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const rafRef = useRef<number | null>(null);
 
   // keep startSelected in sync when not dragging
   if (!isDraggingRef.current) {
@@ -225,7 +226,13 @@ function WheelPicker({
         dampedDy = maxDy + (dy - maxDy) * (1 / (1 + over * 0.35));
       }
       dragOffsetRef.current = dampedDy;
-      setDragOffset(dampedDy);
+      // rAF throttle: one React render per frame max (budget phones)
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(() => {
+          setDragOffset(dragOffsetRef.current);
+          rafRef.current = null;
+        });
+      }
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 1);
       const vy = (e.clientY - lastYRef.current) / dt; // px/ms
@@ -242,6 +249,10 @@ function WheelPicker({
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
       setIsDragging(false);
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       document.body.style.overflow = "";
       document.documentElement.style.overscrollBehavior = "";
       try {
@@ -300,11 +311,11 @@ function WheelPicker({
       <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#ffdf00] rounded-full pointer-events-none z-10" />
       <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-[3px] h-[28px] bg-[#11ffba] rounded-full pointer-events-none z-10" />
 
-      {/* fades matching card bg #141414 */}
-      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#141414] via-[#141414]/70 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#141414] via-[#141414]/70 to-transparent pointer-events-none z-10" />
-      {/* center highlight for selected - makes white middle item pop, iOS style */}
-      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e]/90 border border-[#2e2e2e] rounded-xl pointer-events-none z-0 backdrop-blur-sm shadow-[0_2px_12px_rgba(0,0,0,0.4)]" />
+      {/* fades - minimal */}
+      <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-[#141414] to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#141414] to-transparent pointer-events-none z-10" />
+      {/* center highlight - simple, no blur/shadow */}
+      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl pointer-events-none z-0" />
 
       {/* flat list – no preserve-3d / perspective / translateZ / rotateX / blur – 100% stable on low-end GPUs */}
       <div className="absolute inset-0 overflow-hidden">
@@ -320,6 +331,8 @@ function WheelPicker({
             const liveIdx = selected - dragOffset / ITEM_PX;
             const liveDist = idx - liveIdx;
             const absLive = Math.abs(liveDist);
+            // windowing: skip far items (32 -> ~9) - huge win on low-end
+            if (absLive > 4.5 && Math.abs(idx - selected) > 4) return null;
             const roundedDist = Math.round(absLive);
             const isSelected = absLive < 0.5;
             const abs = isDragging ? roundedDist : Math.abs(idx - selected);
@@ -357,24 +370,14 @@ function WheelPicker({
                 style={{
                   height: `${ITEM_PX}px`,
                   opacity,
-                  transform: `scale(${scale})`,
-                  transition: isDragging ? "none" : "opacity 300ms ease, transform 320ms cubic-bezier(0.32,0.72,0,1), color 200ms ease",
                   color,
-                  textShadow: isSelected ? "0 0 10px rgba(255,255,255,0.35)" : "none",
                 }}
               >
                 <span
                   className={`block w-full px-2 text-center tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis ${
-                    isSelected
-                      ? "text-[15px] md:text-[17px] font-black"
-                      : abs === 1
-                        ? "text-[12px] md:text-[13px] font-bold"
-                        : "text-[11px] md:text-[12px] font-medium"
+                    isSelected ? "text-[15px] md:text-[17px] font-black" : abs === 1 ? "text-[12px] md:text-[13px] font-bold" : "text-[11px] md:text-[12px] font-medium"
                   }`}
-                  style={{
-                    transform: isSelected ? "scale(1.03)" : "scale(1)",
-                    transition: isDragging ? "none" : "transform 300ms ease, color 200ms ease",
-                  }}
+                  style={{ color }}
                 >
                   {opt.label}
                 </span>
@@ -399,24 +402,18 @@ function ServiceItem({
   return (
     <button
       onClick={onToggle}
-      className={`group w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer select-none backdrop-blur-sm border ${
-        checked
-          ? "bg-[#242424]/90 border-[#ffdf00]/45 shadow-[0_0_12px_rgba(255,223,0,0.15)]"
-          : "bg-[#1a1a1a]/70 hover:bg-[#242424]/80 border-[#2a2a2a] hover:border-[#ffdf00]/25"
+      className={`w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl cursor-pointer select-none border ${
+        checked ? "bg-[#242424] border-[#ffdf00]/50" : "bg-[#1a1a1a] border-[#2a2a2a]"
       }`}
     >
       <span
-        className={`text-[13px] md:text-[14px] font-bold transition-colors duration-300 text-right flex-1 ${
-          checked ? "text-white" : "text-[#ededed]/90"
-        }`}
+        className={`text-[13px] md:text-[14px] font-bold text-right flex-1 ${checked ? "text-white" : "text-[#ededed]/90"}`}
       >
         {service.label}
       </span>
 
       <span
-        className={`relative inline-flex items-center justify-center w-[20px] h-[20px] md:w-[22px] md:h-[22px] rounded-[6px] border-[1.8px] transition-all duration-300 shrink-0
-        ${checked ? "bg-[#ffdf00] border-[#ffdf00] shadow-[0_0_12px_rgba(255,223,0,0.45)]" : "bg-transparent border-[#2a2a2a] group-hover:border-[#ffdf00]/50"}
-        `}
+        className={`relative inline-flex items-center justify-center w-[20px] h-[20px] md:w-[22px] md:h-[22px] rounded-[6px] border-[1.8px] shrink-0 ${checked ? "bg-[#ffdf00] border-[#ffdf00]" : "bg-transparent border-[#2a2a2a]"}`}
       >
         {checked && (
           <svg width="14" height="14" viewBox="0 0 14 14" className="text-[#0a0a0a]">
@@ -432,10 +429,7 @@ function ServiceItem({
         )}
       </span>
 
-      <span
-        className={`text-[12px] md:text-[13px] font-black tracking-tight min-w-[44px] text-left font-mono transition-colors duration-300
-        ${checked ? "text-[#ffdf00]" : "text-[#9a9a9a]/60"}
-        `}
+      <span className={`text-[12px] md:text-[13px] font-black tracking-tight min-w-[44px] text-left font-mono ${checked ? "text-[#ffdf00]" : "text-[#9a9a9a]/60"}`}
       >
         +{toPersianNumber(service.percent)}%
       </span>
@@ -508,17 +502,12 @@ export default function Page() {
       suppressHydrationWarning
       className="w-full h-[100dvh] h-[100svh] overflow-hidden flex flex-col items-center justify-center px-4 md:px-6 py-3 md:py-4 bg-[#0a0a0a] relative selection:bg-[#ffdf00]/30"
     >
-      <div className="absolute inset-0 bumim-grid opacity-[0.04] pointer-events-none" />
-      <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[120%] h-[70%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.09),transparent_60%)] pointer-events-none blur-[1px]" />
-      <div className="absolute -top-[10%] -right-[20%] w-[70%] h-[60%] bg-[radial-gradient(ellipse_at_center,_rgba(17,255,186,0.07),transparent_65%)] pointer-events-none" />
-      <div className="absolute top-[18%] -left-[18%] w-[55%] h-[45%] bg-[radial-gradient(ellipse_at_center,_rgba(255,223,0,0.06),transparent_70%)] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[40%] bg-[radial-gradient(ellipse_at_center,_rgba(17,255,186,0.06),transparent_70%)] pointer-events-none" />
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffdf00]/20 to-transparent pointer-events-none" />
+      {/* lightweight: no radial blur layers on budget phones */}
 
       <div className="relative w-full max-w-[980px] mx-auto flex flex-col flex-1 min-h-0 justify-center items-center">
         {/* Pack centered, no outer scroll */}
         <div className="w-full flex flex-col justify-center items-center min-h-0">
-          <div className="w-full max-w-[980px] bg-[#141414]/80 border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="w-full max-w-[980px] bg-[#141414] border border-[#2a2a2a] rounded-[24px] md:rounded-[28px] p-4 md:p-5 flex flex-col items-center gap-3 md:gap-4 max-h-[calc(100dvh-24px)] md:max-h-[calc(100svh-24px)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {/* Pack header: logo + name top-right inside card */}
             <div dir="ltr" className="w-full flex justify-end items-center">
               <div className="flex items-center gap-2 md:gap-2.5">
@@ -563,12 +552,8 @@ export default function Page() {
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
-                  className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                  style={{
-                    fontWeight: 900,
-                    letterSpacing: "-0.04em",
-                    textShadow: "0 0 24px rgba(255,223,0,0.20), 0 0 48px rgba(17,255,186,0.14)",
-                  }}
+                  className="persian-num text-[40px] md:text-[56px] font-black tracking-tight leading-none text-white"
+                  style={{ fontWeight: 900, letterSpacing: "-0.04em" }}
                 >
                   {formattedPrice}
                 </span>

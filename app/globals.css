@@ -39,17 +39,4 @@ body {
   background: transparent;
 }
 
-.wheel-perspective {
-  perspective: 1200px;
-  perspective-origin: 50% 50%;
-}
-.wheel-preserve {
-  transform-style: preserve-3d;
-}
-
-.bumim-grid {
-  background-image:
-    linear-gradient(rgba(255, 223, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 223, 0, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
+/* removed heavy perspective/grid - lightweight */
