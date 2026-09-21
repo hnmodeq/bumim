@@ -509,8 +509,8 @@ export default function Page() {
               چقدر دستمزد بگیرم؟
             </h2>
 
-            {/* Wheels - reduced empty space */}
-            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2 items-start justify-items-center max-w-[1020px] mx-auto">
+            {/* Wheels - reduced empty space - tight on mobile */}
+            <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-2 items-start justify-items-center max-w-[1020px] mx-auto">
               <div className="w-full">
                 <WheelPicker ariaLabel="تعداد ویدیو" options={countOptions} selected={countIdx} onSelect={setCountIdx} />
               </div>
@@ -534,8 +534,8 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Price + buttons - more gap to checkboxes and card edge */}
-            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-4 min-h-[64px] pt-10 md:pt-10 pb-8 md:pb-8 mt-4 md:mt-6">
+            {/* Price + buttons - more breathing room */}
+            <div className="w-full max-w-[860px] mx-auto relative flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-6 min-h-[64px] pt-12 md:pt-12 pb-10 md:pb-10 mt-6 md:mt-8">
               <div className="flex items-baseline gap-3 md:gap-4 justify-center select-none">
                 <span
                   suppressHydrationWarning
@@ -549,13 +549,13 @@ export default function Page() {
               <div className="flex items-center gap-2 shrink-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2" dir="ltr">
                 <button
                   onClick={handleSelectAll}
-                  className="shrink-0 px-4 py-2.5 md:px-4 md:py-2 rounded-lg text-[12px] md:text-[12px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_12px_rgba(255,223,0,0.25)] transition-all duration-200"
+                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#ffdf00]/40 bg-[#ffdf00] hover:bg-[#ffdf00]/90 text-[#0a0a0a] shadow-[0_0_14px_rgba(255,223,0,0.28)] transition-all duration-200"
                 >
                   انتخاب همه
                 </button>
                 <button
                   onClick={handleReset}
-                  className="shrink-0 px-4 py-2.5 md:px-4 md:py-2 rounded-lg text-[12px] md:text-[12px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
+                  className="shrink-0 px-5 py-3 md:px-6 md:py-3 rounded-xl text-[12px] md:text-[13px] font-black tracking-wide border border-[#2a2a2a] bg-[#1a1a1a]/80 hover:bg-[#242424] hover:border-[#ffdf00]/30 text-[#9a9a9a] hover:text-white transition-all duration-200"
                 >
                   بازنشانی
                 </button>
