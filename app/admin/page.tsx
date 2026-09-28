@@ -2,63 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-type Package = {
-  id: string;
-  name: string;
-  price: string;
-  per: string;
-  popular?: boolean;
-  features: string[];
-  color: string;
-};
-
-type Service = {
-  id: string;
-  name: string;
-  packages: Package[];
-};
-
-const defaultServices: Service[] = [
-  {
-    id: "short",
-    name: "ادیت ویدیوی کوتاه",
-    packages: [
-      { id: "eco", name: "اقتصادی", price: "۱.۴", per: "میلیون / دقیقه", features: ["کات و تدوین پایه", "اصلاح رنگ اولیه", "میکس صدا ساده", "—", "—"], color: "from-[#7c3aed] to-[#4f46e5]" },
-      { id: "pro", name: "پیشرفته", price: "۲.۳", per: "میلیون / دقیقه", popular: true, features: ["کات و تدوین پایه", "اصلاح رنگ حرفه‌ای", "میکس و مسترینگ صدا", "افکت صوتی", "—"], color: "from-[#f97316] to-[#eab308]" },
-      { id: "motion", name: "موشن‌دار", price: "۳.۲", per: "میلیون / دقیقه", features: ["کات و تدوین پایه", "اصلاح رنگ حرفه‌ای", "میکس و مسترینگ", "موشن گرافیک سبک", "افکت تصویری"], color: "from-[#06b6d4] to-[#10b981]" },
-    ],
-  },
-  {
-    id: "teaser",
-    name: "تیزر و موشن",
-    packages: [
-      { id: "teaser", name: "تیزر تبلیغاتی", price: "۴.۴", per: "تا ۴۵ ثانیه", features: ["سناریو کوتاه", "تدوین ریتمیک", "موزیک و افکت", "اصلاح رنگ", "لوگو موشن"], color: "from-[#ec4899] to-[#f43f5e]" },
-      { id: "motion25", name: "موشن ۲.۵ بعدی", price: "۸.۶", per: "/ ۳۰ ثانیه", popular: true, features: ["طراحی وکتور", "انیمیت ۲.۵ بعدی", "موزیک اختصاصی", "صداگذاری", "خروجی 4K"], color: "from-[#8b5cf6] to-[#ec4899]" },
-    ],
-  },
-  {
-    id: "course",
-    name: "دوره آموزشی",
-    packages: [
-      { id: "c1", name: "۱ تا ۲ ساعت", price: "۱.۶", per: "میلیون / ساعت", features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "—"], color: "from-[#6366f1] to-[#8b5cf6]" },
-      { id: "c2", name: "۳ تا ۵ ساعت", price: "۱.۴", per: "میلیون / ساعت", popular: true, features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "کاور ویدیو"], color: "from-[#f59e0b] to-[#f97316]" },
-      { id: "c3", name: "۶ تا ۱۰ ساعت", price: "۱.۲", per: "میلیون / ساعت", features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "کاور + اینترو"], color: "from-[#10b981] to-[#06b6d4]" },
-      { id: "c4", name: "بالای ۱۰ ساعت", price: "۱", per: "میلیون / ساعت", features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "پشتیبانی کامل"], color: "from-[#ef4444] to-[#ec4899]" },
-    ],
-  },
-];
-
-const colorOptions = [
-  "from-[#7c3aed] to-[#4f46e5]",
-  "from-[#f97316] to-[#eab308]",
-  "from-[#06b6d4] to-[#10b981]",
-  "from-[#ec4899] to-[#f43f5e]",
-  "from-[#8b5cf6] to-[#ec4899]",
-  "from-[#6366f1] to-[#8b5cf6]",
-  "from-[#f59e0b] to-[#f97316]",
-  "from-[#10b981] to-[#06b6d4]",
-  "from-[#ef4444] to-[#ec4899]",
-];
+import { defaultServices, colorOptions, type Package, type Service } from "../lib/pricing";
 
 export default function AdminPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -68,15 +12,43 @@ export default function AdminPage() {
   const [isAddingPackage, setIsAddingPackage] = useState(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem("bumim-services");
-    const data = raw ? JSON.parse(raw) : defaultServices;
-    setServices(data);
-    setActiveServiceId(data[0]?.id || "");
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((j) => (Array.isArray(j?.services) && j.services.length ? j.services : defaultServices))
+      .catch(() => defaultServices)
+      .then((data: Service[]) => {
+        setServices(data);
+        setActiveServiceId(data[0]?.id || "");
+      });
   }, []);
 
-  const save = (next: Service[]) => {
+  const [status, setStatus] = useState<string>("");
+
+  const save = (next: Service[], allowRetry = true) => {
     setServices(next);
-    localStorage.setItem("bumim-services", JSON.stringify(next));
+    setStatus("در حال ذخیره…");
+    const key = typeof window !== "undefined" ? localStorage.getItem("bumim-admin-key") || "" : "";
+    fetch("/api/services", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-admin-key": key },
+      body: JSON.stringify({ services: next }),
+    })
+      .then(async (r) => {
+        const j = await r.json().catch(() => ({} as Record<string, string>));
+        if (r.status === 401 && allowRetry) {
+          const entered = window.prompt("رمز ادمین را وارد کنید:");
+          if (entered) {
+            localStorage.setItem("bumim-admin-key", entered.trim());
+            save(next, false);
+          } else {
+            setStatus("رمز وارد نشد — ذخیره نشد");
+          }
+          return;
+        }
+        if (j?.ok) setStatus("✓ در دیتابیس ذخیره شد");
+        else setStatus(`خطا: ${j?.error || r.status}`);
+      })
+      .catch(() => setStatus("خطای شبکه — ذخیره نشد"));
   };
 
   const addService = () => {
@@ -121,9 +93,8 @@ export default function AdminPage() {
   };
 
   const reset = () => {
-    if (!confirm("بازگشت به پیش‌فرض؟")) return;
-    localStorage.removeItem("bumim-services");
-    setServices(defaultServices);
+    if (!confirm("بازگشت به تعرفه‌های پیش‌فرض و ذخیره در دیتابیس؟")) return;
+    save(defaultServices);
     setActiveServiceId(defaultServices[0].id);
   };
 
@@ -135,12 +106,15 @@ export default function AdminPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-[20px] font-black text-white">پنل مدیریت تعرفه‌ها</h1>
-            <p className="text-[11px] text-[#666] mt-1">سرویس‌ها → پکیج‌ها → قیمت و جزئیات • ذخیره در مرورگر (localStorage)</p>
+            <p className="text-[11px] text-[#666] mt-1">سرویس‌ها → پکیج‌ها → قیمت و جزئیات • ذخیره مستقیم در دیتابیس (Supabase)</p>
           </div>
           <div className="flex gap-2">
             <a href="/services" className="px-4 py-2 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] text-[12px] font-bold text-[#9a9a9a] hover:text-white">
               مشاهده /services →
             </a>
+            {status ? (
+              <span className={`px-3 py-2 rounded-xl text-[11px] font-bold border ${String(status).startsWith("✓") ? "bg-[#0d2818] border-[#14532d] text-[#4ade80]" : "bg-[#2a1212] border-[#5c1f1f] text-[#ff8b8b]"}`}>{status}</span>
+            ) : null}
             <button onClick={reset} className="px-3 py-2 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] text-[11px] font-bold text-[#666] hover:text-[#ff5555]">
               ریست
             </button>
