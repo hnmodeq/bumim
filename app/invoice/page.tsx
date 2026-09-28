@@ -1452,7 +1452,7 @@ export default function Page() {
 
           <div style={{ marginTop: "18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed #e5e5e5", paddingTop: "14px" }}>
             <div style={{ fontSize: "10px", color: "#999" }}>
-              <div>Powered by bumim — bumim.ir</div>
+              <div>Powered by bumim — bumims.ir</div>
               <div style={{ fontFamily: "monospace", fontSize: "9px", marginTop: "2px" }}>برای تدوینگران حرفه ای</div>
             </div>
             <div style={{ textAlign: "center" as const }}>

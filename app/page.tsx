@@ -10,7 +10,7 @@ export default function Home() {
         </p>
         <div className="mt-8 flex items-center justify-center gap-2 text-[11px] text-[#666]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#ffdf00] animate-pulse" />
-          bumim.ir
+          bumims.ir
         </div>
       </div>
     </main>
