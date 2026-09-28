@@ -1,160 +1,282 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "تعرفه خدمات کندو — بومیم",
-  description: "تعرفه‌های کندو برای ۳ ماه دوم ۱۴۰۵",
+import { useState, useEffect } from "react";
+
+type Package = {
+  id: string;
+  name: string;
+  price: string;
+  per: string;
+  popular?: boolean;
+  features: string[];
+  color: string;
 };
 
-function toFa(n: number | string) {
-  const s = String(n);
-  const fa = "۰۱۲۳۴۵۶۷۸۹";
-  return s.replace(/\d/g, (d) => fa[Number(d)]);
-}
+type Service = {
+  id: string;
+  name: string;
+  packages: Package[];
+};
+
+const defaultServices: Service[] = [
+  {
+    id: "short",
+    name: "ادیت ویدیوی کوتاه",
+    packages: [
+      {
+        id: "eco",
+        name: "اقتصادی",
+        price: "۱.۴",
+        per: "میلیون / دقیقه",
+        features: ["کات و تدوین پایه", "اصلاح رنگ اولیه", "میکس صدا ساده", "—", "—"],
+        color: "from-[#7c3aed] to-[#4f46e5]",
+      },
+      {
+        id: "pro",
+        name: "پیشرفته",
+        price: "۲.۳",
+        per: "میلیون / دقیقه",
+        popular: true,
+        features: ["کات و تدوین پایه", "اصلاح رنگ حرفه‌ای", "میکس و مسترینگ صدا", "افکت صوتی", "—"],
+        color: "from-[#f97316] to-[#eab308]",
+      },
+      {
+        id: "motion",
+        name: "موشن‌دار",
+        price: "۳.۲",
+        per: "میلیون / دقیقه",
+        features: ["کات و تدوین پایه", "اصلاح رنگ حرفه‌ای", "میکس و مسترینگ", "موشن گرافیک سبک", "افکت تصویری"],
+        color: "from-[#06b6d4] to-[#10b981]",
+      },
+    ],
+  },
+  {
+    id: "teaser",
+    name: "تیزر و موشن",
+    packages: [
+      {
+        id: "teaser",
+        name: "تیزر تبلیغاتی",
+        price: "۴.۴",
+        per: "تا ۴۵ ثانیه",
+        features: ["سناریو کوتاه", "تدوین ریتمیک", "موزیک و افکت", "اصلاح رنگ", "لوگو موشن"],
+        color: "from-[#ec4899] to-[#f43f5e]",
+      },
+      {
+        id: "motion25",
+        name: "موشن ۲.۵ بعدی",
+        price: "۸.۶",
+        per: "/ ۳۰ ثانیه",
+        popular: true,
+        features: ["طراحی وکتور", "انیمیت ۲.۵ بعدی", "موزیک اختصاصی", "صداگذاری", "خروجی 4K"],
+        color: "from-[#8b5cf6] to-[#ec4899]",
+      },
+    ],
+  },
+  {
+    id: "course",
+    name: "دوره آموزشی",
+    packages: [
+      {
+        id: "c1",
+        name: "۱ تا ۲ ساعت",
+        price: "۱.۶",
+        per: "میلیون / ساعت",
+        features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "—"],
+        color: "from-[#6366f1] to-[#8b5cf6]",
+      },
+      {
+        id: "c2",
+        name: "۳ تا ۵ ساعت",
+        price: "۱.۴",
+        per: "میلیون / ساعت",
+        popular: true,
+        features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "کاور ویدیو"],
+        color: "from-[#f59e0b] to-[#f97316]",
+      },
+      {
+        id: "c3",
+        name: "۶ تا ۱۰ ساعت",
+        price: "۱.۲",
+        per: "میلیون / ساعت",
+        features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "کاور + اینترو"],
+        color: "from-[#10b981] to-[#06b6d4]",
+      },
+      {
+        id: "c4",
+        name: "بالای ۱۰ ساعت",
+        price: "۱",
+        per: "میلیون / ساعت",
+        features: ["کات و تدوین", "اصلاح رنگ", "میکس صدا", "زیرنویس", "پشتیبانی کامل"],
+        color: "from-[#ef4444] to-[#ec4899]",
+      },
+    ],
+  },
+];
+
+const featureNames = [
+  "کات و تدوین پایه",
+  "اصلاح رنگ",
+  "میکس و مسترینگ صدا",
+  "افکت و موشن",
+  "خروجی و تحویل",
+];
 
 export default function ServicesPage() {
+  const [services, setServices] = useState<Service[]>(defaultServices);
+  const [activeId, setActiveId] = useState<string>(defaultServices[0].id);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("bumim-services");
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+          setServices(parsed);
+          setActiveId(parsed[0].id);
+        }
+      } catch {}
+    }
+  }, []);
+
+  const active = services.find((s) => s.id === activeId) || services[0];
+
   return (
     <main className="w-full min-h-[100dvh] bg-[#0a0a0a] px-4 md:px-6 py-8 md:py-10">
-      <div className="w-full max-w-[980px] mx-auto">
+      <div className="w-full max-w-[1100px] mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-[#141414] border border-[#2a2a2a] rounded-full px-3.5 py-1.5 text-[11px] font-bold text-[#ffdf00] tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ffdf00] animate-pulse" />
-            کندو • ۳ ماه دوم ۱۴۰۵
-          </div>
-          <h1 className="text-[26px] md:text-[32px] font-black tracking-tight text-white mt-4" style={{ letterSpacing: "-0.03em" }}>
-            تعرفه‌های کندو
+        <div className="text-center mb-6">
+          <h1 className="text-[28px] md:text-[36px] font-black tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+            <span className="bg-gradient-to-r from-[#8b5cf6] via-[#ec4899] to-[#f59e0b] bg-clip-text text-transparent">PRICE LIST</span>
+            <span className="text-white mr-2">تعرفه‌ها</span>
           </h1>
-          <p className="text-[12px] md:text-[13px] text-[#9a9a9a] mt-2">
-            مدت زمان راش محاسبه می‌شود • یک اصلاحیه رایگان
-          </p>
+          <p className="text-[12px] text-[#9a9a9a] mt-2">برای ۳ ماه دوم ۱۴۰۵ • مدت زمان راش محاسبه می‌شود • یک اصلاحیه رایگان</p>
         </div>
 
-        {/* Short video - 3 tiers */}
-        <div className="mb-6">
-          <h2 className="text-[13px] font-black text-white mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 rounded-full bg-[#ffdf00]" />
-            ادیت ویدیوی کوتاه
-            <span className="text-[11px] font-medium text-[#666] mr-2">محاسبه بر اساس هر دقیقه راش</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {[
-              { label: "اقتصادی", price: "۱.۴", sub: "میلیون", per: "/ دقیقه", desc: "کات و تدوین پایه" },
-              { label: "پیشرفته", price: "۲.۳", sub: "میلیون", per: "/ دقیقه", desc: "تدوین حرفه‌ای + افکت", popular: true },
-              { label: "موشن‌دار", price: "۳.۲", sub: "میلیون", per: "/ دقیقه", desc: "با گرافیک و موشن" },
-            ].map((c) => (
-              <div
-                key={c.label}
-                className={`relative bg-[#141414] border rounded-[20px] p-5 flex flex-col text-center ${
-                  (c as any).popular ? "border-[#ffdf00]/40 shadow-[0_0_20px_rgba(255,223,0,0.08)]" : "border-[#2a2a2a]"
-                }`}
-              >
-                {(c as any).popular && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#ffdf00] text-[#0a0a0a] text-[10px] font-black px-3 py-1 rounded-full whitespace-nowrap">
-                    پرطرفدار
-                  </span>
-                )}
-                <div className="text-[13px] font-black text-white">{c.label}</div>
-                <div className="text-[11px] text-[#888] mt-1">{c.desc}</div>
-                <div className="mt-4 flex items-baseline justify-center gap-1">
-                  <span className="text-[26px] font-black tracking-tight text-[#ffdf00]">{c.price}</span>
-                  <span className="text-[11px] font-bold text-[#ffdf00]/80">{c.sub}</span>
-                  <span className="text-[11px] text-[#666] mr-1">{c.per}</span>
+        {/* Service switcher */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+          {services.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveId(s.id)}
+              className={`px-4 md:px-5 py-2.5 rounded-full text-[13px] font-black transition-all border ${
+                activeId === s.id
+                  ? "bg-white text-[#0a0a0a] border-white shadow-[0_4px_16px_rgba(255,255,255,0.15)]"
+                  : "bg-[#141414] text-[#9a9a9a] border-[#2a2a2a] hover:text-white hover:border-[#3a3a3a]"
+              }`}
+            >
+              {s.name}
+            </button>
+          ))}
+          <a
+            href="/admin"
+            className="px-3 py-2 rounded-full text-[11px] font-bold text-[#666] hover:text-[#999] border border-dashed border-[#2a2a2a] hover:border-[#3a3a3a]"
+          >
+            مدیریت ←
+          </a>
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block bg-[#141414]/50 border border-[#1f1f1f] rounded-[24px] overflow-hidden backdrop-blur">
+          <div className="grid gap-0" style={{ gridTemplateColumns: `280px repeat(${active.packages.length}, 1fr)` }}>
+            {/* Header row */}
+            <div className="p-6">
+              <div className="text-[11px] font-bold text-[#666] tracking-widest">FEATURES</div>
+              <div className="text-[10px] text-[#555] mt-1">جزئیات هر پکیج</div>
+            </div>
+            {active.packages.map((pkg) => (
+              <div key={pkg.id} className="p-4 flex flex-col items-center text-center border-r border-[#1f1f1f]/50">
+                <div className="text-[11px] font-black tracking-widest text-white">{pkg.name}</div>
+                <div className="text-[10px] text-[#666] mt-1">▼</div>
+                <div className={`mt-3 w-full rounded-[18px] bg-gradient-to-br ${pkg.color} p-[1.5px]`}>
+                  <div className={`rounded-[16px] bg-gradient-to-br ${pkg.color} px-3 py-3 flex items-center justify-center gap-1`}>
+                    <span className="text-[11px] font-black text-white/80">$</span>
+                    <span className="text-[28px] font-black leading-none text-white">{pkg.price}</span>
+                    <span className="text-[9px] font-bold text-white/80 leading-[1]">
+                      {pkg.per.split(" ")[0]}
+                      <br />
+                      {pkg.per.split(" ").slice(1).join(" ")}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-[10px] text-[#555] mt-1">{toFa(c.price.replace(".", ""))}۰۰۰ تومان / دقیقه</div>
+                {pkg.popular && (
+                  <span className="mt-2 text-[10px] font-black text-[#ffdf00] tracking-wide">★ پرطرفدار</span>
+                )}
+              </div>
+            ))}
+
+            {/* Feature rows */}
+            {featureNames.map((feat, idx) => (
+              <div key={feat} className="contents">
+                <div className={`px-6 py-4 text-[12px] font-bold border-t border-[#1f1f1f]/50 ${idx % 2 === 0 ? "bg-[#141414]" : "bg-[#0a0a0a]/50"} text-[#ededed]`}>
+                  <div className="font-black text-white text-[12px]">{feat}</div>
+                  <div className="text-[10px] text-[#666] font-normal mt-0.5">توضیح کوتاه ویژگی</div>
+                </div>
+                {active.packages.map((pkg) => {
+                  const has = pkg.features[idx] && pkg.features[idx] !== "—";
+                  return (
+                    <div
+                      key={pkg.id + feat}
+                      className={`flex items-center justify-center border-t border-r border-[#1f1f1f]/50 px-4 py-4 ${
+                        idx % 2 === 0 ? "bg-[#141414]" : "bg-[#0a0a0a]/50"
+                      }`}
+                    >
+                      {has ? (
+                        <span
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-bold bg-gradient-to-br ${pkg.color} text-white`}
+                        >
+                          ✓
+                        </span>
+                      ) : (
+                        <span className="text-[#444] text-[14px]">—</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Teaser + Motion */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-          <div className="bg-[#141414] border border-[#2a2a2a] rounded-[20px] p-6 flex flex-col">
-            <div className="text-[13px] font-black text-white">تیزر تبلیغاتی</div>
-            <div className="text-[11px] text-[#888] mt-1">تا سقف ۴۵ ثانیه</div>
-            <div className="mt-4 flex items-baseline gap-1.5">
-              <span className="text-[26px] font-black tracking-tight text-white">{toFa("4.4")}</span>
-              <span className="text-[11px] font-bold text-white/60">میلیون تومان</span>
-            </div>
-            <div className="text-[11px] text-[#666] mt-1">۴,۴۰۰,۰۰۰ تومان / پروژه</div>
-            <div className="mt-3 inline-flex self-start bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-3 py-1 text-[11px] font-bold text-[#9a9a9a]">تا ۴۵ ثانیه</div>
-          </div>
-          <div className="bg-[#141414] border border-[#ffdf00]/20 rounded-[20px] p-6 flex flex-col">
-            <div className="text-[13px] font-black text-white">طراحی موشن گرافیک ۲.۵ بعدی</div>
-            <div className="text-[11px] text-[#888] mt-1">هر ۳۰ ثانیه</div>
-            <div className="mt-4 flex items-baseline gap-1.5">
-              <span className="text-[26px] font-black tracking-tight text-[#ffdf00]">{toFa("8.6")}</span>
-              <span className="text-[11px] font-bold text-[#ffdf00]/80">میلیون تومان</span>
-            </div>
-            <div className="text-[11px] text-[#666] mt-1">۸,۶۰۰,۰۰۰ تومان / ۳۰ ثانیه</div>
-            <div className="mt-3 inline-flex self-start bg-[#ffdf00] text-[#0a0a0a] rounded-full px-3 py-1 text-[11px] font-black">۳۰ ثانیه</div>
-          </div>
-        </div>
-
-        {/* Course */}
-        <div className="bg-[#141414] border border-[#2a2a2a] rounded-[20px] overflow-hidden">
-          <div className="px-5 md:px-6 py-4 flex items-center justify-between">
-            <div>
-              <div className="text-[13px] font-black text-white">دوره آموزشی</div>
-              <div className="text-[11px] text-[#888] mt-0.5">محاسبه بر اساس مجموع ساعات راش • هرچه دوره طولانی‌تر، قیمت هر ساعت کمتر</div>
-            </div>
-            <div className="hidden md:flex items-center gap-1.5 text-[10px] font-bold text-[#ffdf00] bg-[#ffdf00]/10 border border-[#ffdf00]/20 rounded-full px-3 py-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ffdf00]" />
-              به ازای هر یک ساعت
-            </div>
-          </div>
-          <div className="border-t border-[#2a2a2a] overflow-x-auto">
-            <table className="w-full text-[12px] min-w-[520px]">
-              <thead>
-                <tr className="bg-[#0a0a0a] text-[#9a9a9a] text-[11px]">
-                  <th className="text-right font-bold px-5 py-3">مدت دوره</th>
-                  <th className="text-center font-bold px-3 py-3">قیمت هر ساعت</th>
-                  <th className="text-left font-bold px-5 py-3 hidden md:table-cell">توضیح</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#2a2a2a]">
-                {[
-                  { range: "۱ تا ۲ ساعت", price: "۱,۶۰۰,۰۰۰", note: "دوره کوتاه" },
-                  { range: "۳ تا ۵ ساعت", price: "۱,۴۰۰,۰۰۰", note: "دوره متوسط", popular: true },
-                  { range: "۶ تا ۱۰ ساعت", price: "۱,۲۰۰,۰۰۰", note: "دوره بلند" },
-                  { range: "بالای ۱۰ ساعت", price: "۱,۰۰۰,۰۰۰", note: "دوره جامع" },
-                ].map((r) => (
-                  <tr key={r.range} className={(r as any).popular ? "bg-[#ffdf00]/5" : "bg-transparent"}>
-                    <td className="px-5 py-3.5 font-bold text-white whitespace-nowrap">
-                      {r.range}
-                      {(r as any).popular && <span className="mr-2 bg-[#ffdf00] text-[#0a0a0a] text-[9px] font-black px-1.5 py-0.5 rounded">به‌صرفه</span>}
-                    </td>
-                    <td className="px-3 py-3.5 text-center">
-                      <span className="font-black text-[#ffdf00]">{r.price}</span>
-                      <span className="text-[#666] mr-1 text-[11px]">تومان</span>
-                    </td>
-                    <td className="px-5 py-3.5 text-left text-[#888] text-[11px] hidden md:table-cell">{r.note}</td>
-                  </tr>
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3">
+          {active.packages.map((pkg) => (
+            <div key={pkg.id} className="bg-[#141414] border border-[#2a2a2a] rounded-[20px] overflow-hidden">
+              <div className={`bg-gradient-to-br ${pkg.color} p-4 flex items-center justify-between`}>
+                <div>
+                  <div className="text-[14px] font-black text-white">{pkg.name}</div>
+                  <div className="text-[11px] text-white/70">{pkg.per}</div>
+                </div>
+                <div className="flex items-baseline gap-1 bg-white text-[#0a0a0a] rounded-full px-3.5 py-2">
+                  <span className="text-[11px] font-black">$</span>
+                  <span className="text-[22px] font-black leading-none">{pkg.price}</span>
+                </div>
+              </div>
+              <div className="p-4 space-y-2.5">
+                {pkg.features.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2.5 text-[12px]">
+                    {f === "—" ? (
+                      <>
+                        <span className="w-5 h-5 rounded-full bg-[#1f1f1f] flex items-center justify-center text-[#444] text-[10px]">—</span>
+                        <span className="text-[#555] line-through">{featureNames[i]}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className={`w-5 h-5 rounded-full bg-gradient-to-br ${pkg.color} flex items-center justify-center text-white text-[10px]`}>✓</span>
+                        <span className="text-[#ededed] font-medium">{f}</span>
+                      </>
+                    )}
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-5 md:px-6 py-3 bg-[#0a0a0a]/50 border-t border-[#2a2a2a] flex flex-col md:flex-row items-center justify-between gap-2 text-[11px]">
-            <span className="text-[#666]">مدت زمان راش محاسبه می‌شود</span>
-            <span className="text-[#9a9a9a]">مثال: دوره ۴ ساعته = ۴ × ۱,۴۰۰,۰۰۰ = ۵,۶۰۰,۰۰۰ تومان</span>
-          </div>
-        </div>
-
-        {/* Free revision + footer */}
-        <div className="mt-5 flex flex-col md:flex-row gap-3">
-          <div className="flex-1 bg-[#141414] border border-[#11ffba]/20 rounded-2xl px-5 py-4 flex items-center gap-3">
-            <span className="w-8 h-8 rounded-full bg-[#11ffba]/15 border border-[#11ffba]/20 flex items-center justify-center text-[#11ffba] text-[13px] font-black">✓</span>
-            <div>
-              <div className="text-[12px] font-bold text-white">یک اصلاحیه رایگان</div>
-              <div className="text-[11px] text-[#888]">برای هر پروژه یک بار اصلاح بدون هزینه</div>
+              </div>
             </div>
-          </div>
-          <div className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-2xl px-5 py-4">
-            <div className="text-[11px] font-bold text-[#9a9a9a]">نکته</div>
-            <div className="text-[11px] leading-5 text-[#666] mt-1">قیمت‌ها برای ۳ ماه دوم ۱۴۰۵ معتبر است. برای برآورد دقیق پروژه ترکیبی از ماشین‌حساب استفاده کنید.</div>
-          </div>
+          ))}
         </div>
 
-        <div className="mt-8 text-center text-[10px] text-[#555]">بومیم — bumims.ir • کندو</div>
+        {/* Footer note */}
+        <div className="mt-6 text-center text-[11px] text-[#666]">
+          قیمت‌ها برای ۳ ماه دوم ۱۴۰۵ • <span className="text-[#9a9a9a]">یک اصلاحیه رایگان</span> • مدت زمان راش محاسبه می‌شود
+        </div>
       </div>
     </main>
   );
