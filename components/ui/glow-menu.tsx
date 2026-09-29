@@ -44,16 +44,16 @@ const navItems: NavItem[] = [
     name: "تعرفه‌ها",
     href: "/services",
     icon: Layers,
-    color: "#a855f7",
-    glowColor: "rgba(168, 85, 247, 0.5)",
+    color: "#c084fc",
+    glowColor: "rgba(192, 132, 252, 0.5)",
     badge: "۱۴۰۵",
   },
   {
     name: "مدیریت",
     href: "/admin",
     icon: Settings,
-    color: "#11ffba",
-    glowColor: "rgba(17, 255, 186, 0.5)",
+    color: "#34d399",
+    glowColor: "rgba(52, 211, 153, 0.5)",
   },
 ];
 
@@ -83,10 +83,10 @@ export function GlowMenu({ className }: { className?: string }) {
           <motion.div
             key={currentHoveredOrActive.href}
             initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 0.45, scale: 1.1 }}
+            animate={{ opacity: 0.5, scale: 1.15 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="absolute -inset-1 rounded-full blur-xl pointer-events-none transition-colors duration-500"
+            className="absolute -inset-1 rounded-full blur-2xl pointer-events-none transition-colors duration-500"
             style={{
               background: `radial-gradient(circle, ${currentHoveredOrActive.glowColor} 0%, transparent 70%)`,
             }}
@@ -94,17 +94,17 @@ export function GlowMenu({ className }: { className?: string }) {
         )}
       </AnimatePresence>
 
-      {/* Main Glass Pill Dock */}
-      <div className="relative flex items-center gap-1 p-1.5 rounded-full bg-black/70 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+      {/* Main Frosted Glass Pill Dock */}
+      <div className="relative flex items-center gap-1 p-1.5 rounded-full bg-zinc-950/40 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]">
         {/* Brand Icon on start */}
         <Link
           href="/"
           className="flex items-center gap-1.5 ps-2.5 pe-2 py-1 rounded-full text-foreground hover:text-primary transition-colors group"
         >
-          <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-[0_0_12px_rgba(255,223,0,0.3)]">
+          <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-[0_0_12px_rgba(255,223,0,0.3)]">
             <Video className="w-3.5 h-3.5" />
           </div>
-          <span className="text-xs font-black tracking-tight hidden sm:inline">بومیم</span>
+          <span className="text-xs font-black tracking-tight hidden sm:inline text-white">بومیم</span>
         </Link>
 
         <div className="h-4 w-[1px] bg-white/10 mx-0.5" />
@@ -123,21 +123,21 @@ export function GlowMenu({ className }: { className?: string }) {
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
+                  "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
                   isActive
                     ? "text-white font-black"
                     : "text-zinc-400 hover:text-zinc-100"
                 )}
               >
-                {/* Active Sliding Glowing Pill */}
+                {/* Active Sliding Frosted Glow Pill */}
                 {isActive && (
                   <motion.div
                     layoutId="glow-menu-active-pill"
-                    className="absolute inset-0 rounded-full bg-white/10 border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_0_16px_rgba(255,255,255,0.1)]"
+                    className="absolute inset-0 rounded-full bg-white/[0.12] border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_20px_rgba(255,255,255,0.15)]"
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   >
                     <div
-                      className="absolute inset-0 rounded-full opacity-30"
+                      className="absolute inset-0 rounded-full opacity-35"
                       style={{
                         background: `radial-gradient(circle at 50% 0%, ${item.color}, transparent 80%)`,
                       }}
@@ -149,7 +149,7 @@ export function GlowMenu({ className }: { className?: string }) {
                 {isHovered && !isActive && (
                   <motion.div
                     layoutId="glow-menu-hover-pill"
-                    className="absolute inset-0 rounded-full bg-white/5 border border-white/10"
+                    className="absolute inset-0 rounded-full bg-white/[0.06] border border-white/15"
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
@@ -172,9 +172,9 @@ export function GlowMenu({ className }: { className?: string }) {
                   {item.badge && (
                     <Badge
                       variant="outline"
-                      className="hidden sm:inline-flex text-[9px] px-1 py-0 h-4 border-white/20 font-mono text-zinc-300"
+                      className="hidden sm:inline-flex text-[9px] px-1 py-0 h-4 border-white/20 font-mono text-zinc-300 bg-white/5"
                       style={{
-                        borderColor: isActive ? `${item.color}55` : undefined,
+                        borderColor: isActive ? `${item.color}66` : undefined,
                         color: isActive ? item.color : undefined,
                       }}
                     >

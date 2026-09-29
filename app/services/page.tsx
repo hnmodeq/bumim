@@ -5,8 +5,7 @@ import Link from "next/link";
 import { defaultServices, featureNames, type Service, type Package } from "../lib/pricing";
 
 import { GlowMenu } from "@/components/ui/glow-menu";
-import { GlowCard } from "@/components/ui/glow-card";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,10 +61,10 @@ export default function ServicesPage() {
   const active = services.find((s) => s.id === activeId) || services[0];
 
   return (
-    <main className="min-h-screen bg-[#070709] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
-      {/* Background ambient neon orbs */}
-      <div className="absolute top-10 left-1/3 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+    <main className="min-h-screen bg-[#060608] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
+      {/* Background ambient iridescent orbs */}
+      <div className="absolute top-10 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-purple-600/15 via-indigo-600/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-gradient-to-tl from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
 
       {/* Floating Glow Menu Dock */}
       <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
@@ -76,9 +75,9 @@ export default function ServicesPage() {
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2">
-            <div className="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(168,85,247,0.15)] text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-              <span className="text-zinc-200">تعرفه‌های رسمی مصوب کندو • ۳ ماه دوم ۱۴۰۵</span>
+            <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.12] backdrop-blur-2xl shadow-[0_4px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+              <span className="text-zinc-200">تعرفه‌های مصوب صنف تدوینگران • ۳ ماه دوم ۱۴۰۵</span>
             </div>
           </div>
 
@@ -86,14 +85,14 @@ export default function ServicesPage() {
             className="text-3xl md:text-5xl font-black tracking-tight text-white"
             style={{ letterSpacing: "-0.03em" }}
           >
-            <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-300 via-pink-300 to-amber-200 bg-clip-text text-transparent">
               PRICE LIST
             </span>{" "}
             <span>لیست تعرفه خدمات ادیت</span>
           </h1>
 
           <p className="text-xs md:text-sm text-zinc-400 leading-relaxed">
-            محاسبه دقیق بر مبنای نرخ مصوب • مبنای محاسبه مدت زمان راش ویدیویی است • شامل یک مرحله اصلاحیه رایگان
+            محاسبه دقیق بر مبنای نرخ مصوب کندو • مبنای محاسبه مدت زمان راش ویدیویی است • شامل یک مرحله اصلاحیه رایگان
           </p>
         </div>
 
@@ -101,32 +100,32 @@ export default function ServicesPage() {
         {loading ? (
           <div className="space-y-6">
             <div className="flex justify-center gap-2">
-              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
-              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
-              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
-                <GlowCard key={i} className="p-6 space-y-4">
-                  <Skeleton className="h-6 w-1/2 bg-white/5" />
-                  <Skeleton className="h-14 w-full rounded-xl bg-white/5" />
-                  <Separator className="bg-white/5" />
+                <FrostedCard key={i} className="p-6 space-y-4">
+                  <Skeleton className="h-6 w-1/2 bg-white/[0.05]" />
+                  <Skeleton className="h-14 w-full rounded-2xl bg-white/[0.05]" />
+                  <Separator className="bg-white/[0.06]" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-full bg-white/5" />
-                    <Skeleton className="h-4 w-4/5 bg-white/5" />
-                    <Skeleton className="h-4 w-3/4 bg-white/5" />
-                    <Skeleton className="h-4 w-5/6 bg-white/5" />
+                    <Skeleton className="h-4 w-full bg-white/[0.05]" />
+                    <Skeleton className="h-4 w-4/5 bg-white/[0.05]" />
+                    <Skeleton className="h-4 w-3/4 bg-white/[0.05]" />
+                    <Skeleton className="h-4 w-5/6 bg-white/[0.05]" />
                   </div>
-                  <Skeleton className="h-10 w-full rounded-xl bg-white/5" />
-                </GlowCard>
+                  <Skeleton className="h-11 w-full rounded-xl bg-white/[0.05]" />
+                </FrostedCard>
               ))}
             </div>
           </div>
         ) : (
           <>
-            {/* Service Glow Switcher Tabs */}
+            {/* Service Frosted Switcher Tabs */}
             <div className="flex flex-col items-center">
-              <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-black/60 border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-white/[0.03] border border-white/[0.12] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]">
                 {services.map((s) => {
                   const isActive = activeId === s.id;
                   return (
@@ -137,8 +136,8 @@ export default function ServicesPage() {
                       className={cn(
                         "relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
                         isActive
-                          ? "bg-white/15 text-white shadow-[0_0_16px_rgba(255,255,255,0.2)] border border-white/20 font-black"
-                          : "text-zinc-400 hover:text-white hover:bg-white/5"
+                          ? "bg-white/[0.14] text-white shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.3)] border border-white/25 font-black"
+                          : "text-zinc-400 hover:text-white hover:bg-white/[0.05]"
                       )}
                     >
                       <Layers className={cn("w-3.5 h-3.5 transition-transform", isActive ? "text-primary scale-110" : "opacity-60")} />
@@ -149,19 +148,25 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            {/* Package Glow Cards Grid */}
+            {/* Package Frosted Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {active.packages.map((pkg) => {
-                const glowHex = pkg.popular ? "#ffdf00" : "#a855f7";
+                const glowGradients: Record<string, string> = {
+                  eco: "rgba(124, 58, 237, 0.25)",
+                  pro: "rgba(255, 223, 0, 0.25)",
+                  motion: "rgba(236, 72, 153, 0.25)",
+                };
+                const cardGlow = glowGradients[pkg.id] || "rgba(255, 255, 255, 0.15)";
+
                 return (
-                  <GlowCard
+                  <FrostedCard
                     key={pkg.id}
-                    glowColor={glowHex}
+                    accentGlow={cardGlow}
                     className={cn(
                       "flex flex-col justify-between relative",
                       pkg.popular
-                        ? "border-primary/50 shadow-[0_0_30px_rgba(255,223,0,0.12)]"
-                        : "border-white/10"
+                        ? "border-primary/50 shadow-[0_20px_50px_rgba(255,223,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.3)]"
+                        : "border-white/[0.1]"
                     )}
                   >
                     <div>
@@ -172,7 +177,7 @@ export default function ServicesPage() {
                           <p className="text-[11px] text-zinc-400 mt-0.5">سرویس {active.name}</p>
                         </div>
                         {pkg.popular && (
-                          <Badge className="bg-primary text-primary-foreground font-black text-[10px] gap-1 shadow-[0_0_12px_rgba(255,223,0,0.4)]">
+                          <Badge className="bg-primary text-primary-foreground font-black text-[10px] gap-1 shadow-[0_0_14px_rgba(255,223,0,0.4)]">
                             <Sparkles className="w-3 h-3" />
                             پرطرفدار
                           </Badge>
@@ -180,8 +185,8 @@ export default function ServicesPage() {
                       </div>
 
                       {/* Price badge container */}
-                      <div className={`mt-2 rounded-xl p-[1px] bg-gradient-to-br ${pkg.color} shadow-[0_4px_20px_rgba(0,0,0,0.4)]`}>
-                        <div className="rounded-[11px] bg-zinc-950/90 backdrop-blur p-3.5 text-center flex items-center justify-center gap-2">
+                      <div className={`mt-2 rounded-2xl p-[1px] bg-gradient-to-br ${pkg.color} shadow-[0_8px_24px_rgba(0,0,0,0.4)]`}>
+                        <div className="rounded-[15px] bg-zinc-950/80 backdrop-blur-xl p-4 text-center flex items-center justify-center gap-2">
                           <span className="text-xs font-black text-zinc-400">$</span>
                           <span className="text-3xl font-black tracking-tight text-white">{pkg.price}</span>
                           <div className="text-[10px] text-zinc-400 font-bold leading-tight text-right">
@@ -190,26 +195,26 @@ export default function ServicesPage() {
                         </div>
                       </div>
 
-                      <Separator className="bg-white/10 my-4" />
+                      <Separator className="bg-white/[0.08] my-4" />
 
                       {/* Feature list */}
                       <div className="space-y-2.5">
                         <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
                           امکانات و جزئیات پکیج:
                         </div>
-                        <ul className="space-y-2">
+                        <ul className="space-y-2.5">
                           {pkg.features.map((f, i) => {
                             const has = f && f !== "—";
                             return (
                               <li key={i} className="flex items-center gap-2.5 text-xs">
                                 {has ? (
                                   <div
-                                    className={`w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-br ${pkg.color} text-white shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.2)]`}
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-br ${pkg.color} text-white shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.25)]`}
                                   >
                                     <Check className="w-3 h-3 stroke-[3]" />
                                   </div>
                                 ) : (
-                                  <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-zinc-600 shrink-0">
+                                  <div className="w-5 h-5 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-600 shrink-0">
                                     <Minus className="w-3 h-3" />
                                   </div>
                                 )}
@@ -232,25 +237,25 @@ export default function ServicesPage() {
                         href="/invoice"
                         className={cn(
                           buttonVariants({ variant: pkg.popular ? "default" : "secondary" }),
-                          "w-full font-bold text-xs h-10 gap-2",
+                          "w-full font-bold text-xs h-11 gap-2 rounded-xl",
                           pkg.popular
-                            ? "shadow-[0_0_20px_rgba(255,223,0,0.3)] hover:shadow-[0_0_30px_rgba(255,223,0,0.5)]"
-                            : "bg-white/10 border border-white/10 text-white hover:bg-white/20"
+                            ? "shadow-[0_0_24px_rgba(255,223,0,0.35)] hover:shadow-[0_0_36px_rgba(255,223,0,0.55)]"
+                            : "bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.15]"
                         )}
                       >
                         <Calculator className="w-4 h-4" />
                         <span>صدور پیش‌فاکتور با این نرخ</span>
                       </Link>
                     </div>
-                  </GlowCard>
+                  </FrostedCard>
                 );
               })}
             </div>
 
             {/* Desktop Comparison Table */}
             <div className="hidden lg:block mt-8">
-              <GlowCard glowColor="#3b82f6" className="p-0 overflow-hidden">
-                <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <FrostedCard accentGlow="rgba(59, 130, 246, 0.15)" className="p-0 overflow-hidden">
+                <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
                   <div>
                     <h3 className="text-base font-black text-white flex items-center gap-2">
                       <FileSpreadsheet className="w-4 h-4 text-primary" />
@@ -260,14 +265,14 @@ export default function ServicesPage() {
                       بررسی تفاوت‌ها و امکانات همراه هر سطح
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-xs font-mono border-white/20 text-zinc-300">
+                  <Badge variant="outline" className="text-xs font-mono border-white/20 text-zinc-300 bg-white/5">
                     {active.packages.length} پکیج فعال
                   </Badge>
                 </div>
 
                 <Table>
-                  <TableHeader className="bg-white/5">
-                    <TableRow className="border-white/10">
+                  <TableHeader className="bg-white/[0.03]">
+                    <TableRow className="border-white/[0.08]">
                       <TableHead className="w-[280px] text-right font-black text-xs text-white py-4 px-6">
                         ویژگی / فاکتور فنی
                       </TableHead>
@@ -285,7 +290,7 @@ export default function ServicesPage() {
                   </TableHeader>
                   <TableBody>
                     {featureNames.map((feat, idx) => (
-                      <TableRow key={feat} className="border-white/5 hover:bg-white/5">
+                      <TableRow key={feat} className="border-white/[0.05] hover:bg-white/[0.03]">
                         <TableCell className="font-bold text-xs text-zinc-200 py-3.5 px-6">
                           <div className="flex items-center gap-2">
                             <span>{feat}</span>
@@ -305,7 +310,7 @@ export default function ServicesPage() {
                           return (
                             <TableCell key={pkg.id + feat} className="text-center py-3.5 px-4">
                               {has ? (
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs shadow-[0_0_10px_rgba(255,223,0,0.15)]">
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary font-bold text-xs shadow-[0_0_12px_rgba(255,223,0,0.15)]">
                                   <Check className="w-3 h-3 stroke-[3]" />
                                   <span>{val}</span>
                                 </div>
@@ -319,14 +324,14 @@ export default function ServicesPage() {
                     ))}
                   </TableBody>
                 </Table>
-              </GlowCard>
+              </FrostedCard>
             </div>
 
             {/* Note & Guidelines */}
-            <GlowCard glowColor="#11ffba" className="p-4 md:p-5">
+            <FrostedCard accentGlow="rgba(17, 255, 186, 0.15)" className="p-4 md:p-5">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-[0_0_12px_rgba(17,255,186,0.2)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-[0_0_16px_rgba(17,255,186,0.25)]">
                     <Info className="w-4 h-4" />
                   </div>
                   <div>
@@ -338,14 +343,14 @@ export default function ServicesPage() {
                   href="/invoice"
                   className={cn(
                     buttonVariants({ size: "sm" }),
-                    "font-bold gap-2 shrink-0 shadow-[0_0_16px_rgba(255,223,0,0.25)]"
+                    "font-bold gap-2 shrink-0 rounded-xl shadow-[0_0_20px_rgba(255,223,0,0.3)]"
                   )}
                 >
                   <span>ورود به صدور پیش‌فاکتور</span>
                   <ArrowLeft className="w-4 h-4" />
                 </Link>
               </div>
-            </GlowCard>
+            </FrostedCard>
           </>
         )}
       </div>
