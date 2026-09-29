@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { defaultServices, featureNames, type Service, type Package } from "../lib/pricing";
 
+import { GlowMenu } from "@/components/ui/glow-menu";
+import { GlowCard } from "@/components/ui/glow-card";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -27,7 +29,6 @@ import {
   Sparkles,
   Check,
   Minus,
-  Settings,
   Calculator,
   ArrowLeft,
   Info,
@@ -61,59 +62,28 @@ export default function ServicesPage() {
   const active = services.find((s) => s.id === activeId) || services[0];
 
   return (
-    <main className="min-h-screen bg-background text-foreground px-4 md:px-6 py-8 md:py-12 relative overflow-hidden">
-      {/* Background accents */}
-      <div className="absolute top-0 left-1/3 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#070709] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
+      {/* Background ambient neon orbs */}
+      <div className="absolute top-10 left-1/3 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Floating Glow Menu Dock */}
+      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
+        <GlowMenu />
+      </header>
 
       <div className="w-full max-w-6xl mx-auto relative z-10 space-y-8">
-        {/* Navigation Bar */}
-        <div className="flex items-center justify-between pb-4 border-b border-border/60">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm font-black text-foreground hover:text-primary transition-colors"
-            >
-              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-black">
-                ب
-              </div>
-              <span>بومیم</span>
-            </Link>
-            <Badge variant="outline" className="text-[11px] font-mono border-primary/30 text-primary">
-              bumims.ir
-            </Badge>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/invoice"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1.5")}
-            >
-              <Calculator className="w-3.5 h-3.5" />
-              <span>صدور پیش‌فاکتور</span>
-            </Link>
-            <Link
-              href="/admin"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "text-xs gap-1.5 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span>مدیریت</span>
-            </Link>
-          </div>
-        </div>
-
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <Badge variant="secondary" className="px-3 py-1 rounded-full text-xs font-semibold gap-1.5 bg-secondary/80 border border-border">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            تعرفه‌های رسمی • ۳ ماه دوم ۱۴۰۵
-          </Badge>
+          <div className="inline-flex items-center gap-2">
+            <div className="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(168,85,247,0.15)] text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <span className="text-zinc-200">تعرفه‌های رسمی مصوب کندو • ۳ ماه دوم ۱۴۰۵</span>
+            </div>
+          </div>
 
           <h1
-            className="text-3xl md:text-5xl font-black tracking-tight"
+            className="text-3xl md:text-5xl font-black tracking-tight text-white"
             style={{ letterSpacing: "-0.03em" }}
           >
             <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
@@ -122,8 +92,8 @@ export default function ServicesPage() {
             <span>لیست تعرفه خدمات ادیت</span>
           </h1>
 
-          <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-            محاسبه دقیق بر مبنای نرخ مصوب کندو • مبنای محاسبه مدت زمان راش ویدیویی است • شامل یک مرحله اصلاحیه رایگان
+          <p className="text-xs md:text-sm text-zinc-400 leading-relaxed">
+            محاسبه دقیق بر مبنای نرخ مصوب • مبنای محاسبه مدت زمان راش ویدیویی است • شامل یک مرحله اصلاحیه رایگان
           </p>
         </div>
 
@@ -131,250 +101,251 @@ export default function ServicesPage() {
         {loading ? (
           <div className="space-y-6">
             <div className="flex justify-center gap-2">
-              <Skeleton className="h-10 w-32 rounded-xl" />
-              <Skeleton className="h-10 w-32 rounded-xl" />
-              <Skeleton className="h-10 w-32 rounded-xl" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
+              <Skeleton className="h-10 w-32 rounded-full bg-white/5" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 space-y-4 bg-card/60">
-                  <Skeleton className="h-6 w-1/2" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                  <Separator />
+                <GlowCard key={i} className="p-6 space-y-4">
+                  <Skeleton className="h-6 w-1/2 bg-white/5" />
+                  <Skeleton className="h-14 w-full rounded-xl bg-white/5" />
+                  <Separator className="bg-white/5" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-4/5" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-4 w-full bg-white/5" />
+                    <Skeleton className="h-4 w-4/5 bg-white/5" />
+                    <Skeleton className="h-4 w-3/4 bg-white/5" />
+                    <Skeleton className="h-4 w-5/6 bg-white/5" />
                   </div>
-                  <Skeleton className="h-10 w-full rounded-xl" />
-                </Card>
+                  <Skeleton className="h-10 w-full rounded-xl bg-white/5" />
+                </GlowCard>
               ))}
             </div>
           </div>
         ) : (
           <>
-            {/* Service Tabs */}
+            {/* Service Glow Switcher Tabs */}
             <div className="flex flex-col items-center">
-              <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-secondary/50 border border-border">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-black/60 border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                 {services.map((s) => {
                   const isActive = activeId === s.id;
                   return (
-                    <Button
+                    <button
                       key={s.id}
-                      variant={isActive ? "default" : "ghost"}
-                      size="sm"
+                      type="button"
                       onClick={() => setActiveId(s.id)}
-                      className={`rounded-xl text-xs font-bold transition-all ${
+                      className={cn(
+                        "relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                      }`}
+                          ? "bg-white/15 text-white shadow-[0_0_16px_rgba(255,255,255,0.2)] border border-white/20 font-black"
+                          : "text-zinc-400 hover:text-white hover:bg-white/5"
+                      )}
                     >
-                      <Layers className="w-3.5 h-3.5 ms-1.5 opacity-70" />
-                      {s.name}
-                    </Button>
+                      <Layers className={cn("w-3.5 h-3.5 transition-transform", isActive ? "text-primary scale-110" : "opacity-60")} />
+                      <span>{s.name}</span>
+                    </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Desktop Package Cards Grid */}
+            {/* Package Glow Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {active.packages.map((pkg) => {
+                const glowHex = pkg.popular ? "#ffdf00" : "#a855f7";
                 return (
-                  <Card
+                  <GlowCard
                     key={pkg.id}
-                    className={`relative flex flex-col justify-between overflow-hidden transition-all duration-300 bg-card/70 backdrop-blur border-border/80 hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(255,223,0,0.06)] ${
-                      pkg.popular ? "ring-2 ring-primary/60 border-primary/60 shadow-[0_0_25px_rgba(255,223,0,0.1)]" : ""
-                    }`}
+                    glowColor={glowHex}
+                    className={cn(
+                      "flex flex-col justify-between relative",
+                      pkg.popular
+                        ? "border-primary/50 shadow-[0_0_30px_rgba(255,223,0,0.12)]"
+                        : "border-white/10"
+                    )}
                   >
-                    {/* Top Accent Gradient Bar */}
-                    <div className={`h-1.5 w-full bg-gradient-to-r ${pkg.color}`} />
-
                     <div>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg font-black">{pkg.name}</CardTitle>
-                          {pkg.popular && (
-                            <Badge className="bg-primary text-primary-foreground font-black text-[10px] gap-1 shadow-sm">
-                              <Sparkles className="w-3 h-3" />
-                              پرطرفدار
-                            </Badge>
-                          )}
+                      {/* Top Header */}
+                      <div className="flex items-start justify-between pb-3">
+                        <div>
+                          <h3 className="text-lg font-black text-white">{pkg.name}</h3>
+                          <p className="text-[11px] text-zinc-400 mt-0.5">سرویس {active.name}</p>
                         </div>
-                        <CardDescription className="text-xs text-muted-foreground">
-                          سرویس {active.name}
-                        </CardDescription>
-                      </CardHeader>
+                        {pkg.popular && (
+                          <Badge className="bg-primary text-primary-foreground font-black text-[10px] gap-1 shadow-[0_0_12px_rgba(255,223,0,0.4)]">
+                            <Sparkles className="w-3 h-3" />
+                            پرطرفدار
+                          </Badge>
+                        )}
+                      </div>
 
-                      <CardContent className="space-y-4">
-                        {/* Price banner */}
-                        <div className={`rounded-xl p-[1px] bg-gradient-to-br ${pkg.color}`}>
-                          <div className="rounded-[11px] bg-card/95 p-3.5 text-center flex items-center justify-center gap-2">
-                            <span className="text-xs font-black text-muted-foreground">$</span>
-                            <span className="text-3xl font-black tracking-tight text-foreground">{pkg.price}</span>
-                            <div className="text-[10px] text-muted-foreground font-bold leading-tight text-right">
-                              {pkg.per}
-                            </div>
+                      {/* Price badge container */}
+                      <div className={`mt-2 rounded-xl p-[1px] bg-gradient-to-br ${pkg.color} shadow-[0_4px_20px_rgba(0,0,0,0.4)]`}>
+                        <div className="rounded-[11px] bg-zinc-950/90 backdrop-blur p-3.5 text-center flex items-center justify-center gap-2">
+                          <span className="text-xs font-black text-zinc-400">$</span>
+                          <span className="text-3xl font-black tracking-tight text-white">{pkg.price}</span>
+                          <div className="text-[10px] text-zinc-400 font-bold leading-tight text-right">
+                            {pkg.per}
                           </div>
                         </div>
+                      </div>
 
-                        <Separator className="bg-border/60" />
+                      <Separator className="bg-white/10 my-4" />
 
-                        {/* Feature list */}
-                        <div className="space-y-2.5 pt-1">
-                          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            امکانات و جزئیات پکیج:
-                          </div>
-                          <ul className="space-y-2">
-                            {pkg.features.map((f, i) => {
-                              const has = f && f !== "—";
-                              return (
-                                <li key={i} className="flex items-center gap-2.5 text-xs">
-                                  {has ? (
-                                    <div
-                                      className={`w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-br ${pkg.color} text-white shrink-0 shadow-xs`}
-                                    >
-                                      <Check className="w-3 h-3 stroke-[3]" />
-                                    </div>
-                                  ) : (
-                                    <div className="w-5 h-5 rounded-full bg-secondary flex items-center justify-center text-muted-foreground/50 shrink-0">
-                                      <Minus className="w-3 h-3" />
-                                    </div>
-                                  )}
-                                  <span
-                                    className={`leading-tight ${
-                                      has ? "text-foreground font-medium" : "text-muted-foreground/60 line-through"
-                                    }`}
+                      {/* Feature list */}
+                      <div className="space-y-2.5">
+                        <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                          امکانات و جزئیات پکیج:
+                        </div>
+                        <ul className="space-y-2">
+                          {pkg.features.map((f, i) => {
+                            const has = f && f !== "—";
+                            return (
+                              <li key={i} className="flex items-center gap-2.5 text-xs">
+                                {has ? (
+                                  <div
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-br ${pkg.color} text-white shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.2)]`}
                                   >
-                                    {has ? f : featureNames[i]}
-                                  </span>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      </CardContent>
+                                    <Check className="w-3 h-3 stroke-[3]" />
+                                  </div>
+                                ) : (
+                                  <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-zinc-600 shrink-0">
+                                    <Minus className="w-3 h-3" />
+                                  </div>
+                                )}
+                                <span
+                                  className={`leading-tight ${
+                                    has ? "text-zinc-200 font-medium" : "text-zinc-600 line-through"
+                                  }`}
+                                >
+                                  {has ? f : featureNames[i]}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     </div>
 
-                    <CardFooter className="pt-2">
+                    <div className="pt-6">
                       <Link
                         href="/invoice"
                         className={cn(
                           buttonVariants({ variant: pkg.popular ? "default" : "secondary" }),
-                          "w-full font-bold gap-2"
+                          "w-full font-bold text-xs h-10 gap-2",
+                          pkg.popular
+                            ? "shadow-[0_0_20px_rgba(255,223,0,0.3)] hover:shadow-[0_0_30px_rgba(255,223,0,0.5)]"
+                            : "bg-white/10 border border-white/10 text-white hover:bg-white/20"
                         )}
                       >
                         <Calculator className="w-4 h-4" />
                         <span>صدور پیش‌فاکتور با این نرخ</span>
                       </Link>
-                    </CardFooter>
-                  </Card>
+                    </div>
+                  </GlowCard>
                 );
               })}
             </div>
 
             {/* Desktop Comparison Table */}
-            <div className="hidden lg:block mt-10">
-              <Card className="bg-card/50 backdrop-blur border-border/80 overflow-hidden">
-                <CardHeader className="pb-3 border-b border-border/60">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-base font-black flex items-center gap-2">
-                        <FileSpreadsheet className="w-4 h-4 text-primary" />
-                        جدول مقایسه جامع پکیج‌های «{active.name}»
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        بررسی جزئیات، خدمات همراه و تفاوت‌های هر سطح
-                      </CardDescription>
-                    </div>
-                    <Badge variant="outline" className="text-xs font-mono">
-                      {active.packages.length} پکیج فعال
-                    </Badge>
+            <div className="hidden lg:block mt-8">
+              <GlowCard glowColor="#3b82f6" className="p-0 overflow-hidden">
+                <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-black text-white flex items-center gap-2">
+                      <FileSpreadsheet className="w-4 h-4 text-primary" />
+                      جدول مقایسه جامع پکیج‌های «{active.name}»
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      بررسی تفاوت‌ها و امکانات همراه هر سطح
+                    </p>
                   </div>
-                </CardHeader>
+                  <Badge variant="outline" className="text-xs font-mono border-white/20 text-zinc-300">
+                    {active.packages.length} پکیج فعال
+                  </Badge>
+                </div>
 
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader className="bg-secondary/40">
-                      <TableRow className="border-border/60">
-                        <TableHead className="w-[280px] text-right font-black text-xs text-foreground py-4 px-6">
-                          ویژگی / فاکتور فنی
+                <Table>
+                  <TableHeader className="bg-white/5">
+                    <TableRow className="border-white/10">
+                      <TableHead className="w-[280px] text-right font-black text-xs text-white py-4 px-6">
+                        ویژگی / فاکتور فنی
+                      </TableHead>
+                      {active.packages.map((pkg) => (
+                        <TableHead key={pkg.id} className="text-center font-black text-xs text-white py-4 px-4">
+                          <div className="space-y-1">
+                            <div className="text-sm font-black text-white">{pkg.name}</div>
+                            <div className="text-[11px] text-primary font-mono font-bold">
+                              {pkg.price} {pkg.per}
+                            </div>
+                          </div>
                         </TableHead>
-                        {active.packages.map((pkg) => (
-                          <TableHead key={pkg.id} className="text-center font-black text-xs text-foreground py-4 px-4">
-                            <div className="space-y-1">
-                              <div className="text-sm font-black">{pkg.name}</div>
-                              <div className="text-[11px] text-primary font-mono font-bold">
-                                {pkg.price} {pkg.per}
-                              </div>
-                            </div>
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {featureNames.map((feat, idx) => (
-                        <TableRow key={feat} className="border-border/40 hover:bg-secondary/20">
-                          <TableCell className="font-bold text-xs text-foreground py-3.5 px-6">
-                            <div className="flex items-center gap-2">
-                              <span>{feat}</span>
-                              <Tooltip>
-                                <TooltipTrigger className="text-muted-foreground/60 hover:text-muted-foreground cursor-pointer">
-                                  <HelpCircle className="w-3.5 h-3.5" />
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs">
-                                  فاکتور فنی در استاندارد تدوین ویدیو
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                          </TableCell>
-                          {active.packages.map((pkg) => {
-                            const val = pkg.features[idx];
-                            const has = val && val !== "—";
-                            return (
-                              <TableCell key={pkg.id + feat} className="text-center py-3.5 px-4">
-                                {has ? (
-                                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs">
-                                    <Check className="w-3 h-3 stroke-[3]" />
-                                    <span>{val}</span>
-                                  </div>
-                                ) : (
-                                  <span className="text-muted-foreground/40 font-mono text-sm">—</span>
-                                )}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
                       ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {featureNames.map((feat, idx) => (
+                      <TableRow key={feat} className="border-white/5 hover:bg-white/5">
+                        <TableCell className="font-bold text-xs text-zinc-200 py-3.5 px-6">
+                          <div className="flex items-center gap-2">
+                            <span>{feat}</span>
+                            <Tooltip>
+                              <TooltipTrigger className="text-zinc-500 hover:text-zinc-300 cursor-pointer">
+                                <HelpCircle className="w-3.5 h-3.5" />
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs bg-zinc-900 border-white/10 text-white">
+                                فاکتور فنی در استاندارد تدوین ویدیو
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TableCell>
+                        {active.packages.map((pkg) => {
+                          const val = pkg.features[idx];
+                          const has = val && val !== "—";
+                          return (
+                            <TableCell key={pkg.id + feat} className="text-center py-3.5 px-4">
+                              {has ? (
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs shadow-[0_0_10px_rgba(255,223,0,0.15)]">
+                                  <Check className="w-3 h-3 stroke-[3]" />
+                                  <span>{val}</span>
+                                </div>
+                              ) : (
+                                <span className="text-zinc-600 font-mono text-sm">—</span>
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </GlowCard>
             </div>
 
             {/* Note & Guidelines */}
-            <Card className="bg-secondary/30 border-border/60 p-4 md:p-5">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <GlowCard glowColor="#11ffba" className="p-4 md:p-5">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-[0_0_12px_rgba(17,255,186,0.2)]">
                     <Info className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-foreground">نکته مهم:</span> نرخ‌های فوق به عنوان مبنای کارشناسی تدوین ویدیوی ۱۴۰۵ است. برای محاسبه پروژه‌های چند قسمتی و دریافت پیش‌فاکتور با نام خودتان، از بخش صدور پیش‌فاکتور استفاده کنید.
+                    <span className="font-bold text-white">نکته مهم:</span> نرخ‌های فوق به عنوان مبنای کارشناسی تدوین ویدیوی ۱۴۰۵ است. برای محاسبه پروژه‌های چند قسمتی و دریافت پیش‌فاکتور با نام خودتان، از بخش صدور پیش‌فاکتور استفاده کنید.
                   </div>
                 </div>
 
                 <Link
                   href="/invoice"
-                  className={cn(buttonVariants({ size: "sm" }), "font-bold gap-2 shrink-0")}
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "font-bold gap-2 shrink-0 shadow-[0_0_16px_rgba(255,223,0,0.25)]"
+                  )}
                 >
                   <span>ورود به صدور پیش‌فاکتور</span>
                   <ArrowLeft className="w-4 h-4" />
                 </Link>
               </div>
-            </Card>
+            </GlowCard>
           </>
         )}
       </div>

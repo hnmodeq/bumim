@@ -10,6 +10,8 @@ import {
   type Service,
 } from "../lib/pricing";
 
+import { GlowMenu } from "@/components/ui/glow-menu";
+import { GlowCard } from "@/components/ui/glow-card";
 import {
   Card,
   CardHeader,
@@ -61,7 +63,6 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState<string>("");
 
-  // Password Prompt Dialog state
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
   const [pendingNextServices, setPendingNextServices] = useState<Service[] | null>(null);
@@ -216,86 +217,92 @@ export default function AdminPage() {
   const active = services.find((s) => s.id === activeServiceId);
 
   return (
-    <main className="min-h-screen bg-background text-foreground px-4 md:px-6 py-8">
-      <div className="w-full max-w-5xl mx-auto space-y-6">
+    <main className="min-h-screen bg-[#070709] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
+      {/* Background ambient neon orbs */}
+      <div className="absolute top-10 right-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Floating Glow Menu Dock */}
+      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
+        <GlowMenu />
+      </header>
+
+      <div className="w-full max-w-5xl mx-auto relative z-10 space-y-6">
         {/* Top Header Card */}
-        <Card className="bg-card/70 backdrop-blur border-border/80">
-          <CardHeader className="pb-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-black">
-                    <Database className="w-4 h-4" />
-                  </div>
-                  <CardTitle className="text-xl font-black">پنل مدیریت تعرفه‌ها</CardTitle>
-                  <Badge variant="outline" className="border-primary/40 text-primary text-[11px] font-mono">
-                    Supabase Connected
-                  </Badge>
+        <GlowCard glowColor="#11ffba">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black shadow-[0_0_16px_rgba(17,255,186,0.25)]">
+                  <Database className="w-4 h-4" />
                 </div>
-                <CardDescription className="text-xs">
-                  ویرایش سرویس‌ها، پکیج‌ها، قیمت‌ها و امکانات همراه با ذخیره بلادرنگ در دیتابیس
-                </CardDescription>
+                <h1 className="text-xl font-black text-white">پنل مدیریت تعرفه‌ها</h1>
+                <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 text-[11px] font-mono shadow-[0_0_10px_rgba(17,255,186,0.2)]">
+                  Supabase Live
+                </Badge>
               </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <Link
-                  href="/services"
-                  target="_blank"
-                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1.5")}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>مشاهده صفحه تعرفه‌ها</span>
-                  <ExternalLink className="w-3 h-3 opacity-60" />
-                </Link>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetToDefaults}
-                  className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>ریست به پیش‌فرض</span>
-                </Button>
-              </div>
+              <p className="text-xs text-zinc-400">
+                ویرایش آنلاین سرویس‌ها، پکیج‌ها، قیمت‌ها و امکانات همراه با ذخیره بلادرنگ در دیتابیس ابری
+              </p>
             </div>
-          </CardHeader>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/services"
+                target="_blank"
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1.5 border-white/10 hover:bg-white/5 text-zinc-300")}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>مشاهده صفحه تعرفه‌ها</span>
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </Link>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetToDefaults}
+                className="text-xs text-zinc-400 hover:text-red-400 hover:bg-red-500/10 gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>ریست به پیش‌فرض</span>
+              </Button>
+            </div>
+          </div>
 
           {status && (
-            <CardFooter className="pt-0 pb-3 flex items-center gap-2 text-xs">
+            <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-xs">
               {status.startsWith("✓") ? (
-                <Badge variant="outline" className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10 gap-1.5 py-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/50 text-emerald-400 bg-emerald-500/10 shadow-[0_0_12px_rgba(17,255,186,0.2)]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>{status}</span>
-                </Badge>
+                </div>
               ) : (
-                <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10 gap-1.5 py-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/50 text-amber-400 bg-amber-500/10 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{status}</span>
-                </Badge>
+                </div>
               )}
-            </CardFooter>
+            </div>
           )}
-        </Card>
+        </GlowCard>
 
         {loading ? (
           <div className="space-y-4">
-            <Skeleton className="h-44 w-full rounded-2xl" />
-            <Skeleton className="h-72 w-full rounded-2xl" />
+            <Skeleton className="h-44 w-full rounded-2xl bg-white/5" />
+            <Skeleton className="h-72 w-full rounded-2xl bg-white/5" />
           </div>
         ) : (
           <>
             {/* Services Section */}
-            <Card className="bg-card/70 backdrop-blur border-border/80">
-              <CardHeader className="pb-3">
+            <GlowCard glowColor="#a855f7">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-black flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-black text-white flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-purple-400" />
                     <span>دسته‌بندی سرویس‌ها ({services.length})</span>
-                  </CardTitle>
+                  </h2>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+
                 {/* Service Pills */}
                 <div className="flex flex-wrap gap-2">
                   {services.map((s) => {
@@ -303,11 +310,12 @@ export default function AdminPage() {
                     return (
                       <div
                         key={s.id}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                        className={cn(
+                          "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all duration-200",
                           isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-xs"
-                            : "bg-secondary/60 text-muted-foreground border-border hover:text-foreground hover:border-border/80"
-                        }`}
+                            ? "bg-purple-500/20 text-white border-purple-500/50 shadow-[0_0_14px_rgba(168,85,247,0.3)] font-black"
+                            : "bg-white/5 text-zinc-400 border-white/10 hover:text-white hover:border-white/20"
+                        )}
                       >
                         <button
                           type="button"
@@ -319,7 +327,7 @@ export default function AdminPage() {
                         <button
                           type="button"
                           onClick={() => deleteService(s.id, s.name)}
-                          className="w-4 h-4 rounded-full flex items-center justify-center opacity-70 hover:opacity-100 hover:bg-black/20"
+                          className="w-4 h-4 rounded-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-white/20"
                           title="حذف این سرویس"
                         >
                           ×
@@ -329,7 +337,7 @@ export default function AdminPage() {
                   })}
                 </div>
 
-                <Separator className="bg-border/60" />
+                <Separator className="bg-white/10" />
 
                 {/* Add Service Bar */}
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -338,13 +346,13 @@ export default function AdminPage() {
                       value={newServiceName}
                       onChange={(e) => setNewServiceName(e.target.value)}
                       placeholder="نام سرویس جدید (مثلاً: ادیت پادکست تصویری)"
-                      className="bg-background text-xs"
+                      className="bg-black/60 border-white/10 text-xs"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") addService();
                       }}
                     />
                   </div>
-                  <Button onClick={addService} size="sm" className="font-bold gap-1.5 text-xs">
+                  <Button onClick={addService} size="sm" className="font-bold gap-1.5 text-xs shadow-[0_0_14px_rgba(255,223,0,0.25)]">
                     <Plus className="w-4 h-4" />
                     <span>افزودن سرویس جدید</span>
                   </Button>
@@ -353,49 +361,49 @@ export default function AdminPage() {
                 {/* Active service rename */}
                 {active && (
                   <div className="flex items-center gap-3 pt-1">
-                    <Label className="text-xs text-muted-foreground shrink-0">
+                    <Label className="text-xs text-zinc-400 shrink-0">
                       ویرایش نام سرویس فعال:
                     </Label>
                     <Input
                       value={active.name}
                       onChange={(e) => updateServiceName(active.id, e.target.value)}
-                      className="max-w-xs bg-background text-xs h-8"
+                      className="max-w-xs bg-black/60 border-white/10 text-xs h-8"
                     />
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
 
             {/* Packages Section */}
             {active && (
-              <Card className="bg-card/70 backdrop-blur border-border/80">
-                <CardHeader className="pb-3">
+              <GlowCard glowColor="#ffdf00">
+                <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                      <CardTitle className="text-sm font-black flex items-center gap-2">
+                      <h2 className="text-sm font-black text-white flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-primary" />
                         <span>پکیج‌های «{active.name}» ({active.packages.length})</span>
-                      </CardTitle>
-                      <CardDescription className="text-xs">
+                      </h2>
+                      <p className="text-xs text-zinc-400 mt-0.5">
                         تنظیم نرخ، گرادینت، ویژگی‌های ۵گانه و نشان پرطرفدار
-                      </CardDescription>
+                      </p>
                     </div>
 
                     <Button
                       onClick={openAddPackageDialog}
                       size="sm"
-                      className="font-bold gap-1.5 text-xs"
+                      className="font-bold gap-1.5 text-xs shadow-[0_0_14px_rgba(255,223,0,0.25)]"
                     >
                       <Plus className="w-4 h-4" />
                       <span>افزودن پکیج جدید</span>
                     </Button>
                   </div>
-                </CardHeader>
 
-                <CardContent>
+                  <Separator className="bg-white/10" />
+
                   {active.packages.length === 0 ? (
-                    <div className="text-center py-10 border border-dashed border-border rounded-xl">
-                      <p className="text-xs text-muted-foreground mb-3">هنوز پکیجی برای این سرویس تعریف نشده است.</p>
+                    <div className="text-center py-10 border border-dashed border-white/10 rounded-2xl bg-black/40">
+                      <p className="text-xs text-zinc-400 mb-3">هنوز پکیجی برای این سرویس تعریف نشده است.</p>
                       <Button onClick={openAddPackageDialog} size="sm" variant="outline" className="text-xs">
                         افزودن اولین پکیج
                       </Button>
@@ -403,45 +411,45 @@ export default function AdminPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {active.packages.map((pkg) => (
-                        <Card
+                        <div
                           key={pkg.id}
-                          className="bg-background/80 border-border/80 overflow-hidden relative flex flex-col justify-between"
+                          className="rounded-xl border border-white/10 bg-black/60 p-4 space-y-3 relative overflow-hidden flex flex-col justify-between hover:border-white/20 transition-all"
                         >
-                          <div className={`h-1.5 w-full bg-gradient-to-r ${pkg.color}`} />
+                          <div className={`h-1 w-full absolute top-0 inset-x-0 bg-gradient-to-r ${pkg.color}`} />
 
-                          <div className="p-4 space-y-3">
-                            <div className="flex items-start justify-between">
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between pt-1">
                               <div>
-                                <div className="text-sm font-black text-foreground flex items-center gap-2">
+                                <div className="text-sm font-black text-white flex items-center gap-2">
                                   <span>{pkg.name}</span>
                                   {pkg.popular && (
-                                    <Badge className="bg-primary text-primary-foreground text-[10px] py-0">
+                                    <Badge className="bg-primary text-primary-foreground text-[10px] py-0 shadow-[0_0_8px_rgba(255,223,0,0.3)]">
                                       پرطرفدار
                                     </Badge>
                                   )}
                                 </div>
-                                <div className="text-[11px] text-muted-foreground">{pkg.per}</div>
+                                <div className="text-[11px] text-zinc-400">{pkg.per}</div>
                               </div>
                               <div className="text-left font-mono">
                                 <span className="text-lg font-black text-primary">{pkg.price}</span>
                               </div>
                             </div>
 
-                            <Separator className="bg-border/60" />
+                            <Separator className="bg-white/10" />
 
                             <ul className="space-y-1 text-xs">
                               {pkg.features.map((f, i) => (
                                 <li key={i} className="flex items-center gap-2">
                                   <span
                                     className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] shrink-0 ${
-                                      f === "—" ? "bg-secondary text-muted-foreground" : "bg-primary text-primary-foreground font-black"
+                                      f === "—" ? "bg-white/10 text-zinc-500" : "bg-primary text-primary-foreground font-black"
                                     }`}
                                   >
                                     {f === "—" ? "—" : "✓"}
                                   </span>
                                   <span
                                     className={`truncate ${
-                                      f === "—" ? "text-muted-foreground/50 line-through" : "text-muted-foreground"
+                                      f === "—" ? "text-zinc-600 line-through" : "text-zinc-300"
                                     }`}
                                   >
                                     {f || "—"}
@@ -451,12 +459,12 @@ export default function AdminPage() {
                             </ul>
                           </div>
 
-                          <CardFooter className="pt-0 pb-3 px-4 flex gap-2">
+                          <div className="pt-3 border-t border-white/10 flex gap-2">
                             <Button
                               variant="secondary"
                               size="sm"
                               onClick={() => openEditPackageDialog(pkg)}
-                              className="flex-1 text-xs font-bold gap-1.5"
+                              className="flex-1 text-xs font-bold gap-1.5 bg-white/10 hover:bg-white/20 text-white"
                             >
                               <Edit className="w-3.5 h-3.5" />
                               <span>ویرایش</span>
@@ -465,31 +473,31 @@ export default function AdminPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => deletePackage(pkg.id, pkg.name)}
-                              className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              className="text-xs text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>
-                          </CardFooter>
-                        </Card>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </GlowCard>
             )}
           </>
         )}
 
         {/* Dialog for Package Add/Edit */}
         <Dialog open={isPackageDialogOpen} onOpenChange={setIsPackageDialogOpen}>
-          <DialogContent className="max-w-lg bg-card border-border">
+          <DialogContent className="max-w-lg bg-zinc-950 border-white/10 text-white backdrop-blur-2xl">
             <DialogHeader>
               <DialogTitle className="text-base font-black">
                 {editingPackage && services.some((s) => s.packages.some((p) => p.id === editingPackage.id))
                   ? "ویرایش پکیج"
                   : "افزودن پکیج جدید"}
               </DialogTitle>
-              <DialogDescription className="text-xs">
+              <DialogDescription className="text-xs text-zinc-400">
                 تنظیم مشخصات پکیج برای سرویس «{active?.name}»
               </DialogDescription>
             </DialogHeader>
@@ -497,40 +505,40 @@ export default function AdminPage() {
             {editingPackage && (
               <div className="space-y-4 py-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">نام پکیج</Label>
+                  <Label className="text-xs text-zinc-300">نام پکیج</Label>
                   <Input
                     value={editingPackage.name}
                     onChange={(e) => setEditingPackage({ ...editingPackage, name: e.target.value })}
                     placeholder="مثلاً: اقتصادی، حرفه‌ای، موشن ۲۵"
-                    className="text-xs"
+                    className="text-xs bg-black/60 border-white/10"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs">قیمت</Label>
+                    <Label className="text-xs text-zinc-300">قیمت</Label>
                     <Input
                       value={editingPackage.price}
                       onChange={(e) => setEditingPackage({ ...editingPackage, price: e.target.value })}
                       placeholder="مثلاً: ۱.۴ یا ۴.۴"
-                      className="text-xs font-mono"
+                      className="text-xs font-mono bg-black/60 border-white/10"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">واحد و بازه</Label>
+                    <Label className="text-xs text-zinc-300">واحد و بازه</Label>
                     <Input
                       value={editingPackage.per}
                       onChange={(e) => setEditingPackage({ ...editingPackage, per: e.target.value })}
                       placeholder="میلیون / دقیقه"
-                      className="text-xs"
+                      className="text-xs bg-black/60 border-white/10"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/40 border border-border">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="space-y-0.5">
-                    <Label className="text-xs font-bold">علامت به عنوان پکیج پرطرفدار (Popular)</Label>
-                    <p className="text-[11px] text-muted-foreground">در لیست با رنگ شاخص و بج ستاره‌دار نمایش داده می‌شود</p>
+                    <Label className="text-xs font-bold text-white">علامت به عنوان پکیج پرطرفدار (Popular)</Label>
+                    <p className="text-[11px] text-zinc-400">در لیست با رنگ شاخص و بج ستاره‌دار نمایش داده می‌شود</p>
                   </div>
                   <Switch
                     checked={!!editingPackage.popular}
@@ -540,7 +548,7 @@ export default function AdminPage() {
 
                 {/* Color gradient picker */}
                 <div className="space-y-2">
-                  <Label className="text-xs flex items-center gap-1.5">
+                  <Label className="text-xs text-zinc-300 flex items-center gap-1.5">
                     <Palette className="w-3.5 h-3.5" />
                     انتخاب تم رنگی پکیج
                   </Label>
@@ -551,7 +559,7 @@ export default function AdminPage() {
                         type="button"
                         onClick={() => setEditingPackage({ ...editingPackage, color: c })}
                         className={`w-7 h-7 rounded-full bg-gradient-to-br ${c} transition-all cursor-pointer ${
-                          editingPackage.color === c ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-110" : "opacity-80 hover:opacity-100"
+                          editingPackage.color === c ? "ring-2 ring-primary ring-offset-2 ring-offset-black scale-110" : "opacity-80 hover:opacity-100"
                         }`}
                       />
                     ))}
@@ -560,7 +568,7 @@ export default function AdminPage() {
 
                 {/* 5 Features */}
                 <div className="space-y-2">
-                  <Label className="text-xs">۵ ویژگی پکیج (برای نداشتن ویژگی علامت — بنویسید)</Label>
+                  <Label className="text-xs text-zinc-300">۵ ویژگی پکیج (برای نداشتن ویژگی علامت — بنویسید)</Label>
                   <div className="space-y-2">
                     {editingPackage.features.map((f, i) => (
                       <Input
@@ -572,7 +580,7 @@ export default function AdminPage() {
                           setEditingPackage({ ...editingPackage, features: next });
                         }}
                         placeholder={`ویژگی ${i + 1} (مثلاً: راف کات، اصلاح رنگ یا —)`}
-                        className="text-xs h-8"
+                        className="text-xs h-8 bg-black/60 border-white/10"
                       />
                     ))}
                   </div>
@@ -581,10 +589,10 @@ export default function AdminPage() {
             )}
 
             <DialogFooter className="gap-2 sm:gap-0">
-              <Button variant="ghost" onClick={() => setIsPackageDialogOpen(false)} className="text-xs">
+              <Button variant="ghost" onClick={() => setIsPackageDialogOpen(false)} className="text-xs text-zinc-400">
                 انصراف
               </Button>
-              <Button onClick={savePackageFromDialog} className="text-xs font-bold gap-1.5">
+              <Button onClick={savePackageFromDialog} className="text-xs font-bold gap-1.5 shadow-[0_0_14px_rgba(255,223,0,0.3)]">
                 <Save className="w-3.5 h-3.5" />
                 <span>ذخیره پکیج</span>
               </Button>
@@ -594,35 +602,35 @@ export default function AdminPage() {
 
         {/* Password Prompt Dialog */}
         <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-          <DialogContent className="max-w-md bg-card border-border">
+          <DialogContent className="max-w-md bg-zinc-950 border-white/10 text-white backdrop-blur-2xl">
             <DialogHeader>
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-2">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-2 shadow-[0_0_16px_rgba(255,223,0,0.2)]">
                 <Lock className="w-5 h-5" />
               </div>
               <DialogTitle className="text-base font-black">رمز عبور پنل ادمین</DialogTitle>
-              <DialogDescription className="text-xs">
+              <DialogDescription className="text-xs text-zinc-400">
                 برای ذخیره تغییرات در دیتابیس Supabase، لطفاً رمز ادمین را وارد کنید. این رمز در مرورگر شما ذخیره خواهد شد.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4 py-2">
               <div className="space-y-1.5">
-                <Label className="text-xs">رمز ادمین (ADMIN_PANEL_KEY)</Label>
+                <Label className="text-xs text-zinc-300">رمز ادمین (ADMIN_PANEL_KEY)</Label>
                 <Input
                   type="password"
                   value={adminPasswordInput}
                   onChange={(e) => setAdminPasswordInput(e.target.value)}
                   placeholder="رمز را وارد کنید..."
-                  className="text-xs"
+                  className="text-xs bg-black/60 border-white/10"
                   autoFocus
                 />
               </div>
 
               <DialogFooter className="gap-2 sm:gap-0">
-                <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)} className="text-xs">
+                <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)} className="text-xs text-zinc-400">
                   انصراف
                 </Button>
-                <Button type="submit" className="text-xs font-bold gap-1.5">
+                <Button type="submit" className="text-xs font-bold gap-1.5 shadow-[0_0_14px_rgba(255,223,0,0.3)]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>تایید و ذخیره</span>
                 </Button>

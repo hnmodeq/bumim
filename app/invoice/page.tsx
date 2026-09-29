@@ -4,14 +4,8 @@ import { useState, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { GlowMenu } from "@/components/ui/glow-menu";
+import { GlowCard } from "@/components/ui/glow-card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -304,18 +298,14 @@ function WheelPicker({
       onKeyDown={handleKeyDown}
       className="relative w-full h-[140px] md:h-[170px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden rounded-xl"
     >
-      {/* Side indicator ticks */}
-      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-primary rounded-full pointer-events-none z-10" />
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-emerald-400 rounded-full pointer-events-none z-10" />
+      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-primary rounded-full pointer-events-none z-10 shadow-[0_0_8px_#ffdf00]" />
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-emerald-400 rounded-full pointer-events-none z-10 shadow-[0_0_8px_#34d399]" />
 
-      {/* Top / Bottom Fades */}
-      <div className="absolute inset-x-0 top-0 h-[36px] bg-gradient-to-b from-card via-card/80 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-[36px] bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 top-0 h-[36px] bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[36px] bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
 
-      {/* Center highlight box */}
-      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-secondary/80 border border-primary/20 rounded-xl pointer-events-none z-0" />
+      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-white/5 border border-primary/20 rounded-xl pointer-events-none z-0 shadow-[inset_0_0_12px_rgba(255,223,0,0.05)]" />
 
-      {/* Flat List */}
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute left-0 right-0"
@@ -357,10 +347,10 @@ function WheelPicker({
                 <span
                   className={`block w-full px-2 text-center tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis ${
                     isSelected
-                      ? "text-sm md:text-base font-black text-foreground"
+                      ? "text-sm md:text-base font-black text-white"
                       : abs === 1
-                      ? "text-xs md:text-sm font-bold text-muted-foreground"
-                      : "text-xs font-medium text-muted-foreground/60"
+                      ? "text-xs md:text-sm font-bold text-zinc-300"
+                      : "text-xs font-medium text-zinc-500"
                   }`}
                 >
                   {opt.label}
@@ -388,28 +378,31 @@ function ServiceItem({
       type="button"
       dir="ltr"
       onClick={onToggle}
-      className={`w-full flex items-center gap-2 py-2 px-3 rounded-xl cursor-pointer select-none border transition-all text-right ${
+      className={cn(
+        "w-full flex items-center gap-2 py-2 px-3 rounded-xl cursor-pointer select-none border transition-all text-right",
         checked
-          ? "bg-primary/10 border-primary/50 text-foreground shadow-xs"
-          : "bg-secondary/40 border-border/70 text-muted-foreground hover:border-border hover:text-foreground"
-      }`}
+          ? "bg-primary/10 border-primary/50 text-white shadow-[0_0_12px_rgba(255,223,0,0.15)] font-black"
+          : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/20 hover:text-white"
+      )}
     >
       <span
-        className={`text-[11px] font-black font-mono tracking-tight min-w-[36px] text-left shrink-0 ${
-          checked ? "text-primary" : "text-muted-foreground/60"
-        }`}
+        className={cn(
+          "text-[11px] font-black font-mono tracking-tight min-w-[36px] text-left shrink-0",
+          checked ? "text-primary" : "text-zinc-500"
+        )}
       >
         +{toPersianNumber(service.percent)}%
       </span>
 
       <Checkbox
         checked={checked}
-        className={`pointer-events-none ${
-          checked ? "bg-primary text-primary-foreground border-primary" : "border-border"
-        }`}
+        className={cn(
+          "pointer-events-none",
+          checked ? "bg-primary text-primary-foreground border-primary shadow-[0_0_8px_#ffdf00]" : "border-white/20"
+        )}
       />
 
-      <span className={`flex-1 min-w-0 text-right truncate text-xs font-bold ${checked ? "text-foreground font-black" : ""}`}>
+      <span className={cn("flex-1 min-w-0 text-right truncate text-xs font-bold", checked ? "text-white" : "")}>
         {service.label}
       </span>
     </button>
@@ -419,11 +412,11 @@ function ServiceItem({
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 w-full max-w-[640px] mx-auto my-3">
-      <div className="h-[1px] flex-1 rounded-full bg-border/60" />
-      <span className="text-[11px] font-black tracking-wider uppercase whitespace-nowrap text-primary">
+      <div className="h-[1px] flex-1 rounded-full bg-white/10" />
+      <span className="text-[11px] font-black tracking-wider uppercase whitespace-nowrap text-primary shadow-[0_0_10px_rgba(255,223,0,0.2)]">
         {label}
       </span>
-      <div className="h-[1px] flex-1 rounded-full bg-border/60" />
+      <div className="h-[1px] flex-1 rounded-full bg-white/10" />
     </div>
   );
 }
@@ -1038,319 +1031,277 @@ export default function InvoicePage() {
   }, [price.total]);
 
   return (
-    <main className="min-h-screen bg-background text-foreground px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
-      <div className="w-full max-w-4xl mx-auto space-y-5">
-        {/* Top Navbar */}
-        <div className="flex items-center justify-between pb-3 border-b border-border/60">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-black">
-              <Video className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-foreground flex items-center gap-2">
-                بومیم
-                <Badge variant="outline" className="text-[10px] py-0 border-primary/30 text-primary">
-                  bumims.ir
-                </Badge>
-              </div>
-            </div>
-          </Link>
+    <main className="min-h-screen bg-[#070709] text-foreground px-3 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
+      {/* Background ambient neon orbs */}
+      <div className="absolute top-10 right-1/4 w-[450px] h-[450px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-10 left-1/4 w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none" />
 
-          <div className="flex items-center gap-2">
-            <Link
-              href="/services"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-xs gap-1.5")}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>لیست تعرفه‌ها</span>
-            </Link>
-            <Link
-              href="/admin"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "text-xs gap-1.5 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span>مدیریت</span>
-            </Link>
-          </div>
-        </div>
+      {/* Floating Glow Menu Dock */}
+      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
+        <GlowMenu />
+      </header>
 
+      <div className="w-full max-w-4xl mx-auto space-y-5 relative z-10">
         {/* Main Calculator Card */}
-        <Card className="bg-card/70 backdrop-blur border-border/80 shadow-lg overflow-hidden">
-          <CardHeader className="text-center pb-2 pt-5">
-            <div className="inline-flex items-center justify-center gap-1.5 mx-auto mb-2">
-              <Badge variant="secondary" className="px-3 py-1 rounded-full text-xs font-semibold gap-1.5 bg-secondary/80 border border-border">
-                <Sparkles className="w-3 h-3 text-primary" />
-                محاسبه‌گر هوشمند دستمزد تدوین
-              </Badge>
+        <GlowCard glowColor="#ffdf00" className="p-4 md:p-6 space-y-5">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center gap-1.5 mx-auto">
+              <div className="relative inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold shadow-[0_0_12px_rgba(255,223,0,0.2)]">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span className="text-zinc-200">محاسبه‌گر هوشمند دستمزد تدوین</span>
+              </div>
             </div>
-            <CardTitle className="text-2xl md:text-3xl font-black tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white" style={{ letterSpacing: "-0.03em" }}>
               چقدر دستمزد بگیرم؟
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h1>
+            <p className="text-xs text-zinc-400">
               نوع پروژه، مدت زمان راش و تعداد ویدیو را انتخاب کنید
-            </CardDescription>
-          </CardHeader>
+            </p>
+          </div>
 
-          <CardContent className="space-y-4 px-3 md:px-6">
-            {/* Wheels Container */}
-            <div className="grid grid-cols-3 gap-1 md:gap-2 p-1.5 md:p-2 rounded-2xl bg-secondary/40 border border-border">
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] md:text-xs font-black text-muted-foreground mb-1">نوع پروژه</span>
-                <WheelPicker
-                  options={typeOptions}
-                  selected={typeIdx}
-                  onSelect={setTypeIdx}
-                  ariaLabel="نوع پروژه"
+          {/* Wheels Container */}
+          <div className="grid grid-cols-3 gap-1 md:gap-2 p-1.5 md:p-2 rounded-2xl bg-black/60 border border-white/10 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] md:text-xs font-black text-zinc-400 mb-1">نوع پروژه</span>
+              <WheelPicker
+                options={typeOptions}
+                selected={typeIdx}
+                onSelect={setTypeIdx}
+                ariaLabel="نوع پروژه"
+              />
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] md:text-xs font-black text-zinc-400 mb-1">مدت زمان</span>
+              <WheelPicker
+                options={durationOptions}
+                selected={durationIdx}
+                onSelect={setDurationIdx}
+                ariaLabel="مدت زمان"
+              />
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] md:text-xs font-black text-zinc-400 mb-1">تعداد ویدیو</span>
+              <WheelPicker
+                options={countOptions}
+                selected={countIdx}
+                onSelect={setCountIdx}
+                ariaLabel="تعداد ویدیو"
+              />
+            </div>
+          </div>
+
+          {/* Basic Services */}
+          <div className="space-y-2">
+            <SectionDivider label="خدمات پایه" />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {basicServices.map((s) => (
+                <ServiceItem
+                  key={s.id}
+                  service={s}
+                  checked={!!basicChecked[s.id]}
+                  onToggle={() => setBasicChecked((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
                 />
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] md:text-xs font-black text-muted-foreground mb-1">مدت زمان</span>
-                <WheelPicker
-                  options={durationOptions}
-                  selected={durationIdx}
-                  onSelect={setDurationIdx}
-                  ariaLabel="مدت زمان"
+              ))}
+            </div>
+          </div>
+
+          {/* Advanced Services */}
+          <div className="space-y-2">
+            <SectionDivider label="خدمات پیشرفته و تکمیلی" />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {advancedServices.map((s) => (
+                <ServiceItem
+                  key={s.id}
+                  service={s}
+                  checked={!!advChecked[s.id]}
+                  onToggle={() => setAdvChecked((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
                 />
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] md:text-xs font-black text-muted-foreground mb-1">تعداد ویدیو</span>
-                <WheelPicker
-                  options={countOptions}
-                  selected={countIdx}
-                  onSelect={setCountIdx}
-                  ariaLabel="تعداد ویدیو"
-                />
+              ))}
+            </div>
+          </div>
+
+          {/* Live Price Summary Bar */}
+          <div className="p-4 rounded-2xl bg-black/60 border border-primary/40 shadow-[0_0_24px_rgba(255,223,0,0.12)] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-center sm:text-right">
+              <div className="text-xs text-zinc-400 font-medium">مبلغ برآورد این پروژه:</div>
+              <div className="text-2xl md:text-3xl font-black text-primary tracking-tight font-mono">
+                {formattedPrice} <span className="text-sm font-sans font-bold text-white">تومان</span>
               </div>
             </div>
 
-            {/* Basic Services */}
-            <div className="space-y-2">
-              <SectionDivider label="خدمات پایه" />
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {basicServices.map((s) => (
-                  <ServiceItem
-                    key={s.id}
-                    service={s}
-                    checked={!!basicChecked[s.id]}
-                    onToggle={() => setBasicChecked((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
-                  />
-                ))}
-              </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button
+                onClick={handleAddToInvoice}
+                className="w-full sm:w-auto font-black text-xs gap-1.5 shadow-[0_0_20px_rgba(255,223,0,0.3)] hover:shadow-[0_0_30px_rgba(255,223,0,0.5)]"
+              >
+                <Plus className="w-4 h-4" />
+                <span>افزودن این پروژه به پیش‌فاکتور</span>
+              </Button>
             </div>
+          </div>
 
-            {/* Advanced Services */}
-            <div className="space-y-2">
-              <SectionDivider label="خدمات پیشرفته و تکمیلی" />
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {advancedServices.map((s) => (
-                  <ServiceItem
-                    key={s.id}
-                    service={s}
-                    checked={!!advChecked[s.id]}
-                    onToggle={() => setAdvChecked((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Live Price Summary Bar */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-secondary/80 via-secondary/60 to-secondary/80 border border-primary/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-center sm:text-right">
-                <div className="text-xs text-muted-foreground font-medium">مبلغ برآورد این پروژه:</div>
-                <div className="text-2xl md:text-3xl font-black text-primary tracking-tight font-mono">
-                  {formattedPrice} <span className="text-sm font-sans font-bold text-foreground">تومان</span>
+          {/* Multi-project invoice items list */}
+          {invoiceItems.length > 0 && (
+            <div className="rounded-2xl border border-white/10 bg-black/60 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+              <div className="p-3.5 px-4 border-b border-white/10 flex items-center justify-between">
+                <div className="text-xs font-black text-white flex items-center gap-2">
+                  <span>پروژه‌های ثبت‌شده در پیش‌فاکتور</span>
+                  <Badge variant="secondary" className="text-[10px] font-mono bg-white/10 text-white border-white/10">
+                    {toPersianNumber(invoiceItems.length)} آیتم
+                  </Badge>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
-                  onClick={handleAddToInvoice}
-                  className="w-full sm:w-auto font-black text-xs gap-1.5 shadow-sm"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setInvoiceItems([]);
+                    toast.info("لیست پیش‌فاکتور خالی شد");
+                  }}
+                  className="text-xs text-red-400 hover:bg-red-500/10 h-7 px-2"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>افزودن این پروژه به پیش‌فاکتور</span>
+                  <Trash2 className="w-3 h-3 ms-1" />
+                  پاک کردن همه
                 </Button>
               </div>
+
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/10">
+                    <TableHead className="w-12 text-center text-[11px] font-black text-white">ردیف</TableHead>
+                    <TableHead className="text-right text-[11px] font-black text-white">شرح پروژه</TableHead>
+                    <TableHead className="text-center text-[11px] font-black text-white">تعداد</TableHead>
+                    <TableHead className="text-center text-[11px] font-black text-white">مبلغ</TableHead>
+                    <TableHead className="w-10"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoiceItems.map((it, idx) => (
+                    <TableRow key={it.id} className="border-white/5 hover:bg-white/5">
+                      <TableCell className="text-center font-mono text-xs text-zinc-400">{toPersianNumber(idx + 1)}</TableCell>
+                      <TableCell className="text-right py-2.5">
+                        <div className="text-xs font-bold text-white">
+                          {it.typeLabel} • {it.durationLabel} • {it.countLabel}
+                        </div>
+                        <div className="text-[10px] text-zinc-400 truncate max-w-xs mt-0.5">
+                          {it.services.length ? it.services.map((s) => s.label).join("، ") : "بدون خدمات اضافی"}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-xs font-bold text-zinc-300">
+                        {it.countLabel ? toPersianNumber(parseInt(it.countLabel.replace(/[^0-9]/g, "") || "1")) : "۱"}
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-xs font-black text-primary">
+                        {toPersianPrice(it.total)}
+                      </TableCell>
+                      <TableCell className="text-center p-1">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveItem(it.id)}
+                          className="w-6 h-6 rounded-md hover:bg-red-500/20 text-zinc-500 hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <div className="p-3.5 px-4 bg-white/5 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="font-bold text-zinc-400">جمع کل فاکتور ({toPersianNumber(invoiceItems.length)} پروژه):</span>
+                <span className="font-black text-base text-primary font-mono">{toPersianPrice(invoiceTotal)} تومان</span>
+              </div>
+            </div>
+          )}
+
+          {/* Seller & Buyer Info Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+            {/* Seller */}
+            <div className="rounded-2xl border border-white/10 bg-black/60 p-4 space-y-2.5">
+              <div className="text-xs font-black text-primary flex items-center gap-1.5 pb-1">
+                <User className="w-3.5 h-3.5" />
+                <span>اطلاعات فروشنده (شما)</span>
+              </div>
+              <Input
+                value={sellerInfo.name}
+                onChange={(e) => setSellerInfo((s) => ({ ...s, name: e.target.value }))}
+                placeholder="نام ویدیو ادیتور"
+                className="text-xs bg-zinc-950/70 border-white/10"
+              />
+              <Input
+                value={sellerInfo.brand}
+                onChange={(e) => setSellerInfo((s) => ({ ...s, brand: e.target.value }))}
+                placeholder="نام برند / شرکت (اختیاری)"
+                className="text-xs bg-zinc-950/70 border-white/10"
+              />
+              <Input
+                value={sellerInfo.phone}
+                onChange={(e) => setSellerInfo((s) => ({ ...s, phone: e.target.value }))}
+                placeholder="تلفن تماس ویدیو ادیتور"
+                dir="ltr"
+                className="text-xs bg-zinc-950/70 border-white/10 text-left font-mono"
+              />
+              <Input
+                value={sellerInfo.email}
+                onChange={(e) => setSellerInfo((s) => ({ ...s, email: e.target.value }))}
+                placeholder="پست الکترونیکی"
+                dir="ltr"
+                className="text-xs bg-zinc-950/70 border-white/10 text-left font-mono"
+              />
+              <div className="flex items-center gap-2 pt-1">
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-xs font-bold hover:bg-white/20 transition-colors text-white">
+                    <Upload className="w-3 h-3" />
+                    <span>آپلود لوگوی اختصاصی</span>
+                  </div>
+                </label>
+                <span className="text-[11px] text-zinc-400 truncate">
+                  {sellerLogo ? "✓ لوگو انتخاب شد" : "اختیاری (نمایش در PDF)"}
+                </span>
+              </div>
             </div>
 
-            {/* Multi-project invoice items list */}
-            {invoiceItems.length > 0 && (
-              <Card className="bg-background/90 border-border">
-                <CardHeader className="py-3 px-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs font-black flex items-center gap-2">
-                      <span>پروژه‌های ثبت‌شده در پیش‌فاکتور</span>
-                      <Badge variant="secondary" className="text-[10px] font-mono">
-                        {toPersianNumber(invoiceItems.length)} آیتم
-                      </Badge>
-                    </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setInvoiceItems([]);
-                        toast.info("لیست پیش‌فاکتور خالی شد");
-                      }}
-                      className="text-xs text-destructive hover:bg-destructive/10 h-7 px-2"
-                    >
-                      <Trash2 className="w-3 h-3 ms-1" />
-                      پاک کردن همه
-                    </Button>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader className="bg-secondary/40">
-                      <TableRow className="border-border">
-                        <TableHead className="w-12 text-center text-[11px] font-black">ردیف</TableHead>
-                        <TableHead className="text-right text-[11px] font-black">شرح پروژه</TableHead>
-                        <TableHead className="text-center text-[11px] font-black">تعداد</TableHead>
-                        <TableHead className="text-center text-[11px] font-black">مبلغ</TableHead>
-                        <TableHead className="w-10"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {invoiceItems.map((it, idx) => (
-                        <TableRow key={it.id} className="border-border/60">
-                          <TableCell className="text-center font-mono text-xs">{toPersianNumber(idx + 1)}</TableCell>
-                          <TableCell className="text-right py-2.5">
-                            <div className="text-xs font-bold text-foreground">
-                              {it.typeLabel} • {it.durationLabel} • {it.countLabel}
-                            </div>
-                            <div className="text-[10px] text-muted-foreground truncate max-w-xs mt-0.5">
-                              {it.services.length ? it.services.map((s) => s.label).join("، ") : "بدون خدمات اضافی"}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center font-mono text-xs font-bold">
-                            {it.countLabel ? toPersianNumber(parseInt(it.countLabel.replace(/[^0-9]/g, "") || "1")) : "۱"}
-                          </TableCell>
-                          <TableCell className="text-center font-mono text-xs font-black text-primary">
-                            {toPersianPrice(it.total)}
-                          </TableCell>
-                          <TableCell className="text-center p-1">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveItem(it.id)}
-                              className="w-6 h-6 rounded-md hover:bg-destructive/20 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors cursor-pointer"
-                            >
-                              ×
-                            </button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-
-                  <div className="p-3 bg-secondary/30 border-t border-border flex items-center justify-between text-xs">
-                    <span className="font-bold text-muted-foreground">جمع کل فاکتور ({toPersianNumber(invoiceItems.length)} پروژه):</span>
-                    <span className="font-black text-base text-primary font-mono">{toPersianPrice(invoiceTotal)} تومان</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Seller & Buyer Info Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-              {/* Seller */}
-              <Card className="bg-secondary/30 border-border/80">
-                <CardHeader className="py-3 px-4 pb-2">
-                  <CardTitle className="text-xs font-black text-primary flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5" />
-                    <span>اطلاعات فروشنده (شما)</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2.5 px-4 pb-4">
-                  <Input
-                    value={sellerInfo.name}
-                    onChange={(e) => setSellerInfo((s) => ({ ...s, name: e.target.value }))}
-                    placeholder="نام ویدیو ادیتور"
-                    className="text-xs bg-background"
-                  />
-                  <Input
-                    value={sellerInfo.brand}
-                    onChange={(e) => setSellerInfo((s) => ({ ...s, brand: e.target.value }))}
-                    placeholder="نام برند / شرکت (اختیاری)"
-                    className="text-xs bg-background"
-                  />
-                  <Input
-                    value={sellerInfo.phone}
-                    onChange={(e) => setSellerInfo((s) => ({ ...s, phone: e.target.value }))}
-                    placeholder="تلفن تماس ویدیو ادیتور"
-                    dir="ltr"
-                    className="text-xs bg-background text-left font-mono"
-                  />
-                  <Input
-                    value={sellerInfo.email}
-                    onChange={(e) => setSellerInfo((s) => ({ ...s, email: e.target.value }))}
-                    placeholder="پست الکترونیکی"
-                    dir="ltr"
-                    className="text-xs bg-background text-left font-mono"
-                  />
-                  <div className="flex items-center gap-2 pt-1">
-                    <label className="cursor-pointer">
-                      <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary border border-border text-xs font-bold hover:bg-secondary/80 transition-colors">
-                        <Upload className="w-3 h-3" />
-                        <span>آپلود لوگوی اختصاصی</span>
-                      </div>
-                    </label>
-                    <span className="text-[11px] text-muted-foreground truncate">
-                      {sellerLogo ? "✓ لوگو انتخاب شد" : "اختیاری (نمایش در PDF)"}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Buyer */}
-              <Card className="bg-secondary/30 border-border/80">
-                <CardHeader className="py-3 px-4 pb-2">
-                  <CardTitle className="text-xs font-black text-emerald-400 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>اطلاعات خریدار (مشتری)</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2.5 px-4 pb-4">
-                  <Input
-                    value={buyerInfo.name}
-                    onChange={(e) => setBuyerInfo((s) => ({ ...s, name: e.target.value }))}
-                    placeholder="نام مشتری"
-                    className="text-xs bg-background"
-                  />
-                  <Input
-                    value={buyerInfo.company}
-                    onChange={(e) => setBuyerInfo((s) => ({ ...s, company: e.target.value }))}
-                    placeholder="نام شرکت / پیج / مجموعه (اختیاری)"
-                    className="text-xs bg-background"
-                  />
-                  <Input
-                    value={buyerInfo.phone}
-                    onChange={(e) => setBuyerInfo((s) => ({ ...s, phone: e.target.value }))}
-                    placeholder="تلفن تماس مشتری"
-                    dir="ltr"
-                    className="text-xs bg-background text-left font-mono"
-                  />
-                  <Input
-                    value={buyerInfo.email}
-                    onChange={(e) => setBuyerInfo((s) => ({ ...s, email: e.target.value }))}
-                    placeholder="ایمیل مشتری"
-                    dir="ltr"
-                    className="text-xs bg-background text-left font-mono"
-                  />
-                </CardContent>
-              </Card>
+            {/* Buyer */}
+            <div className="rounded-2xl border border-white/10 bg-black/60 p-4 space-y-2.5">
+              <div className="text-xs font-black text-emerald-400 flex items-center gap-1.5 pb-1">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>اطلاعات خریدار (مشتری)</span>
+              </div>
+              <Input
+                value={buyerInfo.name}
+                onChange={(e) => setBuyerInfo((s) => ({ ...s, name: e.target.value }))}
+                placeholder="نام مشتری"
+                className="text-xs bg-zinc-950/70 border-white/10"
+              />
+              <Input
+                value={buyerInfo.company}
+                onChange={(e) => setBuyerInfo((s) => ({ ...s, company: e.target.value }))}
+                placeholder="نام شرکت / پیج / مجموعه (اختیاری)"
+                className="text-xs bg-zinc-950/70 border-white/10"
+              />
+              <Input
+                value={buyerInfo.phone}
+                onChange={(e) => setBuyerInfo((s) => ({ ...s, phone: e.target.value }))}
+                placeholder="تلفن تماس مشتری"
+                dir="ltr"
+                className="text-xs bg-zinc-950/70 border-white/10 text-left font-mono"
+              />
+              <Input
+                value={buyerInfo.email}
+                onChange={(e) => setBuyerInfo((s) => ({ ...s, email: e.target.value }))}
+                placeholder="ایمیل مشتری"
+                dir="ltr"
+                className="text-xs bg-zinc-950/70 border-white/10 text-left font-mono"
+              />
             </div>
-          </CardContent>
+          </div>
 
-          <CardFooter className="pt-2 pb-5 px-3 md:px-6">
+          <div className="pt-2">
             <Button
               onClick={handleExportPDF}
               disabled={isExporting}
               size="lg"
-              className="w-full font-black text-sm md:text-base py-6 shadow-md gap-2"
+              className="w-full font-black text-sm md:text-base py-6 shadow-[0_0_30px_rgba(255,223,0,0.3)] hover:shadow-[0_0_45px_rgba(255,223,0,0.55)] transition-all gap-2"
             >
               {isExporting ? (
                 <>
@@ -1368,8 +1319,8 @@ export default function InvoicePage() {
                 </>
               )}
             </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </GlowCard>
       </div>
     </main>
   );
