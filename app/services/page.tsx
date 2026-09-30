@@ -32,8 +32,17 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  X,
+  Zap,
+  Edit3,
 } from "lucide-react";
+
+const PROFILE_STORAGE_KEY = "bumim_customer_profile";
+
+interface CustomerProfile {
+  name: string;
+  phone: string;
+  telegramOrId?: string;
+}
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>(defaultServices);
@@ -43,6 +52,10 @@ export default function ServicesPage() {
   // Modal Order State
   const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
   const [selectedPkg, setSelectedPkg] = useState<{ serviceName: string; pkg: Package } | null>(null);
+
+  // Smart Auto-Fill & Customer Profile State
+  const [savedProfile, setSavedProfile] = useState<CustomerProfile | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
 
   // Form Fields
   const [name, setName] = useState<string>("");
@@ -55,7 +68,23 @@ export default function ServicesPage() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // Load saved profile on mount
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as CustomerProfile;
+        if (parsed.name && parsed.phone) {
+          setSavedProfile(parsed);
+          setName(parsed.name);
+          setPhone(parsed.phone);
+          if (parsed.telegramOrId) setTelegramOrId(parsed.telegramOrId);
+        }
+      }
+    } catch {
+      // ignore JSON parse errors
+    }
+
     fetch("/api/services")
       .then((r) => r.json())
       .then((j) => {
@@ -78,16 +107,34 @@ export default function ServicesPage() {
     setSelectedPkg({ serviceName: active.name, pkg });
     setSubmitStatus("idle");
     setErrorMessage("");
+    // If we have a saved profile, start in 1-Click quick confirmation mode
+    setIsEditingProfile(!savedProfile);
     setOrderModalOpen(true);
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
+  const handleQuickOneClickSubmit = async () => {
+    if (!savedProfile?.name || !savedProfile?.phone) {
+      setIsEditingProfile(true);
+      return;
+    }
+    await executeSubmission(savedProfile.name, savedProfile.phone, savedProfile.telegramOrId || "", note);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) {
       setErrorMessage("لطفاً نام و شماره تماس خود را وارد کنید.");
       return;
     }
+    await executeSubmission(name.trim(), phone.trim(), telegramOrId.trim(), note.trim());
+  };
 
+  const executeSubmission = async (
+    custName: string,
+    custPhone: string,
+    custTelegram: string,
+    custNote: string
+  ) => {
     setSubmitting(true);
     setErrorMessage("");
 
@@ -96,10 +143,10 @@ export default function ServicesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim(),
-          phone: phone.trim(),
-          telegramOrId: telegramOrId.trim(),
-          note: note.trim(),
+          name: custName,
+          phone: custPhone,
+          telegramOrId: custTelegram,
+          note: custNote,
           serviceName: selectedPkg?.serviceName,
           packageName: selectedPkg?.pkg.name,
           packagePrice: selectedPkg?.pkg.price ? `${selectedPkg.pkg.price} ${selectedPkg.pkg.per}` : "",
@@ -108,6 +155,19 @@ export default function ServicesPage() {
 
       const data = await res.json();
       if (data.ok) {
+        // Save to smart auto-fill storage
+        const profileToSave: CustomerProfile = {
+          name: custName,
+          phone: custPhone,
+          telegramOrId: custTelegram || undefined,
+        };
+        try {
+          localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileToSave));
+          setSavedProfile(profileToSave);
+        } catch {
+          // ignore storage error
+        }
+
         setSubmitStatus("success");
       } else {
         setSubmitStatus("error");
@@ -313,8 +373,17 @@ export default function ServicesPage() {
                             : "bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.15] hover:border-white/25 hover:scale-[1.02]"
                         )}
                       >
-                        <SendHorizontal className="w-4 h-4 text-primary" />
-                        <span>ثبت درخواست این پکیج</span>
+                        {savedProfile ? (
+                          <>
+                            <Zap className="w-4 h-4 text-primary fill-primary" />
+                            <span>سفارش سریع (۱ کلیک)</span>
+                          </>
+                        ) : (
+                          <>
+                            <SendHorizontal className="w-4 h-4 text-primary" />
+                            <span>ثبت درخواست این پکیج</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </FrostedCard>
@@ -331,8 +400,17 @@ export default function ServicesPage() {
           <DialogHeader className="space-y-1.5 text-right">
             <div className="flex items-center justify-between">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>سفارش سریع</span>
+                {savedProfile && !isEditingProfile ? (
+                  <>
+                    <Zap className="w-3.5 h-3.5 fill-primary" />
+                    <span>تایید سریع ۱ کلیک</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>ثبت درخواست آنلاین</span>
+                  </>
+                )}
               </div>
               {selectedPkg && (
                 <Badge variant="outline" className="border-white/20 text-zinc-300 bg-white/5 text-xs">
@@ -341,10 +419,12 @@ export default function ServicesPage() {
               )}
             </div>
             <DialogTitle className="text-xl font-black text-white pt-2">
-              ثبت درخواست ادیت ویدیو
+              {savedProfile && !isEditingProfile ? `ثبت سفارش برای ${savedProfile.name}` : "ثبت درخواست ادیت ویدیو"}
             </DialogTitle>
             <DialogDescription className="text-xs text-zinc-400">
-              نام و شماره تماس خود را وارد کنید تا جزئیات پکیج مستقیماً ارسال شود و با شما تماس بگیریم.
+              {savedProfile && !isEditingProfile
+                ? "مشخصات شما از قبل شناسایی شده است. تنها با یک کلیک درخواست را نهایی کنید."
+                : "نام و شماره تماس خود را وارد کنید تا جزئیات پکیج مستقیماً ارسال شود و با شما تماس بگیریم."}
             </DialogDescription>
           </DialogHeader>
 
@@ -362,7 +442,7 @@ export default function ServicesPage() {
             </div>
           )}
 
-          {/* Success Screen */}
+          {/* 1. Success Screen */}
           {submitStatus === "success" ? (
             <div className="py-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(16,185,129,0.3)]">
@@ -377,14 +457,77 @@ export default function ServicesPage() {
               <Button
                 type="button"
                 onClick={() => setOrderModalOpen(false)}
-                className="w-full h-11 rounded-xl font-bold bg-white/[0.1] hover:bg-white/[0.15] text-white border border-white/20"
+                className="w-full h-11 rounded-xl font-bold bg-white/[0.1] hover:bg-white/[0.15] text-white border border-white/20 cursor-pointer"
               >
                 بستن پنجره
               </Button>
             </div>
+          ) : savedProfile && !isEditingProfile ? (
+            /* 2. Quick 1-Click Confirmation Screen */
+            <div className="space-y-4 mt-2 animate-in fade-in duration-200">
+              <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.12] space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 text-primary flex items-center justify-center font-black text-base shrink-0 shadow-[0_0_16px_rgba(255,223,0,0.2)]">
+                    {savedProfile.name.charAt(0)}
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="text-sm font-black text-white flex items-center gap-2">
+                      <span>{savedProfile.name}</span>
+                      <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        مشتری شناخته‌شده
+                      </span>
+                    </div>
+                    <div className="text-xs font-mono text-zinc-400 dir-ltr text-right">
+                      {savedProfile.phone}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-zinc-400 leading-relaxed pt-1 border-t border-white/[0.06]">
+                  درخواست پکیج <span className="font-bold text-white">«{selectedPkg?.pkg.name}»</span> با شماره فوق ارسال شود؟
+                </div>
+              </div>
+
+              {errorMessage && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-1">
+                <Button
+                  type="button"
+                  onClick={handleQuickOneClickSubmit}
+                  disabled={submitting}
+                  className="w-full h-12 rounded-xl font-black bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_28px_rgba(255,223,0,0.4)] transition-all cursor-pointer text-sm"
+                >
+                  {submitting ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>در حال ارسال پیام...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 fill-primary-foreground" />
+                      <span>تایید و ارسال با ۱ کلیک</span>
+                    </div>
+                  )}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsEditingProfile(true)}
+                  className="w-full py-2 text-xs font-bold text-zinc-400 hover:text-white flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>تغییر نام، شماره تماس یا افزودن توضیحات</span>
+                </button>
+              </div>
+            </div>
           ) : (
-            /* Order Form */
-            <form onSubmit={handleSubmitOrder} className="space-y-4 mt-2">
+            /* 3. Manual Edit / First Time Form */
+            <form onSubmit={handleFormSubmit} className="space-y-3.5 mt-2 animate-in fade-in duration-200">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-primary" />
@@ -434,12 +577,12 @@ export default function ServicesPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary" />
-                  <span>توضیحات کوتاه یا لینک پروژه (اختیاری)</span>
+                  <span>توضیحات یا لینک راش‌ها (اختیاری)</span>
                 </label>
                 <Textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  placeholder="مثلاً تعداد راش‌ها، سبک تدوین یا زمان‌بندی مد نظرتان..."
+                  placeholder="تعداد راش‌ها، سبک تدوین یا زمان‌بندی مد نظرتان..."
                   rows={2}
                   className="rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 focus-visible:ring-primary/40 focus-visible:border-primary text-xs resize-none"
                 />
@@ -452,23 +595,35 @@ export default function ServicesPage() {
                 </div>
               )}
 
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full h-11 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_24px_rgba(255,223,0,0.35)] transition-all cursor-pointer"
-              >
-                {submitting ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>در حال ثبت و ارسال درخواست...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <SendHorizontal className="w-4 h-4" />
-                    <span>ثبت درخواست و تماس با من</span>
-                  </div>
+              <div className="space-y-2 pt-1">
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full h-11 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_24px_rgba(255,223,0,0.35)] transition-all cursor-pointer"
+                >
+                  {submitting ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>در حال ثبت و ذخیره اطلاعات...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <SendHorizontal className="w-4 h-4" />
+                      <span>ثبت درخواست و ذخیره برای دفعات بعد</span>
+                    </div>
+                  )}
+                </Button>
+
+                {savedProfile && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingProfile(false)}
+                    className="w-full py-1.5 text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  >
+                    بازگشت به حالت تایید ۱ کلیک
+                  </button>
                 )}
-              </Button>
+              </div>
             </form>
           )}
         </DialogContent>
