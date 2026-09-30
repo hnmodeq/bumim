@@ -7,33 +7,16 @@ import { defaultServices, featureNames, type Service, type Package } from "../li
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   Sparkles,
   Check,
   Minus,
   Calculator,
-  ArrowLeft,
-  Info,
   Layers,
-  HelpCircle,
-  FileSpreadsheet,
 } from "lucide-react";
 
 export default function ServicesPage() {
@@ -184,7 +167,7 @@ export default function ServicesPage() {
                         )}
                       </div>
 
-                      {/* Clean Uniform Price Capsule (No patchy/broken borders) */}
+                      {/* Clean Uniform Price Capsule */}
                       <div
                         className={cn(
                           "mt-2 rounded-2xl border p-4 text-center flex items-center justify-center gap-2.5 backdrop-blur-xl transition-all relative overflow-hidden",
@@ -259,106 +242,6 @@ export default function ServicesPage() {
                 );
               })}
             </div>
-
-            {/* Desktop Comparison Table */}
-            <div className="hidden lg:block mt-8">
-              <FrostedCard accentGlow="rgba(59, 130, 246, 0.15)" className="p-0 overflow-hidden">
-                <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-black text-white flex items-center gap-2">
-                      <FileSpreadsheet className="w-4 h-4 text-primary" />
-                      جدول مقایسه جامع پکیج‌های «{active.name}»
-                    </h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      بررسی تفاوت‌ها و امکانات همراه هر سطح
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-xs font-mono border-white/20 text-zinc-300 bg-white/5">
-                    {active.packages.length} پکیج فعال
-                  </Badge>
-                </div>
-
-                <Table>
-                  <TableHeader className="bg-white/[0.03]">
-                    <TableRow className="border-white/[0.08]">
-                      <TableHead className="w-[280px] text-right font-black text-xs text-white py-4 px-6">
-                        ویژگی / فاکتور فنی
-                      </TableHead>
-                      {active.packages.map((pkg) => (
-                        <TableHead key={pkg.id} className="text-center font-black text-xs text-white py-4 px-4">
-                          <div className="space-y-1">
-                            <div className="text-sm font-black text-white">{pkg.name}</div>
-                            <div className="text-[11px] text-primary font-mono font-bold">
-                              {pkg.price} {pkg.per}
-                            </div>
-                          </div>
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {featureNames.map((feat, idx) => (
-                      <TableRow key={feat} className="border-white/[0.05] hover:bg-white/[0.03]">
-                        <TableCell className="font-bold text-xs text-zinc-200 py-3.5 px-6">
-                          <div className="flex items-center gap-2">
-                            <span>{feat}</span>
-                            <Tooltip>
-                              <TooltipTrigger className="text-zinc-500 hover:text-zinc-300 cursor-pointer">
-                                <HelpCircle className="w-3.5 h-3.5" />
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs bg-zinc-900 border-white/10 text-white">
-                                فاکتور فنی در استاندارد تدوین ویدیو
-                              </TooltipContent>
-                            </Tooltip>
-                          </div>
-                        </TableCell>
-                        {active.packages.map((pkg) => {
-                          const val = pkg.features[idx];
-                          const has = val && val !== "—";
-                          return (
-                            <TableCell key={pkg.id + feat} className="text-center py-3.5 px-4">
-                              {has ? (
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary font-bold text-xs shadow-[0_0_12px_rgba(255,223,0,0.15)]">
-                                  <Check className="w-3 h-3 stroke-[3]" />
-                                  <span>{val}</span>
-                                </div>
-                              ) : (
-                                <span className="text-zinc-600 font-mono text-sm">—</span>
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </FrostedCard>
-            </div>
-
-            {/* Note & Guidelines */}
-            <FrostedCard accentGlow="rgba(17, 255, 186, 0.15)" className="p-4 md:p-5">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-[0_0_16px_rgba(17,255,186,0.25)]">
-                    <Info className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-white">نکته مهم:</span> نرخ‌های فوق به عنوان مبنای کارشناسی تدوین ویدیوی ۱۴۰۵ است. برای محاسبه پروژه‌های چند قسمتی و دریافت پیش‌فاکتور با نام خودتان، از بخش صدور پیش‌فاکتور استفاده کنید.
-                  </div>
-                </div>
-
-                <Link
-                  href="/invoice"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "font-bold gap-2 shrink-0 rounded-xl shadow-[0_0_20px_rgba(255,223,0,0.3)]"
-                  )}
-                >
-                  <span>ورود به صدور پیش‌فاکتور</span>
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-              </div>
-            </FrostedCard>
           </>
         )}
       </div>
