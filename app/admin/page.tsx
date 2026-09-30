@@ -43,6 +43,7 @@ import {
   Sparkles,
   ExternalLink,
   Lock,
+  LogOut,
   Database,
   CheckCircle2,
   AlertCircle,
@@ -50,6 +51,7 @@ import {
   Eye,
   EyeOff,
   SlidersHorizontal,
+  KeyRound,
 } from "lucide-react";
 
 const pageList = [
@@ -65,6 +67,10 @@ const pageList = [
 ];
 
 export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [passwordInput, setPasswordInput] = useState<string>("");
+  const [authError, setAuthError] = useState<string>("");
+
   const [services, setServices] = useState<Service[]>([]);
   const [activeServiceId, setActiveServiceId] = useState<string>("");
   const [newServiceName, setNewServiceName] = useState("");
@@ -77,11 +83,15 @@ export default function AdminPage() {
   // Page visibility state
   const [pageVisibility, setPageVisibility] = useState<PageVisibility>(defaultPageVisibility);
 
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
-  const [adminPasswordInput, setAdminPasswordInput] = useState("");
-  const [pendingNextServices, setPendingNextServices] = useState<Service[] | null>(null);
-
+  // Check login state on mount
   useEffect(() => {
+    try {
+      const storedKey = localStorage.getItem("bumim-admin-key");
+      if (storedKey && storedKey.trim()) {
+        setIsAuthenticated(true);
+      }
+    } catch {}
+
     try {
       const storedVis = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
       if (storedVis) {
@@ -102,6 +112,28 @@ export default function AdminPage() {
       });
   }, []);
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordInput.trim()) {
+      setAuthError("لطفاً رمز عبور را وارد کنید.");
+      return;
+    }
+
+    localStorage.setItem("bumim-admin-key", passwordInput.trim());
+    setIsAuthenticated(true);
+    setAuthError("");
+    window.dispatchEvent(new Event("bumim_auth_updated"));
+    toast.success("با موفقیت وارد پنل مدیریت شدید");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("bumim-admin-key");
+    setIsAuthenticated(false);
+    setPasswordInput("");
+    window.dispatchEvent(new Event("bumim_auth_updated"));
+    toast.info("از حساب مدیریت خارج شدید. منوی مدیریت مخفی شد.");
+  };
+
   const togglePageVisibility = (pageId: string, currentStatus: boolean) => {
     const updated: PageVisibility = {
       ...pageVisibility,
@@ -121,7 +153,7 @@ export default function AdminPage() {
     }
   };
 
-  const save = (next: Service[], allowRetry = true) => {
+  const save = (next: Service[]) => {
     setServices(next);
     setIsSaving(true);
     setStatus("در حال ذخیره در دیتابیس…");
@@ -134,10 +166,10 @@ export default function AdminPage() {
     })
       .then(async (r) => {
         const j = await r.json().catch(() => ({} as Record<string, string>));
-        if (r.status === 401 && allowRetry) {
-          setPendingNextServices(next);
-          setIsPasswordDialogOpen(true);
-          setStatus("نیاز به تایید رمز ادمین");
+        if (r.status === 401) {
+          setIsAuthenticated(false);
+          setStatus("نیاز به ورود مجدد");
+          toast.error("رمز وارد شده اشتباه است. لطفاً مجدداً لاگین کنید.");
           return;
         }
         if (j?.ok) {
@@ -155,17 +187,6 @@ export default function AdminPage() {
       .finally(() => {
         setIsSaving(false);
       });
-  };
-
-  const handlePasswordSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!adminPasswordInput.trim()) return;
-    localStorage.setItem("bumim-admin-key", adminPasswordInput.trim());
-    setIsPasswordDialogOpen(false);
-    if (pendingNextServices) {
-      save(pendingNextServices, false);
-      setPendingNextServices(null);
-    }
   };
 
   const activeService = services.find((s) => s.id === activeServiceId) || services[0];
@@ -273,412 +294,433 @@ export default function AdminPage() {
       </header>
 
       <div className="w-full max-w-5xl mx-auto relative z-10 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-primary/10 text-primary border-primary/30 font-black text-xs gap-1.5">
-                <Database className="w-3.5 h-3.5" />
-                <span>اتصال ابری به Supabase</span>
-              </Badge>
-              {status && (
-                <span className="text-xs text-zinc-400 font-mono flex items-center gap-1">
-                  {status.includes("✓") ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  ) : (
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
-                  )}
-                  {status}
-                </span>
-              )}
-            </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white">
-              پنل مدیریت و تنظیمات بومیم
-            </h1>
-            <p className="text-xs text-zinc-400">
-              مدیریت تعرفه‌ها، تغییر قیمت‌ها، اضافه کردن سرویس جدید و تنظیم نمایش صفحات
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/services"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "text-xs font-bold gap-1.5 border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] rounded-xl"
-              )}
-            >
-              <span>مشاهده صفحه تعرفه‌ها</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleResetToDefault}
-              className="text-xs font-bold gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>ریست به پیش‌فرض</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* 1. Page Visibility Management Card */}
-        <FrostedCard accentGlow="rgba(56, 189, 248, 0.15)" className="p-5 md:p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-            <div className="flex items-center gap-2 text-sm font-black text-white">
-              <SlidersHorizontal className="w-4 h-4 text-sky-400" />
-              <span>مدیریت نمایش صفحات در منو (Show / Hide Pages)</span>
-            </div>
-            <span className="text-[11px] text-zinc-400 font-mono">
-              تغییرات آنی در منوی سایت اعمال می‌شود
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {pageList.map((pg) => {
-              const isVisible = pageVisibility[pg.id] !== false;
-              return (
-                <div
-                  key={pg.id}
-                  className={cn(
-                    "p-3 rounded-2xl border transition-all flex items-center justify-between gap-3",
-                    isVisible
-                      ? "bg-white/[0.04] border-white/15 text-white"
-                      : "bg-white/[0.01] border-white/[0.05] opacity-50 text-zinc-500"
-                  )}
-                >
-                  <div className="space-y-0.5">
-                    <div className="text-xs font-bold flex items-center gap-1.5">
-                      {isVisible ? (
-                        <Eye className="w-3.5 h-3.5 text-emerald-400" />
-                      ) : (
-                        <EyeOff className="w-3.5 h-3.5 text-zinc-500" />
-                      )}
-                      <span>{pg.name}</span>
-                    </div>
-                    <div className="text-[10px] font-mono text-zinc-400">{pg.path}</div>
-                  </div>
-
-                  <Switch
-                    checked={isVisible}
-                    onCheckedChange={() => togglePageVisibility(pg.id, isVisible)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </FrostedCard>
-
-        {/* 2. Pricelist Management */}
-        {loading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-full rounded-2xl bg-white/[0.05]" />
-            <Skeleton className="h-64 w-full rounded-3xl bg-white/[0.05]" />
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Services Tabs / Management */}
-            <FrostedCard accentGlow="rgba(192, 132, 252, 0.15)" className="p-5 md:p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-sm font-black text-white">
-                  <Layers className="w-4 h-4 text-purple-400" />
-                  <span>دسته‌بندی‌های خدمات و ادیت</span>
-                </div>
-
-                {/* Add new service */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Input
-                    value={newServiceName}
-                    onChange={(e) => setNewServiceName(e.target.value)}
-                    placeholder="نام دسته‌بندی جدید..."
-                    className="h-9 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={handleAddService}
-                    className="h-9 text-xs font-bold gap-1 rounded-xl shadow-[0_0_12px_rgba(255,223,0,0.3)] shrink-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>افزودن</span>
-                  </Button>
-                </div>
+        {!isAuthenticated ? (
+          /* Login Screen */
+          <div className="max-w-md mx-auto my-12 animate-in fade-in zoom-in-95 duration-200">
+            <FrostedCard accentGlow="rgba(255, 223, 0, 0.25)" className="p-6 md:p-8 space-y-6 text-center">
+              <div className="w-14 h-14 rounded-3xl bg-primary/20 border border-primary/40 text-primary flex items-center justify-center mx-auto shadow-[0_0_24px_rgba(255,223,0,0.3)]">
+                <Lock className="w-7 h-7" />
               </div>
 
-              {/* Service Badges */}
-              <div className="flex flex-wrap gap-2 pt-2">
-                {services.map((s) => {
-                  const isActive = activeServiceId === s.id;
+              <div className="space-y-1">
+                <h2 className="text-xl font-black text-white">ورود به پنل مدیریت بومیم</h2>
+                <p className="text-xs text-zinc-400">
+                  برای دسترسی به تنظیمات و دیتابیس، لطفاً رمز ادمین را وارد کنید.
+                </p>
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4 text-right">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold text-zinc-300">رمز عبور ادمین</Label>
+                  <Input
+                    type="password"
+                    required
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="رمز را وارد کنید..."
+                    className="h-11 rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 text-left font-mono"
+                    autoFocus
+                  />
+                </div>
+
+                {authError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>{authError}</span>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full h-11 rounded-xl font-black bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(255,223,0,0.3)] cursor-pointer"
+                >
+                  <KeyRound className="w-4 h-4 ml-1.5" />
+                  <span>ورود به مدیریت</span>
+                </Button>
+              </form>
+            </FrostedCard>
+          </div>
+        ) : (
+          /* Authenticated Admin Dashboard */
+          <>
+            {/* Header */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-primary/10 text-primary border-primary/30 font-black text-xs gap-1.5">
+                    <Database className="w-3.5 h-3.5" />
+                    <span>اتصال ابری به Supabase</span>
+                  </Badge>
+                  {status && (
+                    <span className="text-xs text-zinc-400 font-mono flex items-center gap-1">
+                      {status.includes("✓") ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      ) : (
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                      )}
+                      {status}
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-2xl md:text-3xl font-black text-white">
+                  پنل مدیریت و تنظیمات بومیم
+                </h1>
+                <p className="text-xs text-zinc-400">
+                  مدیریت تعرفه‌ها، تغییر قیمت‌ها، اضافه کردن سرویس جدید و تنظیم نمایش صفحات
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Link
+                  href="/services"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "text-xs font-bold gap-1.5 border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] rounded-xl"
+                  )}
+                >
+                  <span>صفحه تعرفه‌ها</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetToDefault}
+                  className="text-xs font-bold gap-1.5 border-white/15 text-zinc-300 hover:text-white rounded-xl"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>ریست تعرفه‌ها</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-xs font-bold gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>خروج از مدیریت</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* 1. Page Visibility Management Card */}
+            <FrostedCard accentGlow="rgba(56, 189, 248, 0.15)" className="p-5 md:p-6 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <div className="flex items-center gap-2 text-sm font-black text-white">
+                  <SlidersHorizontal className="w-4 h-4 text-sky-400" />
+                  <span>مدیریت نمایش صفحات در منو (Show / Hide Pages)</span>
+                </div>
+                <span className="text-[11px] text-zinc-400 font-mono">
+                  تغییرات آنی در منوی سایت اعمال می‌شود
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {pageList.map((pg) => {
+                  const isVisible = pageVisibility[pg.id] !== false;
                   return (
                     <div
-                      key={s.id}
+                      key={pg.id}
                       className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
-                        isActive
-                          ? "bg-white/[0.15] text-white border-white/25 shadow-sm"
-                          : "bg-white/[0.03] text-zinc-400 border-white/[0.08] hover:text-white"
+                        "p-3 rounded-2xl border transition-all flex items-center justify-between gap-3",
+                        isVisible
+                          ? "bg-white/[0.04] border-white/15 text-white"
+                          : "bg-white/[0.01] border-white/[0.05] opacity-50 text-zinc-500"
                       )}
                     >
-                      <button
-                        type="button"
-                        onClick={() => setActiveServiceId(s.id)}
-                        className="cursor-pointer"
-                      >
-                        {s.name} ({s.packages.length} پکیج)
-                      </button>
-                      {services.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteService(s.id)}
-                          className="hover:text-red-400 text-zinc-500 p-0.5 rounded-full transition-colors cursor-pointer"
-                          title="حذف این دسته‌بندی"
-                        >
-                          ×
-                        </button>
-                      )}
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold flex items-center gap-1.5">
+                          {isVisible ? (
+                            <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                          ) : (
+                            <EyeOff className="w-3.5 h-3.5 text-zinc-500" />
+                          )}
+                          <span>{pg.name}</span>
+                        </div>
+                        <div className="text-[10px] font-mono text-zinc-400">{pg.path}</div>
+                      </div>
+
+                      <Switch
+                        checked={isVisible}
+                        onCheckedChange={() => togglePageVisibility(pg.id, isVisible)}
+                      />
                     </div>
                   );
                 })}
               </div>
             </FrostedCard>
 
-            {/* Packages in Active Service */}
-            {activeService && (
-              <FrostedCard accentGlow="rgba(255, 223, 0, 0.15)" className="p-5 md:p-6 space-y-5">
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-                  <div className="space-y-0.5">
-                    <h3 className="text-base font-black text-white">
-                      پکیج‌های دسته‌بندی «{activeService.name}»
-                    </h3>
-                    <p className="text-xs text-zinc-400">
-                      قیمت، ویژگی‌ها و تم رنگی هر سطح را ویرایش کنید
-                    </p>
+            {/* 2. Pricelist Management */}
+            {loading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full rounded-2xl bg-white/[0.05]" />
+                <Skeleton className="h-64 w-full rounded-3xl bg-white/[0.05]" />
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Services Tabs / Management */}
+                <FrostedCard accentGlow="rgba(192, 132, 252, 0.15)" className="p-5 md:p-6 space-y-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-sm font-black text-white">
+                      <Layers className="w-4 h-4 text-purple-400" />
+                      <span>دسته‌بندی‌های خدمات و ادیت</span>
+                    </div>
+
+                    {/* Add new service */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Input
+                        value={newServiceName}
+                        onChange={(e) => setNewServiceName(e.target.value)}
+                        placeholder="نام دسته‌بندی جدید..."
+                        className="h-9 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={handleAddService}
+                        className="h-9 text-xs font-bold gap-1 rounded-xl shadow-[0_0_12px_rgba(255,223,0,0.3)] shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>افزودن</span>
+                      </Button>
+                    </div>
                   </div>
 
-                  <Button
-                    size="sm"
-                    onClick={handleAddPackage}
-                    className="text-xs font-bold gap-1.5 rounded-xl shadow-[0_0_14px_rgba(255,223,0,0.3)]"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>افزودن پکیج به این بخش</span>
-                  </Button>
-                </div>
+                  {/* Service Badges */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {services.map((s) => {
+                      const isActive = activeServiceId === s.id;
+                      return (
+                        <div
+                          key={s.id}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
+                            isActive
+                              ? "bg-white/[0.15] text-white border-white/25 shadow-sm"
+                              : "bg-white/[0.03] text-zinc-400 border-white/[0.08] hover:text-white"
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setActiveServiceId(s.id)}
+                            className="cursor-pointer"
+                          >
+                            {s.name} ({s.packages.length} پکیج)
+                          </button>
+                          {services.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteService(s.id)}
+                              className="hover:text-red-400 text-zinc-500 p-0.5 rounded-full transition-colors cursor-pointer"
+                              title="حذف این دسته‌بندی"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </FrostedCard>
 
-                {/* Packages Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {activeService.packages.map((pkg) => (
-                    <div
-                      key={pkg.id}
-                      className={cn(
-                        "p-4 rounded-2xl border bg-white/[0.03] flex flex-col justify-between space-y-4 relative transition-all",
-                        pkg.popular ? "border-primary/50 shadow-[0_0_20px_rgba(255,223,0,0.1)]" : "border-white/[0.1]"
-                      )}
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="text-sm font-black text-white flex items-center gap-1.5">
-                              <span>{pkg.name}</span>
-                              {pkg.popular && (
-                                <Badge className="bg-primary text-primary-foreground font-black text-[9px] px-1.5 py-0 h-4">
-                                  پرطرفدار
-                                </Badge>
-                              )}
+                {/* Packages in Active Service */}
+                {activeService && (
+                  <FrostedCard accentGlow="rgba(255, 223, 0, 0.15)" className="p-5 md:p-6 space-y-5">
+                    <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                      <div className="space-y-0.5">
+                        <h3 className="text-base font-black text-white">
+                          پکیج‌های دسته‌بندی «{activeService.name}»
+                        </h3>
+                        <p className="text-xs text-zinc-400">
+                          قیمت، ویژگی‌ها و تم رنگی هر سطح را ویرایش کنید
+                        </p>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        onClick={handleAddPackage}
+                        className="text-xs font-bold gap-1.5 rounded-xl shadow-[0_0_14px_rgba(255,223,0,0.3)]"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>افزودن پکیج به این بخش</span>
+                      </Button>
+                    </div>
+
+                    {/* Packages Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {activeService.packages.map((pkg) => (
+                        <div
+                          key={pkg.id}
+                          className={cn(
+                            "p-4 rounded-2xl border bg-white/[0.03] flex flex-col justify-between space-y-4 relative transition-all",
+                            pkg.popular ? "border-primary/50 shadow-[0_0_20px_rgba(255,223,0,0.1)]" : "border-white/[0.1]"
+                          )}
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="text-sm font-black text-white flex items-center gap-1.5">
+                                  <span>{pkg.name}</span>
+                                  {pkg.popular && (
+                                    <Badge className="bg-primary text-primary-foreground font-black text-[9px] px-1.5 py-0 h-4">
+                                      پرطرفدار
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-xs font-mono font-bold text-primary mt-1">
+                                  {pkg.price} {pkg.per}
+                                </div>
+                              </div>
+
+                              <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${pkg.color} shrink-0`} />
                             </div>
-                            <div className="text-xs font-mono font-bold text-primary mt-1">
-                              {pkg.price} {pkg.per}
+
+                            <Separator className="bg-white/[0.06]" />
+
+                            <div className="space-y-1.5 text-xs text-zinc-300">
+                              {pkg.features.map((f, i) => (
+                                <div key={i} className="flex items-center gap-1.5 text-[11px]">
+                                  <span className="text-zinc-500">•</span>
+                                  <span className={f === "—" ? "text-zinc-600 line-through" : ""}>{f}</span>
+                                </div>
+                              ))}
                             </div>
                           </div>
 
-                          <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${pkg.color} shrink-0`} />
+                          <div className="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleEditPackage(pkg)}
+                              className="flex-1 text-xs font-bold h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white border border-white/10"
+                            >
+                              <Edit className="w-3 h-3 ml-1" />
+                              <span>ویرایش</span>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeletePackage(pkg.id)}
+                              className="text-xs h-8 px-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                  </FrostedCard>
+                )}
+              </div>
+            )}
 
-                        <Separator className="bg-white/[0.06]" />
+            {/* Edit Package Dialog */}
+            <Dialog open={isPackageDialogOpen} onOpenChange={setIsPackageDialogOpen}>
+              <DialogContent className="max-w-md bg-zinc-950/95 border-white/[0.15] text-white backdrop-blur-3xl rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-black">ویرایش مشخصات پکیج</DialogTitle>
+                  <DialogDescription className="text-xs text-zinc-400">
+                    نام، قیمت، بازه زمانی و ویژگی‌های همراه این پکیج را تنظیم کنید.
+                  </DialogDescription>
+                </DialogHeader>
 
-                        <div className="space-y-1.5 text-xs text-zinc-300">
-                          {pkg.features.map((f, i) => (
-                            <div key={i} className="flex items-center gap-1.5 text-[11px]">
-                              <span className="text-zinc-500">•</span>
-                              <span className={f === "—" ? "text-zinc-600 line-through" : ""}>{f}</span>
-                            </div>
-                          ))}
-                        </div>
+                {editingPackage && (
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-zinc-300">نام پکیج</Label>
+                      <Input
+                        value={editingPackage.name}
+                        onChange={(e) => setEditingPackage({ ...editingPackage, name: e.target.value })}
+                        placeholder="مثال: اقتصادی، پیشرفته..."
+                        className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-zinc-300">قیمت (میلیون تومان)</Label>
+                        <Input
+                          value={editingPackage.price}
+                          onChange={(e) => setEditingPackage({ ...editingPackage, price: e.target.value })}
+                          placeholder="مثال: ۲.۳"
+                          className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl font-mono"
+                        />
                       </div>
-
-                      <div className="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEditPackage(pkg)}
-                          className="flex-1 text-xs font-bold h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white border border-white/10"
-                        >
-                          <Edit className="w-3 h-3 ml-1" />
-                          <span>ویرایش</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeletePackage(pkg.id)}
-                          className="text-xs h-8 px-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-zinc-300">واحد و بازه</Label>
+                        <Input
+                          value={editingPackage.per}
+                          onChange={(e) => setEditingPackage({ ...editingPackage, per: e.target.value })}
+                          placeholder="میلیون / دقیقه"
+                          className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl"
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-              </FrostedCard>
-            )}
-          </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/[0.1]">
+                      <div className="space-y-0.5">
+                        <Label className="text-xs font-bold text-white">علامت به عنوان پکیج پرطرفدار (Popular)</Label>
+                        <p className="text-[11px] text-zinc-400">در لیست با رنگ شاخص و بج ستاره‌دار نمایش داده می‌شود</p>
+                      </div>
+                      <Switch
+                        checked={!!editingPackage.popular}
+                        onCheckedChange={(checked) => setEditingPackage({ ...editingPackage, popular: checked })}
+                      />
+                    </div>
+
+                    {/* Color gradient picker */}
+                    <div className="space-y-2">
+                      <Label className="text-xs text-zinc-300 flex items-center gap-1.5">
+                        <Palette className="w-3.5 h-3.5" />
+                        انتخاب تم رنگی پکیج
+                      </Label>
+                      <div className="flex flex-wrap gap-2">
+                        {colorOptions.map((c) => (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => setEditingPackage({ ...editingPackage, color: c })}
+                            className={`w-7 h-7 rounded-full bg-gradient-to-br ${c} transition-all cursor-pointer ${
+                              editingPackage.color === c ? "ring-2 ring-primary ring-offset-2 ring-offset-black scale-110 shadow-[0_0_12px_rgba(255,255,255,0.4)]" : "opacity-75 hover:opacity-100"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 5 Features */}
+                    <div className="space-y-2">
+                      <Label className="text-xs text-zinc-300">۵ ویژگی پکیج (برای نداشتن ویژگی علامت — بنویسید)</Label>
+                      <div className="space-y-2">
+                        {editingPackage.features.map((f, i) => (
+                          <Input
+                            key={i}
+                            value={f}
+                            onChange={(e) => {
+                              const next = [...editingPackage.features];
+                              next[i] = e.target.value;
+                              setEditingPackage({ ...editingPackage, features: next });
+                            }}
+                            placeholder={`ویژگی ${i + 1} (مثلاً: راف کات، اصلاح رنگ یا —)`}
+                            className="text-xs h-8 bg-white/[0.04] border-white/[0.1] rounded-xl"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button variant="ghost" onClick={() => setIsPackageDialogOpen(false)} className="text-xs text-zinc-400 rounded-xl">
+                    انصراف
+                  </Button>
+                  <Button onClick={savePackageFromDialog} className="text-xs font-bold gap-1.5 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)]">
+                    <Save className="w-3.5 h-3.5" />
+                    <span>ذخیره پکیج</span>
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
-
-        {/* Edit Package Dialog */}
-        <Dialog open={isPackageDialogOpen} onOpenChange={setIsPackageDialogOpen}>
-          <DialogContent className="max-w-md bg-zinc-950/95 border-white/[0.15] text-white backdrop-blur-3xl rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]">
-            <DialogHeader>
-              <DialogTitle className="text-base font-black">ویرایش مشخصات پکیج</DialogTitle>
-              <DialogDescription className="text-xs text-zinc-400">
-                نام، قیمت، بازه زمانی و ویژگی‌های همراه این پکیج را تنظیم کنید.
-              </DialogDescription>
-            </DialogHeader>
-
-            {editingPackage && (
-              <div className="space-y-4 py-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-zinc-300">نام پکیج</Label>
-                  <Input
-                    value={editingPackage.name}
-                    onChange={(e) => setEditingPackage({ ...editingPackage, name: e.target.value })}
-                    placeholder="مثال: اقتصادی، پیشرفته..."
-                    className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-zinc-300">قیمت (میلیون تومان)</Label>
-                    <Input
-                      value={editingPackage.price}
-                      onChange={(e) => setEditingPackage({ ...editingPackage, price: e.target.value })}
-                      placeholder="مثال: ۲.۳"
-                      className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl font-mono"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-zinc-300">واحد و بازه</Label>
-                    <Input
-                      value={editingPackage.per}
-                      onChange={(e) => setEditingPackage({ ...editingPackage, per: e.target.value })}
-                      placeholder="میلیون / دقیقه"
-                      className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/[0.1]">
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-bold text-white">علامت به عنوان پکیج پرطرفدار (Popular)</Label>
-                    <p className="text-[11px] text-zinc-400">در لیست با رنگ شاخص و بج ستاره‌دار نمایش داده می‌شود</p>
-                  </div>
-                  <Switch
-                    checked={!!editingPackage.popular}
-                    onCheckedChange={(checked) => setEditingPackage({ ...editingPackage, popular: checked })}
-                  />
-                </div>
-
-                {/* Color gradient picker */}
-                <div className="space-y-2">
-                  <Label className="text-xs text-zinc-300 flex items-center gap-1.5">
-                    <Palette className="w-3.5 h-3.5" />
-                    انتخاب تم رنگی پکیج
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {colorOptions.map((c) => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => setEditingPackage({ ...editingPackage, color: c })}
-                        className={`w-7 h-7 rounded-full bg-gradient-to-br ${c} transition-all cursor-pointer ${
-                          editingPackage.color === c ? "ring-2 ring-primary ring-offset-2 ring-offset-black scale-110 shadow-[0_0_12px_rgba(255,255,255,0.4)]" : "opacity-75 hover:opacity-100"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 5 Features */}
-                <div className="space-y-2">
-                  <Label className="text-xs text-zinc-300">۵ ویژگی پکیج (برای نداشتن ویژگی علامت — بنویسید)</Label>
-                  <div className="space-y-2">
-                    {editingPackage.features.map((f, i) => (
-                      <Input
-                        key={i}
-                        value={f}
-                        onChange={(e) => {
-                          const next = [...editingPackage.features];
-                          next[i] = e.target.value;
-                          setEditingPackage({ ...editingPackage, features: next });
-                        }}
-                        placeholder={`ویژگی ${i + 1} (مثلاً: راف کات، اصلاح رنگ یا —)`}
-                        className="text-xs h-8 bg-white/[0.04] border-white/[0.1] rounded-xl"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button variant="ghost" onClick={() => setIsPackageDialogOpen(false)} className="text-xs text-zinc-400 rounded-xl">
-                انصراف
-              </Button>
-              <Button onClick={savePackageFromDialog} className="text-xs font-bold gap-1.5 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)]">
-                <Save className="w-3.5 h-3.5" />
-                <span>ذخیره پکیج</span>
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Password Prompt Dialog */}
-        <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-          <DialogContent className="max-w-md bg-zinc-950/90 border-white/[0.15] text-white backdrop-blur-3xl rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)]">
-            <DialogHeader>
-              <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.15] backdrop-blur-xl flex items-center justify-center text-primary mb-2 shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.25)]">
-                <Lock className="w-5 h-5" />
-              </div>
-              <DialogTitle className="text-base font-black">رمز عبور پنل ادمین</DialogTitle>
-              <DialogDescription className="text-xs text-zinc-400">
-                برای ذخیره تغییرات در دیتابیس Supabase، لطفاً رمز ادمین را وارد کنید. این رمز در مرورگر شما ذخیره خواهد شد.
-              </DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handlePasswordSubmit} className="space-y-4 py-2">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-zinc-300">رمز ادمین (ADMIN_PANEL_KEY)</Label>
-                <Input
-                  type="password"
-                  value={adminPasswordInput}
-                  onChange={(e) => setAdminPasswordInput(e.target.value)}
-                  placeholder="رمز را وارد کنید..."
-                  className="text-xs bg-white/[0.04] border-white/[0.1] rounded-xl"
-                  autoFocus
-                />
-              </div>
-
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button type="button" variant="ghost" onClick={() => setIsPasswordDialogOpen(false)} className="text-xs text-zinc-400 rounded-xl">
-                  انصراف
-                </Button>
-                <Button type="submit" className="text-xs font-bold gap-1.5 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)]">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>تایید و ذخیره</span>
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
       </div>
     </main>
   );

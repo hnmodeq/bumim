@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import Link from "next/link";
 import { toast } from "sonner";
 
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -22,44 +21,41 @@ import {
   type InvoiceItem,
   toPersianNumber,
   toPersianPrice,
-  INVOICE_STORAGE_KEY,
 } from "@/app/lib/invoice-types";
 import {
-  Calculator as CalcIcon,
   Plus,
   Trash2,
   FileDown,
   Upload,
   User,
   Building2,
-  Sparkles,
-  ArrowLeft,
-  FileSpreadsheet,
-  CheckCircle2,
   Receipt,
+  FileSpreadsheet,
 } from "lucide-react";
+
+const EDITOR_STORAGE_KEY = "bumim_editor_profile";
+const INVOICE_ITEMS_STORAGE_KEY = "bumim_direct_invoice_items";
 
 export default function InvoicePage() {
   // Invoice items list
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Seller info
-  const [sellerInfo, setSellerInfo] = useState({
-    name: "",
-    brand: "",
-    phone: "",
-    email: "",
-  });
+  // New item form fields
+  const [itemTitle, setItemTitle] = useState("");
+  const [itemQuantity, setItemQuantity] = useState("1");
+  const [itemPrice, setItemPrice] = useState("");
+  const [itemServices, setItemServices] = useState("");
+
+  // Seller info (Auto-fill for video editor)
+  const [sellerName, setSellerName] = useState("");
+  const [sellerPhone, setSellerPhone] = useState("");
   const [sellerLogo, setSellerLogo] = useState<string | null>(null);
 
   // Buyer info
-  const [buyerInfo, setBuyerInfo] = useState({
-    name: "",
-    company: "",
-    phone: "",
-    email: "",
-  });
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerCompany, setBuyerCompany] = useState("");
+  const [buyerPhone, setBuyerPhone] = useState("");
 
   // Invoice meta
   const [invoiceNumber] = useState<string>(() => {
@@ -74,10 +70,21 @@ export default function InvoicePage() {
     }).format(new Date());
   }, []);
 
-  // Load stored invoice items and user profile on mount
+  // Load stored editor profile and invoice items on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(INVOICE_STORAGE_KEY);
+      const storedEditor = localStorage.getItem(EDITOR_STORAGE_KEY);
+      if (storedEditor) {
+        const p = JSON.parse(storedEditor);
+        if (p.name) setSellerName(p.name);
+        if (p.phone) setSellerPhone(p.phone);
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      const stored = localStorage.getItem(INVOICE_ITEMS_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -87,34 +94,81 @@ export default function InvoicePage() {
     } catch {
       // ignore
     }
-
-    try {
-      const storedProfile = localStorage.getItem("bumim_customer_profile");
-      if (storedProfile) {
-        const p = JSON.parse(storedProfile);
-        if (p.name) setBuyerInfo((prev) => ({ ...prev, name: p.name }));
-        if (p.phone) setBuyerInfo((prev) => ({ ...prev, phone: p.phone }));
-      }
-    } catch {
-      // ignore
-    }
   }, []);
+
+  // Auto-save editor profile on change
+  const handleSellerNameChange = (val: string) => {
+    setSellerName(val);
+    try {
+      localStorage.setItem(
+        EDITOR_STORAGE_KEY,
+        JSON.stringify({ name: val, phone: sellerPhone })
+      );
+    } catch {}
+  };
+
+  const handleSellerPhoneChange = (val: string) => {
+    setSellerPhone(val);
+    try {
+      localStorage.setItem(
+        EDITOR_STORAGE_KEY,
+        JSON.stringify({ name: sellerName, phone: val })
+      );
+    } catch {}
+  };
 
   // Sync invoice items to localStorage
   const updateInvoiceItems = (items: InvoiceItem[]) => {
     setInvoiceItems(items);
     try {
-      localStorage.setItem(INVOICE_STORAGE_KEY, JSON.stringify(items));
+      localStorage.setItem(INVOICE_ITEMS_STORAGE_KEY, JSON.stringify(items));
     } catch {
       // ignore
     }
+  };
+
+  const handleAddItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!itemTitle.trim()) {
+      toast.error("لطفاً عنوان یا شرح پروژه را وارد کنید.");
+      return;
+    }
+
+    const cleanPrice = parseInt(itemPrice.replace(/[^0-9]/g, "") || "0");
+    if (!cleanPrice || cleanPrice <= 0) {
+      toast.error("لطفاً مبلغ معتبر پروژه را به تومان وارد کنید.");
+      return;
+    }
+
+    const qty = Math.max(1, parseInt(itemQuantity.replace(/[^0-9]/g, "") || "1"));
+    const total = cleanPrice * qty;
+
+    const newItem: InvoiceItem = {
+      id: "item-" + Date.now(),
+      typeLabel: itemTitle.trim(),
+      durationLabel: "",
+      countLabel: `${qty} ویدیو`,
+      services: itemServices.trim() ? [{ label: itemServices.trim(), percent: 0 }] : [],
+      subtotal: total,
+      totalPercent: 0,
+      total,
+    };
+
+    const updated = [...invoiceItems, newItem];
+    updateInvoiceItems(updated);
+
+    setItemTitle("");
+    setItemPrice("");
+    setItemServices("");
+    setItemQuantity("1");
+    toast.success("ردیف پروژه با موفقیت به پیش‌فاکتور اضافه شد.");
   };
 
   const handleRemoveItem = useCallback(
     (id: string) => {
       const updated = invoiceItems.filter((x) => x.id !== id);
       updateInvoiceItems(updated);
-      toast.info("آیتم از پیش‌فاکتور حذف شد");
+      toast.info("ردیف از پیش‌فاکتور حذف شد");
     },
     [invoiceItems]
   );
@@ -123,25 +177,6 @@ export default function InvoicePage() {
     updateInvoiceItems([]);
     toast.info("لیست پیش‌فاکتور خالی شد");
   }, []);
-
-  const handleAddQuickSample = () => {
-    const sampleItem: InvoiceItem = {
-      id: "item-" + Date.now(),
-      typeLabel: "ادیت ویدیوی ریلز اینستاگرامی",
-      durationLabel: "۶۰ ثانیه",
-      countLabel: "ویدیو ۱",
-      services: [
-        { label: "کات و راف کات", percent: 8 },
-        { label: "اصلاح رنگ حرفه‌ای", percent: 12 },
-        { label: "موزیک و افکت صوتی", percent: 10 },
-      ],
-      subtotal: 1800000,
-      totalPercent: 30,
-      total: 2340000,
-    };
-    updateInvoiceItems([...invoiceItems, sampleItem]);
-    toast.success("ردیف تستی اضافه شد");
-  };
 
   const invoiceTotal = useMemo(() => {
     if (invoiceItems.length === 0) return 0;
@@ -168,7 +203,7 @@ export default function InvoicePage() {
   const handleExportPDF = useCallback(async () => {
     if (isExporting) return;
     if (invoiceItems.length === 0) {
-      toast.error("لطفاً حداقل یک پروژه به لیست پیش‌فاکتور اضافه کنید.");
+      toast.error("لطفاً ابتدا حداقل یک ردیف پروژه به پیش‌فاکتور اضافه کنید.");
       return;
     }
 
@@ -251,7 +286,7 @@ export default function InvoicePage() {
         pdf.setFont("Vazirmatn", "bold");
         pdf.setFontSize(18);
         pdf.setTextColor("#0a0a0a");
-        const initial = (sellerInfo.brand || sellerInfo.name || "ب").charAt(0);
+        const initial = (sellerName || "ب").charAt(0);
         pdf.text(initial, x + 21, y + 27, { align: "center" });
       }
 
@@ -259,16 +294,16 @@ export default function InvoicePage() {
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(12);
       pdf.setTextColor("#ffffff");
-      const sellerTitle = sellerInfo.brand || sellerInfo.name || "نام برند ویدیو ادیتور ثبت نشده";
-      pdf.text(sellerTitle, sellerX, 30, { align: "left" } as any);
+      const sellerTitle = sellerName || "نام ویدیو ادیتور ثبت نشده";
+      pdf.text(sellerTitle, sellerX, 32, { align: "left" } as any);
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7.5);
       pdf.setTextColor("#9a9a9a");
-      const sellerContact = sellerInfo.email || "پست الکترونیکی ویدیو ادیتور ثبت نشده";
-      if (sellerContact) pdf.text(sellerContact, sellerX, 42, { align: "left" } as any);
+      const sellerContact = sellerPhone || "تلفن تماس ویدیو ادیتور ثبت نشده";
+      pdf.text(sellerContact, sellerX, 46, { align: "left" } as any);
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
-      pdf.text(invoiceDateFa, sellerX, 54, { align: "left" } as any);
+      pdf.text(invoiceDateFa, sellerX, 58, { align: "left" } as any);
 
       // Title on right
       pdf.setFont("Vazirmatn", "bold");
@@ -281,7 +316,7 @@ export default function InvoicePage() {
       pdf.text("صورتحساب خدمات ادیت ویدیو", pdfW - margin, 46, { align: "right" } as any);
 
       let y = 90;
-      const boxH = 62;
+      const boxH = 56;
       const boxW = (pdfW - margin * 2 - 10) / 2;
       const boxR = 10;
       const sellerBoxX = pdfW - margin - boxW;
@@ -318,20 +353,11 @@ export default function InvoicePage() {
       pdf.setTextColor("#0a0a0a");
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(9);
-      pdf.text(sellerInfo.name || "نام ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
-      if (sellerInfo.brand) {
-        pdf.setFont("Vazirmatn", "normal");
-        pdf.setFontSize(8);
-        pdf.setTextColor("#333");
-        pdf.text(sellerInfo.brand, sellerBoxX + boxW - 10, y + 44, { align: "right" } as any);
-      }
+      pdf.text(sellerName || "نام ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
       pdf.setFont("Vazirmatn", "normal");
-      pdf.setFontSize(7);
+      pdf.setFontSize(7.5);
       pdf.setTextColor("#666");
-      pdf.text(sellerInfo.phone || "تلفن تماس ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 54, { align: "right" } as any);
-      if (sellerInfo.email) {
-        pdf.text(sellerInfo.email, sellerBoxX + boxW - 10, y + 62 - (sellerInfo.brand ? 0 : 8), { align: "right" } as any);
-      }
+      pdf.text(sellerPhone || "تلفن تماس ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 46, { align: "right" } as any);
 
       // Buyer badge
       pdf.setFillColor("#11c69a");
@@ -348,20 +374,17 @@ export default function InvoicePage() {
       pdf.text("خریدار", bBadgeX + 24, badgeY + 9.5, { align: "center" } as any);
       pdf.setTextColor("#0a0a0a");
       pdf.setFontSize(9);
-      pdf.text(buyerInfo.name || "نام مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 32, { align: "right" } as any);
-      if (buyerInfo.company) {
+      pdf.text(buyerName || "نام مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 30, { align: "right" } as any);
+      if (buyerCompany) {
         pdf.setFont("Vazirmatn", "normal");
-        pdf.setFontSize(8);
+        pdf.setFontSize(7.5);
         pdf.setTextColor("#333");
-        pdf.text(buyerInfo.company, buyerBoxX + boxW - 10, y + 44, { align: "right" } as any);
+        pdf.text(buyerCompany, buyerBoxX + boxW - 10, y + 41, { align: "right" } as any);
       }
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7);
       pdf.setTextColor("#666");
-      pdf.text(buyerInfo.phone || "تلفن تماس مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 54, { align: "right" } as any);
-      if (buyerInfo.email) {
-        pdf.text(buyerInfo.email, buyerBoxX + boxW - 10, y + 62 - (buyerInfo.company ? 0 : 8), { align: "right" } as any);
-      }
+      pdf.text(buyerPhone || "تلفن تماس مشتری ثبت نشده", buyerBoxX + boxW - 10, y + (buyerCompany ? 50 : 44), { align: "right" } as any);
 
       y += boxH + 18;
 
@@ -405,23 +428,11 @@ export default function InvoicePage() {
         }
         const servicesText = it.services?.length
           ? it.services.map((s) => s.label).join("، ")
-          : "بدون خدمات اضافی";
+          : "";
 
-        function flipNumberToFront(label: string): string {
-          const parts = label.trim().split(/\s+/);
-          if (parts.length >= 2) {
-            const first = parts[0];
-            const second = parts[1];
-            if (/^[0-9۰-۹]+$/.test(second)) {
-              return `${second} ${first}`;
-            }
-          }
-          return label;
-        }
-
-        const title = `${it.typeLabel} • ${flipNumberToFront(it.durationLabel)} • ${flipNumberToFront(it.countLabel)}`;
+        const title = it.typeLabel;
         pdf.setFont("Vazirmatn", "bold");
-        const svcLines = pdf.splitTextToSize(servicesText, colW.desc - 12);
+        const svcLines = servicesText ? pdf.splitTextToSize(servicesText, colW.desc - 12) : [];
         const lines = 1 + svcLines.length;
         const rowH = Math.max(28, 14 + lines * 9 + rowHPadding);
 
@@ -451,13 +462,15 @@ export default function InvoicePage() {
         pdf.text(toFaNum(i + 1), tableX + colW.row / 2, y + 14, { align: "center" } as any);
 
         pdf.text(title, c1 + colW.desc - 6, y + 12, { align: "right" } as any);
-        pdf.setFont("Vazirmatn", "normal");
-        pdf.setFontSize(6.5);
-        pdf.setTextColor("#777");
-        let sy = y + 22;
-        for (const line of svcLines) {
-          pdf.text(line, c1 + colW.desc - 6, sy, { align: "right" } as any);
-          sy += 8;
+        if (svcLines.length) {
+          pdf.setFont("Vazirmatn", "normal");
+          pdf.setFontSize(6.5);
+          pdf.setTextColor("#777");
+          let sy = y + 22;
+          for (const line of svcLines) {
+            pdf.text(line, c1 + colW.desc - 6, sy, { align: "right" } as any);
+            sy += 8;
+          }
         }
 
         pdf.setFont("Vazirmatn", "bold");
@@ -607,7 +620,7 @@ export default function InvoicePage() {
       pdf.setTextColor("#999");
       pdf.text("bumims.ir", pdfW / 2, footerY + 14, { align: "center" } as any);
 
-      const customerName = buyerInfo.name || buyerInfo.company || "مشتری";
+      const customerName = buyerName || buyerCompany || "مشتری";
       const safeCustomer = customerName.replace(/[\/*?:"<>|]/g, "");
       const fileName = `پیش فاکتور برای ${safeCustomer} - ${invoiceNumber}.pdf`;
       pdf.save(fileName);
@@ -623,8 +636,11 @@ export default function InvoicePage() {
     isExporting,
     invoiceNumber,
     invoiceDateFa,
-    sellerInfo,
-    buyerInfo,
+    sellerName,
+    sellerPhone,
+    buyerName,
+    buyerCompany,
+    buyerPhone,
     sellerLogo,
     invoiceItems,
     invoiceTotal,
@@ -655,14 +671,14 @@ export default function InvoicePage() {
             صدور و چاپ پیش‌فاکتور
           </h1>
           <p className="text-xs text-zinc-400">
-            مشخصات خود و کارفرما را وارد کنید و پیش‌فاکتور استاندارد و قابل کپی در قالب PDF دریافت کنید
+            عنوان پروژه، قیمت و مشخصات را وارد کنید و پیش‌فاکتور استاندارد و قابل کپی در قالب PDF دریافت کنید
           </p>
         </div>
 
-        {/* Main Invoice Card */}
+        {/* Main Invoice Frosted Card */}
         <FrostedCard accentGlow="rgba(255, 223, 0, 0.2)" className="p-5 md:p-8 space-y-6">
-          {/* Top Actions & Summary */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+          {/* Top Invoice Metadata */}
+          <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
             <div className="space-y-0.5">
               <div className="text-xs text-zinc-400">شماره پیش‌فاکتور:</div>
               <div className="text-sm font-mono font-bold text-white flex items-center gap-2">
@@ -672,27 +688,81 @@ export default function InvoicePage() {
                 </Badge>
               </div>
             </div>
-
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link
-                href="/calculator"
-                className={cn(
-                  buttonVariants({ size: "sm" }),
-                  "font-bold text-xs h-9 gap-1.5 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)] w-full sm:w-auto"
-                )}
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ افزودن پروژه از ماشین حساب</span>
-              </Link>
-            </div>
           </div>
 
-          {/* Invoice Items Table */}
+          {/* 1. Add Project Form Directly Here */}
+          <form onSubmit={handleAddItem} className="p-4 md:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-4">
+            <div className="text-xs font-black text-white flex items-center gap-2">
+              <Plus className="w-4 h-4 text-primary" />
+              <span>افزودن ردیف پروژه / خدمت به پیش‌فاکتور</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+              <div className="md:col-span-5 space-y-1">
+                <label className="text-[11px] font-bold text-zinc-400">شرح یا عنوان پروژه</label>
+                <Input
+                  required
+                  value={itemTitle}
+                  onChange={(e) => setItemTitle(e.target.value)}
+                  placeholder="مثال: تدوین ریلز اینستاگرام (ریتمیک)"
+                  className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500"
+                />
+              </div>
+
+              <div className="md:col-span-3 space-y-1">
+                <label className="text-[11px] font-bold text-zinc-400">مبلغ پروژه (تومان)</label>
+                <Input
+                  required
+                  type="text"
+                  dir="ltr"
+                  value={itemPrice}
+                  onChange={(e) => setItemPrice(e.target.value)}
+                  placeholder="مثال: 2,500,000"
+                  className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500 font-mono text-left"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[11px] font-bold text-zinc-400">تعداد ویدیو</label>
+                <Input
+                  type="number"
+                  min="1"
+                  dir="ltr"
+                  value={itemQuantity}
+                  onChange={(e) => setItemQuantity(e.target.value)}
+                  placeholder="1"
+                  className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white font-mono text-center"
+                />
+              </div>
+
+              <div className="md:col-span-2 flex items-end">
+                <Button
+                  type="submit"
+                  className="w-full h-10 text-xs font-bold gap-1 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)] cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>افزودن</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-zinc-400">خدمات یا توضیحات اختیاری همراه این ردیف</label>
+              <Input
+                value={itemServices}
+                onChange={(e) => setItemServices(e.target.value)}
+                placeholder="مثال: اصلاح رنگ، زیرنویس انیمیت‌شده، موزیک و افکت صوتی..."
+                className="h-9 text-xs bg-white/[0.03] border-white/[0.08] rounded-xl text-white placeholder:text-zinc-600"
+              />
+            </div>
+          </form>
+
+          {/* 2. Invoice Items Table */}
           {invoiceItems.length > 0 ? (
             <div className="rounded-3xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.15)]">
               <div className="p-4 px-5 border-b border-white/[0.08] flex items-center justify-between">
                 <div className="text-xs font-black text-white flex items-center gap-2">
-                  <span>ریز پروژه‌ها و خدمات</span>
+                  <span>پروژه‌های ثبت‌شده در پیش‌فاکتور</span>
                   <Badge variant="secondary" className="text-[10px] font-mono bg-white/10 text-white border-white/10">
                     {toPersianNumber(invoiceItems.length)} ردیف
                   </Badge>
@@ -726,11 +796,13 @@ export default function InvoicePage() {
                       </TableCell>
                       <TableCell className="text-right py-3">
                         <div className="text-xs font-bold text-white">
-                          {it.typeLabel} • {it.durationLabel} • {it.countLabel}
+                          {it.typeLabel}
                         </div>
-                        <div className="text-[10px] text-zinc-400 truncate max-w-xs mt-0.5">
-                          {it.services.length ? it.services.map((s) => s.label).join("، ") : "بدون خدمات اضافی"}
-                        </div>
+                        {it.services && it.services.length > 0 && (
+                          <div className="text-[10px] text-zinc-400 truncate max-w-xs mt-0.5">
+                            {it.services.map((s) => s.label).join("، ")}
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-center font-mono text-xs font-bold text-zinc-300">
                         {it.countLabel ? toPersianNumber(parseInt(it.countLabel.replace(/[^0-9]/g, "") || "1")) : "۱"}
@@ -754,7 +826,7 @@ export default function InvoicePage() {
 
               <div className="p-4 px-5 bg-white/[0.04] border-t border-white/[0.08] flex items-center justify-between text-xs">
                 <span className="font-bold text-zinc-400">
-                  جمع کل فاکتور ({toPersianNumber(invoiceItems.length)} پروژه):
+                  جمع کل پیش‌فاکتور ({toPersianNumber(invoiceItems.length)} ردیف):
                 </span>
                 <span className="font-black text-base text-primary font-mono">
                   {toPersianPrice(invoiceTotal)} تومان
@@ -762,71 +834,44 @@ export default function InvoicePage() {
               </div>
             </div>
           ) : (
-            /* Empty State */
-            <div className="p-8 rounded-3xl border border-dashed border-white/15 bg-white/[0.02] text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
-                <FileSpreadsheet className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">هنوز پروژه‌ای به پیش‌فاکتور اضافه نشده است</h4>
-                <p className="text-xs text-zinc-400">
-                  برای برآورد دقیق قیمت و افزودن به این فاکتور، وارد ماشین حساب شوید یا یک نمونه تستی اضافه کنید.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <Link
-                  href="/calculator"
-                  className={cn(buttonVariants({ size: "sm" }), "font-bold text-xs h-9 gap-1.5 rounded-xl")}
-                >
-                  <CalcIcon className="w-4 h-4" />
-                  <span>ورود به ماشین حساب و انتخاب پروژه</span>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddQuickSample}
-                  className="font-bold text-xs h-9 rounded-xl border-white/15 text-zinc-300 hover:text-white"
-                >
-                  + افزودن نمونه تستی
-                </Button>
+            <div className="p-6 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] text-center space-y-2">
+              <FileSpreadsheet className="w-8 h-8 text-zinc-500 mx-auto" />
+              <div className="text-xs text-zinc-400">
+                هنوز ردیفی اضافه نشده است. از فرم بالا عنوان و قیمت پروژه را بنویسید و روی دکمه «افزودن» کلیک کنید.
               </div>
             </div>
           )}
 
-          {/* Seller & Buyer Info Cards */}
+          {/* 3. Seller & Buyer Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-            {/* Seller */}
+            {/* Seller (Video Editor - Auto-fill enabled) */}
             <div className="rounded-3xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-xl p-4 md:p-5 space-y-3 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.15)]">
-              <div className="text-xs font-black text-primary flex items-center gap-1.5 pb-1">
-                <User className="w-3.5 h-3.5" />
-                <span>اطلاعات فروشنده (شما)</span>
+              <div className="flex items-center justify-between pb-1">
+                <div className="text-xs font-black text-primary flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5" />
+                  <span>اطلاعات فروشنده (شما - ذخیره خودکار)</span>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-mono">Auto-Fill</span>
               </div>
-              <Input
-                value={sellerInfo.name}
-                onChange={(e) => setSellerInfo((s) => ({ ...s, name: e.target.value }))}
-                placeholder="نام ویدیو ادیتور"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10"
-              />
-              <Input
-                value={sellerInfo.brand}
-                onChange={(e) => setSellerInfo((s) => ({ ...s, brand: e.target.value }))}
-                placeholder="نام برند / شرکت (اختیاری)"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10"
-              />
-              <Input
-                value={sellerInfo.phone}
-                onChange={(e) => setSellerInfo((s) => ({ ...s, phone: e.target.value }))}
-                placeholder="تلفن تماس ویدیو ادیتور"
-                dir="ltr"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono"
-              />
-              <Input
-                value={sellerInfo.email}
-                onChange={(e) => setSellerInfo((s) => ({ ...s, email: e.target.value }))}
-                placeholder="پست الکترونیکی"
-                dir="ltr"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono"
-              />
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-zinc-400">نام و نام خانوادگی ویدیو ادیتور</label>
+                <Input
+                  value={sellerName}
+                  onChange={(e) => handleSellerNameChange(e.target.value)}
+                  placeholder="مثال: علی رضایی"
+                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-zinc-400">تلفن تماس ویدیو ادیتور</label>
+                <Input
+                  value={sellerPhone}
+                  onChange={(e) => handleSellerPhoneChange(e.target.value)}
+                  placeholder="0912..."
+                  dir="ltr"
+                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono text-white"
+                />
+              </div>
               <div className="flex items-center gap-2 pt-1">
                 <label className="cursor-pointer">
                   <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -841,42 +886,44 @@ export default function InvoicePage() {
               </div>
             </div>
 
-            {/* Buyer */}
+            {/* Buyer (Client) */}
             <div className="rounded-3xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-xl p-4 md:p-5 space-y-3 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.15)]">
               <div className="text-xs font-black text-emerald-400 flex items-center gap-1.5 pb-1">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>اطلاعات خریدار (مشتری)</span>
               </div>
-              <Input
-                value={buyerInfo.name}
-                onChange={(e) => setBuyerInfo((s) => ({ ...s, name: e.target.value }))}
-                placeholder="نام مشتری"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10"
-              />
-              <Input
-                value={buyerInfo.company}
-                onChange={(e) => setBuyerInfo((s) => ({ ...s, company: e.target.value }))}
-                placeholder="نام شرکت / پیج / مجموعه (اختیاری)"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10"
-              />
-              <Input
-                value={buyerInfo.phone}
-                onChange={(e) => setBuyerInfo((s) => ({ ...s, phone: e.target.value }))}
-                placeholder="تلفن تماس مشتری"
-                dir="ltr"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono"
-              />
-              <Input
-                value={buyerInfo.email}
-                onChange={(e) => setBuyerInfo((s) => ({ ...s, email: e.target.value }))}
-                placeholder="ایمیل مشتری"
-                dir="ltr"
-                className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono"
-              />
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-zinc-400">نام مشتری</label>
+                <Input
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="مثال: رضا محمدی"
+                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-zinc-400">نام شرکت / پیج / برند (اختیاری)</label>
+                <Input
+                  value={buyerCompany}
+                  onChange={(e) => setBuyerCompany(e.target.value)}
+                  placeholder="مثال: آکادمی رشد"
+                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-zinc-400">تلفن تماس مشتری</label>
+                <Input
+                  value={buyerPhone}
+                  onChange={(e) => setBuyerPhone(e.target.value)}
+                  placeholder="0912..."
+                  dir="ltr"
+                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono text-white"
+                />
+              </div>
             </div>
           </div>
 
-          {/* PDF Download Button */}
+          {/* 4. PDF Download Button */}
           <div className="pt-2">
             <Button
               onClick={handleExportPDF}
@@ -894,8 +941,8 @@ export default function InvoicePage() {
                   <FileDown className="w-5 h-5" />
                   <span>
                     {invoiceItems.length > 0
-                      ? `خروجی پیش‌فاکتور PDF استاندارد (${toPersianNumber(invoiceItems.length)} پروژه — ${toPersianPrice(invoiceTotal)} تومان)`
-                      : "برای صدور PDF ابتدا یک پروژه اضافه کنید"}
+                      ? `خروجی پیش‌فاکتور PDF استاندارد (${toPersianNumber(invoiceItems.length)} ردیف — ${toPersianPrice(invoiceTotal)} تومان)`
+                      : "برای صدور PDF ابتدا یک ردیف پروژه اضافه کنید"}
                   </span>
                 </>
               )}

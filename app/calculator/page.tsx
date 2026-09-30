@@ -1,16 +1,10 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-
+import { useState, useMemo, useRef, useCallback } from "react";
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import {
   typeOptions,
@@ -21,18 +15,13 @@ import {
   advancedServices,
   type PickerOption,
   type Service,
-  type InvoiceItem,
   type TurnaroundSpeed,
   type EditorLevel,
   toPersianNumber,
   toPersianPrice,
-  INVOICE_STORAGE_KEY,
 } from "@/app/lib/invoice-types";
 import {
   Sparkles,
-  Plus,
-  ArrowLeft,
-  CheckCircle2,
   Zap,
   TrendingUp,
 } from "lucide-react";
@@ -174,61 +163,75 @@ function WheelPicker({
       role="listbox"
       aria-label={ariaLabel}
       tabIndex={0}
-      onKeyDown={handleKeyDown}
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="relative w-full h-[220px] overflow-hidden select-none touch-none cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 rounded-2xl"
+      onKeyDown={handleKeyDown}
+      className="relative w-full h-[140px] md:h-[170px] select-none outline-none cursor-grab active:cursor-grabbing bg-transparent touch-none overscroll-contain overflow-hidden rounded-2xl"
     >
-      {/* Center Highlight Bar */}
-      <div
-        className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[38px] rounded-xl bg-white/[0.08] border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.25)] z-0"
-      />
+      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-primary rounded-full pointer-events-none z-10 shadow-[0_0_10px_#ffdf00]" />
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[3px] h-[26px] bg-emerald-400 rounded-full pointer-events-none z-10 shadow-[0_0_10px_#34d399]" />
 
-      {/* Top & Bottom Gradient Fades */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0c0d12] to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0c0d12] to-transparent z-10" />
+      <div className="absolute inset-x-0 top-0 h-[36px] bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[36px] bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
 
-      {/* Items Container */}
-      <div
-        className="absolute inset-x-0 top-1/2 -translate-y-1/2 will-change-transform"
-        style={{
-          transform: `translateY(calc(-50% + ${dragOffset}px))`,
-          transition: isDragging ? "none" : "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        {options.map((opt, i) => {
-          const effectiveSelected = startSelectedRef.current;
-          const offsetFromEffective = i - effectiveSelected;
-          const continuousOffset = offsetFromEffective - dragOffset / ITEM_PX;
-          const absOffset = Math.abs(continuousOffset);
+      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[36px] bg-white/[0.08] border border-white/[0.15] rounded-xl pointer-events-none z-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]" />
 
-          const rotateX = -continuousOffset * 18;
-          const clampedAbs = Math.min(absOffset, 4);
-          const opacity = Math.max(0.15, 1 - clampedAbs * 0.28);
-          const scale = Math.max(0.75, 1 - clampedAbs * 0.07);
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute left-0 right-0"
+          style={{
+            top: "50%",
+            transform: `translateY(calc(-18px - ${selected * ITEM_PX}px + ${dragOffset}px))`,
+            transition: isDragging ? "none" : "transform 480ms cubic-bezier(0.32, 0.72, 0, 1)",
+          }}
+        >
+          {options.map((opt, idx) => {
+            const liveIdx = selected - dragOffset / ITEM_PX;
+            const liveDist = idx - liveIdx;
+            const absLive = Math.abs(liveDist);
+            const isSelected = absLive < 0.5;
+            const abs = isDragging ? Math.round(absLive) : Math.abs(idx - selected);
 
-          const isExactCenter = Math.abs(continuousOffset) < 0.5;
+            let opacity = 1;
+            if (abs === 0) opacity = 1;
+            else if (abs === 1) opacity = 0.85;
+            else if (abs === 2) opacity = 0.55;
+            else if (abs === 3) opacity = 0.32;
+            else opacity = 0.14;
 
-          return (
-            <div
-              key={opt.label}
-              onClick={() => onSelect(i)}
-              className={cn(
-                "h-[36px] flex items-center justify-center text-center transition-colors px-2 cursor-pointer",
-                isExactCenter ? "text-primary font-black text-sm md:text-base drop-shadow-[0_0_12px_rgba(255,223,0,0.5)]" : "text-zinc-400 font-medium text-xs md:text-sm"
-              )}
-              style={{
-                transform: `perspective(600px) rotateX(${rotateX}deg) scale(${scale})`,
-                opacity,
-              }}
-            >
-              <span className="truncate">{opt.label}</span>
-            </div>
-          );
-        })}
+            const color = isSelected ? "#ffffff" : abs === 1 ? "#e4e4e7" : "#71717a";
+
+            return (
+              <button
+                key={opt.label}
+                type="button"
+                onClick={() => onSelect(idx)}
+                aria-selected={isSelected}
+                className="w-full flex items-center justify-center text-center select-none cursor-pointer"
+                style={{
+                  height: `${ITEM_PX}px`,
+                  opacity,
+                  color,
+                }}
+              >
+                <span
+                  className={`block w-full px-2 text-center tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis ${
+                    isSelected
+                      ? "text-sm md:text-base font-black text-white"
+                      : abs === 1
+                      ? "text-xs md:text-sm font-bold text-zinc-300"
+                      : "text-xs font-medium text-zinc-500"
+                  }`}
+                >
+                  {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -279,8 +282,6 @@ function SectionDivider({ label }: { label: string }) {
 }
 
 export default function CalculatorPage() {
-  const router = useRouter();
-
   // Wheels state
   const [typeIdx, setTypeIdx] = useState(0);
   const [durationIdx, setDurationIdx] = useState(3); // 45s
@@ -299,21 +300,6 @@ export default function CalculatorPage() {
   // Speed & Seniority state
   const [turnaround, setTurnaround] = useState<TurnaroundSpeed>("standard");
   const [editorLevel, setEditorLevel] = useState<EditorLevel>("mid");
-
-  // Stored invoice items count
-  const [storedCount, setStoredCount] = useState<number>(0);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(INVOICE_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) setStoredCount(parsed.length);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
 
   const selectedServices = useMemo(() => {
     const list: { label: string; percent: number }[] = [];
@@ -361,45 +347,6 @@ export default function CalculatorPage() {
   }, [typeIdx, durationIdx, countIdx, selectedServices, turnaround, editorLevel]);
 
   const formattedPrice = useMemo(() => toPersianPrice(price.total), [price.total]);
-
-  const speedLabels: Record<TurnaroundSpeed, string> = {
-    standard: "عادی (۳ تا ۵ روز)",
-    fast: "سریع (۴۸ ساعت)",
-    rush: "فوری VIP (۲۴ ساعت)",
-  };
-
-  const levelLabels: Record<EditorLevel, string> = {
-    junior: "جونیور (پایه)",
-    mid: "میدلول (مسلط)",
-    senior: "سنیور (حرفه‌ای)",
-  };
-
-  const handleAddToInvoice = () => {
-    const newItem: InvoiceItem = {
-      id: "item-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6),
-      typeLabel: typeOptions[typeIdx].label,
-      durationLabel: durationOptions[durationIdx].label,
-      countLabel: countOptions[countIdx].label,
-      services: selectedServices,
-      speedLabel: speedLabels[turnaround],
-      levelLabel: levelLabels[editorLevel],
-      subtotal: price.subtotal,
-      totalPercent: price.totalPercent,
-      total: price.total,
-    };
-
-    try {
-      const stored = localStorage.getItem(INVOICE_STORAGE_KEY);
-      const list: InvoiceItem[] = stored ? JSON.parse(stored) : [];
-      list.push(newItem);
-      localStorage.setItem(INVOICE_STORAGE_KEY, JSON.stringify(list));
-      setStoredCount(list.length);
-      toast.success("پروژه به پیش‌فاکتور افزوده شد!");
-      router.push("/invoice");
-    } catch {
-      toast.error("خطا در ذخیره آیتم");
-    }
-  };
 
   return (
     <main className="min-h-screen bg-[#060608] text-foreground px-3 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
@@ -575,7 +522,7 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          {/* Live Price Summary Bar */}
+          {/* Clean Live Price Summary Bar (Without any Add to Invoice button) */}
           <div className="p-4 md:p-5 rounded-3xl bg-white/[0.04] border border-primary/40 shadow-[0_8px_32px_rgba(255,223,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.2)] flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-xl">
             <div className="text-center sm:text-right">
               <div className="text-xs text-zinc-400 font-medium">مبلغ برآورد این پروژه:</div>
@@ -584,34 +531,10 @@ export default function CalculatorPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button
-                onClick={handleAddToInvoice}
-                className="w-full sm:w-auto font-black text-xs h-11 px-6 rounded-xl gap-2 shadow-[0_0_24px_rgba(255,223,0,0.35)] hover:shadow-[0_0_36px_rgba(255,223,0,0.55)] cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>افزودن به پیش‌فاکتور و صدور PDF</span>
-                <ArrowLeft className="w-4 h-4 mr-1" />
-              </Button>
+            <div className="text-xs text-zinc-400 text-center sm:text-left font-mono">
+              نرخ مصوب صنف تدوینگران ۱۴۰۵
             </div>
           </div>
-
-          {/* Existing Invoice Notice */}
-          {storedCount > 0 && (
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs">
-              <div className="flex items-center gap-2 text-zinc-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>شما <strong>{toPersianNumber(storedCount)}</strong> پروژه آماده در پیش‌فاکتور دارید.</span>
-              </div>
-              <Link
-                href="/invoice"
-                className="font-bold text-primary hover:underline flex items-center gap-1"
-              >
-                <span>مشاهده و خروجی پیش‌فاکتور</span>
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          )}
         </FrostedCard>
       </div>
     </main>

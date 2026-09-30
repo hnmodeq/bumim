@@ -32,6 +32,7 @@ export type NavItem = {
   color: string;
   glowColor: string;
   badge?: string;
+  requireAdminAuth?: boolean;
 };
 
 const allNavItems: NavItem[] = [
@@ -115,6 +116,7 @@ const allNavItems: NavItem[] = [
     icon: Settings,
     color: "#34d399",
     glowColor: "rgba(52, 211, 153, 0.5)",
+    requireAdminAuth: true,
   },
 ];
 
@@ -122,34 +124,40 @@ export function GlowMenu({ className }: { className?: string }) {
   const pathname = usePathname();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [visibility, setVisibility] = useState<PageVisibility>(defaultPageVisibility);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
-      if (stored) {
-        setVisibility(JSON.parse(stored));
-      }
-    } catch {
-      // ignore
-    }
-
-    const handleStorageChange = () => {
+    const checkState = () => {
       try {
         const stored = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
         if (stored) setVisibility(JSON.parse(stored));
       } catch {}
+
+      try {
+        const adminKey = localStorage.getItem("bumim-admin-key");
+        setIsAdminLoggedIn(!!(adminKey && adminKey.trim()));
+      } catch {}
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("bumim_visibility_updated", handleStorageChange);
+    checkState();
+
+    window.addEventListener("storage", checkState);
+    window.addEventListener("bumim_visibility_updated", checkState);
+    window.addEventListener("bumim_auth_updated", checkState);
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("bumim_visibility_updated", handleStorageChange);
+      window.removeEventListener("storage", checkState);
+      window.removeEventListener("bumim_visibility_updated", checkState);
+      window.removeEventListener("bumim_auth_updated", checkState);
     };
   }, []);
 
-  // Filter items based on admin visibility settings
-  const navItems = allNavItems.filter((item) => visibility[item.id] !== false);
+  // Filter items:
+  // 1. Must be visible in admin page visibility settings
+  // 2. If requireAdminAuth is true, only show if admin is logged in!
+  const navItems = allNavItems.filter((item) => {
+    if (item.requireAdminAuth && !isAdminLoggedIn) return false;
+    return visibility[item.id] !== false;
+  });
 
   const activeIdx = navItems.findIndex((item) => {
     if (item.href === "/" && pathname === "/") return true;
