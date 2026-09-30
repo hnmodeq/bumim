@@ -36,6 +36,8 @@ import {
   defaultCalculatorConfig,
   type CalculatorConfig,
   toPersianPrice,
+  formatPersianDateTime,
+  getRelativeTimeFa,
 } from "@/app/lib/invoice-types";
 import {
   Plus,
@@ -682,14 +684,23 @@ export default function AdminPage() {
               {/* Dollar Exchange Rate Controller */}
               <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/20 space-y-3">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="space-y-0.5">
-                    <div className="text-sm font-black text-white flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-primary" />
-                      <span>نرخ تبدیل دلار / تتر به تومان (USD Exchange Rate)</span>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-black text-white flex items-center gap-2">
+                        <DollarSign className="w-4 h-4 text-primary" />
+                        <span>نرخ تبدیل دلار / تتر به تومان (USD Exchange Rate)</span>
+                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/30 text-[10px] font-mono">
+                        به‌روزرسانی خودکار هر ۳۰ دقیقه
+                      </Badge>
                     </div>
-                    <p className="text-xs text-zinc-400">
-                      کلیه ضرایب و نرخ‌های دلاری انواع پروژه‌ها بر اساس این قیمت به تومان تبدیل می‌شوند.
-                    </p>
+
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <Clock className="w-3.5 h-3.5 text-amber-400" />
+                      <span>
+                        آخرین به‌روزرسانی: <strong className="text-amber-300">{getRelativeTimeFa(calcConfig.updatedAt)}</strong> ({formatPersianDateTime(calcConfig.updatedAt)})
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -702,7 +713,7 @@ export default function AdminPage() {
                       className="text-xs font-bold gap-1.5 border-amber-500/30 text-amber-300 hover:bg-amber-500/10 rounded-xl cursor-pointer"
                     >
                       <RefreshCw className={cn("w-3.5 h-3.5", isFetchingDollar && "animate-spin")} />
-                      <span>{isFetchingDollar ? "در حال دریافت نرخ..." : "دریافت آنلاین نرخ روز (API)"}</span>
+                      <span>{isFetchingDollar ? "در حال دریافت..." : "دریافت آنلاین نرخ روز (API)"}</span>
                     </Button>
 
                     <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.12] rounded-xl px-3 py-1.5">

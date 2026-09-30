@@ -34,7 +34,12 @@ import {
   AlertCircle,
   Zap,
   Edit3,
+  Clock,
 } from "lucide-react";
+import {
+  formatPersianDateTime,
+  CALCULATOR_CONFIG_STORAGE_KEY,
+} from "@/app/lib/invoice-types";
 
 const PROFILE_STORAGE_KEY = "bumim_customer_profile";
 
@@ -47,6 +52,7 @@ interface CustomerProfile {
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>(defaultServices);
   const [activeId, setActiveId] = useState<string>(defaultServices[0].id);
+  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
 
   // Modal Order State
   const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
@@ -84,6 +90,27 @@ export default function ServicesPage() {
       // ignore JSON parse errors
     }
 
+    try {
+      const storedCalc = localStorage.getItem(CALCULATOR_CONFIG_STORAGE_KEY);
+      if (storedCalc) {
+        const parsed = JSON.parse(storedCalc);
+        if (parsed?.updatedAt) setLastUpdated(parsed.updatedAt);
+      }
+    } catch {}
+
+    const refreshRate = async () => {
+      try {
+        const res = await fetch("/api/dollar-rate");
+        const data = await res.json();
+        if (data.ok && data.updatedAt) {
+          setLastUpdated(data.updatedAt);
+        }
+      } catch {}
+    };
+
+    refreshRate();
+    const interval = setInterval(refreshRate, 30 * 60 * 1000);
+
     fetch("/api/services")
       .then((r) => r.json())
       .then((j) => {
@@ -94,6 +121,7 @@ export default function ServicesPage() {
       .catch(() => {
         setServices(defaultServices);
       });
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -182,11 +210,18 @@ export default function ServicesPage() {
       <div className="w-full max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2">
+          <div className="inline-flex flex-wrap items-center justify-center gap-2">
             <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.12] backdrop-blur-2xl shadow-[0_4px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-purple-300" />
               <span className="text-zinc-200">تعرفه‌های مصوب صنف تدوینگران • ۳ ماه دوم ۱۴۰۵</span>
             </div>
+
+            {lastUpdated && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[11px] font-mono text-zinc-400">
+                <Clock className="w-3 h-3 text-purple-400" />
+                <span>به‌روزرسانی: {formatPersianDateTime(lastUpdated)}</span>
+              </div>
+            )}
           </div>
 
           <h1

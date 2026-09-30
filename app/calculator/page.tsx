@@ -18,11 +18,13 @@ import {
   type EditorLevel,
   toPersianNumber,
   toPersianPrice,
+  formatPersianDateTime,
 } from "@/app/lib/invoice-types";
 import {
   Sparkles,
   Zap,
   TrendingUp,
+  Clock,
 } from "lucide-react";
 
 function WheelPicker({
@@ -302,7 +304,7 @@ export default function CalculatorPage() {
   const [turnaround, setTurnaround] = useState<TurnaroundSpeed>("standard");
   const [editorLevel, setEditorLevel] = useState<EditorLevel>("mid");
 
-  // Load custom calculator config from storage on mount
+  // Load custom calculator config from storage on mount & auto-refresh dollar price every 30 mins
   useEffect(() => {
     const loadConfig = () => {
       try {
@@ -318,9 +320,41 @@ export default function CalculatorPage() {
 
     loadConfig();
 
+    const fetchLiveDollar = async () => {
+      try {
+        const res = await fetch("/api/dollar-rate");
+        const data = await res.json();
+        if (data.ok && data.rate) {
+          setCalcConfig((prev) => {
+            const nextPrice = data.rate;
+            const nextTypes = prev.typeOptions.map((t) => ({
+              ...t,
+              base: Math.round((t.dollarRate || 8.88) * nextPrice),
+            }));
+            const updated = {
+              ...prev,
+              dollarPrice: nextPrice,
+              updatedAt: data.updatedAt || new Date().toISOString(),
+              dollarSource: data.source || "Nobitex",
+              typeOptions: nextTypes,
+            };
+            try {
+              localStorage.setItem(CALCULATOR_CONFIG_STORAGE_KEY, JSON.stringify(updated));
+            } catch {}
+            return updated;
+          });
+        }
+      } catch {}
+    };
+
+    // Auto-sync live dollar exchange rate every 30 minutes
+    fetchLiveDollar();
+    const interval = setInterval(fetchLiveDollar, 30 * 60 * 1000);
+
     window.addEventListener("storage", loadConfig);
     window.addEventListener("bumim_calc_config_updated", loadConfig);
     return () => {
+      clearInterval(interval);
       window.removeEventListener("storage", loadConfig);
       window.removeEventListener("bumim_calc_config_updated", loadConfig);
     };
@@ -388,12 +422,20 @@ export default function CalculatorPage() {
         {/* Main Calculator Frosted Card */}
         <FrostedCard accentGlow="rgba(255, 223, 0, 0.2)" className="p-5 md:p-8 space-y-6">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center gap-1.5 mx-auto">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 mx-auto">
               <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.12] text-xs font-semibold shadow-[0_4px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)]">
                 <Sparkles className="w-3.5 h-3.5 text-primary" />
                 <span className="text-zinc-200">ماشین حساب هوشمند دستمزد تدوین</span>
               </div>
+
+              {calcConfig.updatedAt && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[11px] font-mono text-zinc-400">
+                  <Clock className="w-3 h-3 text-primary" />
+                  <span>به‌روزرسانی تعرفه‌ها: {formatPersianDateTime(calcConfig.updatedAt)}</span>
+                </div>
+              )}
             </div>
+
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white" style={{ letterSpacing: "-0.03em" }}>
               چقدر دستمزد بگیرم؟
             </h1>

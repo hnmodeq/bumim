@@ -102,6 +102,8 @@ export type EditorLevel = "junior" | "mid" | "senior";
 export type CalculatorConfig = {
   dollarPrice: number; // e.g. 100000 (Toman)
   autoFetchDollar?: boolean;
+  updatedAt?: string; // ISO date string of last update
+  dollarSource?: string; // e.g. 'Tetherland' or 'Manual'
   typeOptions: PickerOption[];
   basicServices: Service[];
   advancedServices: Service[];
@@ -119,7 +121,9 @@ export type CalculatorConfig = {
 
 export const defaultCalculatorConfig: CalculatorConfig = {
   dollarPrice: 100_000,
-  autoFetchDollar: false,
+  autoFetchDollar: true,
+  updatedAt: new Date().toISOString(),
+  dollarSource: "Tetherland",
   typeOptions: [
     { label: "ریلز اینستاگرامی", dollarRate: 8.88, base: 888_000 },
     { label: "ویدیو بلند یوتوبی", dollarRate: 10.68, base: 1_068_000 },
@@ -185,6 +189,43 @@ export function toPersianPrice(num: number) {
   const latin = Math.round(num).toLocaleString("en-US");
   const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
   return latin.replace(/\d/g, (d) => persianDigits[Number(d)]);
+}
+
+export function formatPersianDateTime(dateString?: string | number | Date) {
+  try {
+    const d = dateString ? new Date(dateString) : new Date();
+    if (isNaN(d.getTime())) return "";
+    const formatted = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(d);
+    return formatted.replace(",", " ساعت ");
+  } catch {
+    return "";
+  }
+}
+
+export function getRelativeTimeFa(dateString?: string | number | Date) {
+  try {
+    if (!dateString) return "هم‌اکنون";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "هم‌اکنون";
+    const now = new Date();
+    const diffSec = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 1000));
+    if (diffSec < 60) return "هم‌اکنون";
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${toPersianNumber(diffMin)} دقیقه قبل`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return `${toPersianNumber(diffHours)} ساعت قبل`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${toPersianNumber(diffDays)} روز قبل`;
+  } catch {
+    return "هم‌اکنون";
+  }
 }
 
 export const INVOICE_STORAGE_KEY = "bumim_invoice_items";
