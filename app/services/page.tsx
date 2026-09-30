@@ -184,14 +184,22 @@ export default function ServicesPage() {
                         )}
                       </div>
 
-                      {/* Price badge container */}
-                      <div className={`mt-2 rounded-2xl p-[1px] bg-gradient-to-br ${pkg.color} shadow-[0_8px_24px_rgba(0,0,0,0.4)]`}>
-                        <div className="rounded-[15px] bg-zinc-950/80 backdrop-blur-xl p-4 text-center flex items-center justify-center gap-2">
-                          <span className="text-xs font-black text-zinc-400">$</span>
-                          <span className="text-3xl font-black tracking-tight text-white">{pkg.price}</span>
-                          <div className="text-[10px] text-zinc-400 font-bold leading-tight text-right">
-                            {pkg.per}
-                          </div>
+                      {/* Clean Uniform Price Capsule (No patchy/broken borders) */}
+                      <div
+                        className={cn(
+                          "mt-2 rounded-2xl border p-4 text-center flex items-center justify-center gap-2.5 backdrop-blur-xl transition-all relative overflow-hidden",
+                          pkg.popular
+                            ? "bg-primary/10 border-primary/50 shadow-[0_8px_24px_rgba(255,223,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.25)]"
+                            : "bg-white/[0.04] border-white/[0.15] shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.12)]"
+                        )}
+                      >
+                        {/* Top Specular Reflection Highlight */}
+                        <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+                        <span className={cn("text-xs font-black", pkg.popular ? "text-primary/70" : "text-zinc-400")}>$</span>
+                        <span className="text-3xl font-black tracking-tight text-white font-mono">{pkg.price}</span>
+                        <div className={cn("text-[10px] font-bold leading-tight text-right", pkg.popular ? "text-primary/90" : "text-zinc-400")}>
+                          {pkg.per}
                         </div>
                       </div>
 
