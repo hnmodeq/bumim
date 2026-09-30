@@ -557,7 +557,9 @@ export default function CalculatorPage() {
                   </span>
                   {price.levelMult !== 1 && (
                     <span className="text-[10px] font-mono text-purple-300 font-bold">
-                      {price.levelMult > 1 ? `+${Math.round((price.levelMult - 1) * 100)}%` : "-20%"}
+                      {price.levelMult > 1
+                        ? `+${Math.round((price.levelMult - 1) * 100)}%`
+                        : `${Math.round((price.levelMult - 1) * 100)}%`}
                     </span>
                   )}
                 </div>
