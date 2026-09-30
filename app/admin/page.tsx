@@ -67,6 +67,7 @@ import {
   DollarSign,
   RefreshCw,
   Check,
+  Minus,
 } from "lucide-react";
 
 const pageList = [
@@ -748,10 +749,10 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs font-black text-amber-300">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>ضرایب و نرخ‌های دلاری انواع پروژه‌ها (Project Rates in USD $)</span>
+                    <span>ضرایب پایه انواع پروژه‌ها (Project Rates)</span>
                   </div>
                   <span className="text-[11px] text-zinc-400 font-mono">
-                    فرمول: نرخ دلاری × نرخ روز دلار = قیمت نهایی تومان
+                    فرمول: ضریب پایه پروژه × نرخ تبدیل = قیمت پایه تومان
                   </span>
                 </div>
 
@@ -769,7 +770,7 @@ export default function AdminPage() {
 
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.1] rounded-xl px-2.5 py-1">
-                            <span className="text-xs font-bold text-amber-400 font-mono">$</span>
+                            <span className="text-[10px] font-bold text-amber-400 font-mono uppercase">Rate</span>
                             <Input
                               type="number"
                               step="0.01"
@@ -777,7 +778,7 @@ export default function AdminPage() {
                               onChange={(e) => handleUpdateTypeDollarRate(idx, Number(e.target.value) || 0)}
                               className="w-16 h-7 text-xs bg-transparent border-0 text-white font-mono font-bold text-center p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
-                            <span className="text-[10px] text-zinc-400 font-mono">دلار</span>
+                            <span className="text-[10px] text-zinc-400 font-mono">ضریب</span>
                           </div>
 
                           <div className="text-left font-mono">
@@ -803,67 +804,85 @@ export default function AdminPage() {
                     <span>درصد و مبالغ افزایش قیمت خدمات پایه (Basic Services %)</span>
                   </div>
                   <span className="text-[11px] text-zinc-400 font-mono">
-                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس درصد
+                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس لیست انواع پروژه‌ها
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {calcConfig.basicServices.map((s) => {
                     const dollarPrice = calcConfig.dollarPrice || 100_000;
-                    const reelBase = (calcConfig.typeOptions[0]?.dollarRate || 8.88) * dollarPrice;
-                    const ytBase = (calcConfig.typeOptions[1]?.dollarRate || 10.68) * dollarPrice;
-                    const teaserBase = (calcConfig.typeOptions[3]?.dollarRate || 11.67) * dollarPrice;
-                    const musicBase = (calcConfig.typeOptions[2]?.dollarRate || 12.66) * dollarPrice;
-
-                    const extraReel = Math.round(reelBase * (s.percent / 100));
-                    const extraYt = Math.round(ytBase * (s.percent / 100));
-                    const extraTeaser = Math.round(teaserBase * (s.percent / 100));
-                    const extraMusic = Math.round(musicBase * (s.percent / 100));
 
                     return (
                       <div
                         key={s.id}
-                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2 hover:border-white/20 transition-all"
+                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="space-y-0.5">
-                            <div className="text-xs font-bold text-white">{s.label}</div>
-                            <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="text-xs font-bold text-white truncate">{s.label}</div>
+                            <div className="text-[10px] text-zinc-400 font-mono truncate">شناسه: {s.id}</div>
                           </div>
 
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-xs font-bold text-primary font-mono">+</span>
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={s.percent}
-                              onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
-                              className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                            <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                          {/* Interactive Plus / Minus Stepper */}
+                          <div className="flex items-center bg-white/[0.06] border border-white/[0.12] rounded-xl p-0.5 shrink-0 shadow-inner">
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateBasicPercent(s.id, Math.max(0, (s.percent || 0) - 1))}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 active:scale-95 cursor-pointer transition-all"
+                              title="کاهش ۱ درصد (-)"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+
+                            <div className="flex items-center px-1">
+                              <Input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={s.percent}
+                                onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
+                                className="w-10 h-7 text-xs bg-transparent border-0 text-white font-mono font-bold text-center p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              />
+                              <span className="text-[11px] font-bold text-zinc-400 font-mono">٪</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateBasicPercent(s.id, Math.min(100, (s.percent || 0) + 1))}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/20 active:scale-95 cursor-pointer transition-all"
+                              title="افزایش ۱ درصد (+)"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
 
-                        {/* Live Extra Amount Preview for Different Project Types */}
-                        <div className="pt-2 border-t border-white/[0.05] space-y-1">
-                          <div className="text-[10px] text-zinc-400 font-bold flex items-center justify-between">
-                            <span>افزایش قیمت برای ریلز:</span>
-                            <span className="text-emerald-400 font-mono font-bold">+{toPersianPrice(extraReel)} ت</span>
+                        {/* Live Extra Amount Preview Vertical List for All Project Types */}
+                        <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+                          <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
+                            <span>پیش‌نمایش افزایش قیمت بر اساس ضریب:</span>
+                            <span className="text-yellow-400 font-mono font-bold">+{s.percent}٪</span>
                           </div>
-                          <div className="grid grid-cols-3 gap-1 pt-0.5 text-[9px] font-mono text-zinc-400">
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">یوتوب</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraYt)}</div>
-                            </div>
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">تیزر</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraTeaser)}</div>
-                            </div>
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">موزیکال</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraMusic)}</div>
-                            </div>
+
+                          <div className="space-y-1 bg-black/30 p-2 rounded-xl border border-white/[0.04]">
+                            {calcConfig.typeOptions.map((t, tIdx) => {
+                              const typeRate = t.dollarRate ?? (t.base ? Number((t.base / dollarPrice).toFixed(2)) : 8.88);
+                              const typeBase = typeRate * dollarPrice;
+                              const extra = Math.round(typeBase * (s.percent / 100));
+
+                              return (
+                                <div
+                                  key={tIdx}
+                                  className="flex items-center justify-between text-[11px] py-0.5 border-b border-white/[0.03] last:border-b-0"
+                                >
+                                  <span className="text-zinc-300 font-medium truncate">{t.label}:</span>
+                                  <span className="font-mono font-bold text-emerald-400 whitespace-nowrap">
+                                    +{toPersianPrice(extra)}{" "}
+                                    <span className="text-[9px] text-zinc-500 font-normal">ت</span>
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -882,67 +901,85 @@ export default function AdminPage() {
                     <span>درصد و مبالغ افزایش قیمت خدمات پیشرفته (Advanced Services %)</span>
                   </div>
                   <span className="text-[11px] text-zinc-400 font-mono">
-                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس درصد
+                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس لیست انواع پروژه‌ها
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {calcConfig.advancedServices.map((s) => {
                     const dollarPrice = calcConfig.dollarPrice || 100_000;
-                    const reelBase = (calcConfig.typeOptions[0]?.dollarRate || 8.88) * dollarPrice;
-                    const ytBase = (calcConfig.typeOptions[1]?.dollarRate || 10.68) * dollarPrice;
-                    const teaserBase = (calcConfig.typeOptions[3]?.dollarRate || 11.67) * dollarPrice;
-                    const musicBase = (calcConfig.typeOptions[2]?.dollarRate || 12.66) * dollarPrice;
-
-                    const extraReel = Math.round(reelBase * (s.percent / 100));
-                    const extraYt = Math.round(ytBase * (s.percent / 100));
-                    const extraTeaser = Math.round(teaserBase * (s.percent / 100));
-                    const extraMusic = Math.round(musicBase * (s.percent / 100));
 
                     return (
                       <div
                         key={s.id}
-                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2 hover:border-white/20 transition-all"
+                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="space-y-0.5">
-                            <div className="text-xs font-bold text-white">{s.label}</div>
-                            <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="text-xs font-bold text-white truncate">{s.label}</div>
+                            <div className="text-[10px] text-zinc-400 font-mono truncate">شناسه: {s.id}</div>
                           </div>
 
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-xs font-bold text-purple-300 font-mono">+</span>
-                            <Input
-                              type="number"
-                              min="0"
-                              max="200"
-                              value={s.percent}
-                              onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
-                              className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                            <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                          {/* Interactive Plus / Minus Stepper */}
+                          <div className="flex items-center bg-white/[0.06] border border-white/[0.12] rounded-xl p-0.5 shrink-0 shadow-inner">
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateAdvPercent(s.id, Math.max(0, (s.percent || 0) - 1))}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 active:scale-95 cursor-pointer transition-all"
+                              title="کاهش ۱ درصد (-)"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+
+                            <div className="flex items-center px-1">
+                              <Input
+                                type="number"
+                                min="0"
+                                max="200"
+                                value={s.percent}
+                                onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
+                                className="w-10 h-7 text-xs bg-transparent border-0 text-white font-mono font-bold text-center p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              />
+                              <span className="text-[11px] font-bold text-zinc-400 font-mono">٪</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateAdvPercent(s.id, Math.min(200, (s.percent || 0) + 1))}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-purple-400 hover:text-purple-300 hover:bg-purple-400/20 active:scale-95 cursor-pointer transition-all"
+                              title="افزایش ۱ درصد (+)"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
 
-                        {/* Live Extra Amount Preview for Different Project Types */}
-                        <div className="pt-2 border-t border-white/[0.05] space-y-1">
-                          <div className="text-[10px] text-zinc-400 font-bold flex items-center justify-between">
-                            <span>افزایش قیمت برای ریلز:</span>
-                            <span className="text-purple-300 font-mono font-bold">+{toPersianPrice(extraReel)} ت</span>
+                        {/* Live Extra Amount Preview Vertical List for All Project Types */}
+                        <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+                          <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
+                            <span>پیش‌نمایش افزایش قیمت بر اساس ضریب:</span>
+                            <span className="text-purple-400 font-mono font-bold">+{s.percent}٪</span>
                           </div>
-                          <div className="grid grid-cols-3 gap-1 pt-0.5 text-[9px] font-mono text-zinc-400">
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">یوتوب</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraYt)}</div>
-                            </div>
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">تیزر</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraTeaser)}</div>
-                            </div>
-                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
-                              <div className="text-zinc-500">موزیکال</div>
-                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraMusic)}</div>
-                            </div>
+
+                          <div className="space-y-1 bg-black/30 p-2 rounded-xl border border-white/[0.04]">
+                            {calcConfig.typeOptions.map((t, tIdx) => {
+                              const typeRate = t.dollarRate ?? (t.base ? Number((t.base / dollarPrice).toFixed(2)) : 8.88);
+                              const typeBase = typeRate * dollarPrice;
+                              const extra = Math.round(typeBase * (s.percent / 100));
+
+                              return (
+                                <div
+                                  key={tIdx}
+                                  className="flex items-center justify-between text-[11px] py-0.5 border-b border-white/[0.03] last:border-b-0"
+                                >
+                                  <span className="text-zinc-300 font-medium truncate">{t.label}:</span>
+                                  <span className="font-mono font-bold text-purple-300 whitespace-nowrap">
+                                    +{toPersianPrice(extra)}{" "}
+                                    <span className="text-[9px] text-zinc-500 font-normal">ت</span>
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
