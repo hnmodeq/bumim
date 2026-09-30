@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Vazirmatn, Inconsolata, Geist } from "next/font/google";
+import localFont from "next/font/local";
+import { Inconsolata, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,11 +13,22 @@ const geist = Geist({
   display: "swap",
 });
 
-const vazir = Vazirmatn({
-  subsets: ["arabic"],
-  weight: ["400", "500", "700", "900"],
+const vazir = localFont({
+  src: [
+    {
+      path: "../public/fonts/Vazirmatn-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Vazirmatn-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-vazir",
-  display: "swap",
+  display: "block",
+  preload: true,
 });
 
 const mono = Inconsolata({

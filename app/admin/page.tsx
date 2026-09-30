@@ -17,7 +17,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -71,12 +71,11 @@ export default function AdminPage() {
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [authError, setAuthError] = useState<string>("");
 
-  const [services, setServices] = useState<Service[]>([]);
-  const [activeServiceId, setActiveServiceId] = useState<string>("");
+  const [services, setServices] = useState<Service[]>(defaultServices);
+  const [activeServiceId, setActiveServiceId] = useState<string>(defaultServices[0].id);
   const [newServiceName, setNewServiceName] = useState("");
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
   const [isPackageDialogOpen, setIsPackageDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState<string>("");
 
@@ -106,9 +105,6 @@ export default function AdminPage() {
       .then((data: Service[]) => {
         setServices(data);
         setActiveServiceId(data[0]?.id || "");
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, []);
 
@@ -441,15 +437,9 @@ export default function AdminPage() {
             </FrostedCard>
 
             {/* 2. Pricelist Management */}
-            {loading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-12 w-full rounded-2xl bg-white/[0.05]" />
-                <Skeleton className="h-64 w-full rounded-3xl bg-white/[0.05]" />
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Services Tabs / Management */}
-                <FrostedCard accentGlow="rgba(192, 132, 252, 0.15)" className="p-5 md:p-6 space-y-4">
+            <div className="space-y-6">
+              {/* Services Tabs / Management */}
+              <FrostedCard accentGlow="rgba(192, 132, 252, 0.15)" className="p-5 md:p-6 space-y-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-sm font-black text-white">
                       <Layers className="w-4 h-4 text-purple-400" />
@@ -601,7 +591,6 @@ export default function AdminPage() {
                   </FrostedCard>
                 )}
               </div>
-            )}
 
             {/* Edit Package Dialog */}
             <Dialog open={isPackageDialogOpen} onOpenChange={setIsPackageDialogOpen}>

@@ -47,7 +47,6 @@ interface CustomerProfile {
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>(defaultServices);
   const [activeId, setActiveId] = useState<string>(defaultServices[0].id);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // Modal Order State
   const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
@@ -94,9 +93,6 @@ export default function ServicesPage() {
       })
       .catch(() => {
         setServices(defaultServices);
-      })
-      .finally(() => {
-        setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -210,15 +206,6 @@ export default function ServicesPage() {
 
         {/* Service Content */}
         <div className="relative space-y-8">
-          {loading && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-3xl animate-in fade-in duration-200">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.08] border border-white/[0.15] text-xs font-bold text-white shadow-xl backdrop-blur-xl">
-                <Sparkles className="w-4 h-4 text-primary animate-spin" />
-                <span>به‌روزرسانی تعرفه‌ها...</span>
-              </div>
-            </div>
-          )}
-
           {/* Service Frosted Switcher Tabs */}
           <div className="flex flex-col items-center">
             <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-white/[0.03] border border-white/[0.12] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]">
