@@ -466,7 +466,7 @@ export default function AdminPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {pageList.map((pg) => {
-                  const isVisible = pageVisibility[pg.id] !== false;
+                  const isVisible = pageVisibility[pg.id] === true;
                   return (
                     <div
                       key={pg.id}

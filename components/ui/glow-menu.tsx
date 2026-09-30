@@ -150,11 +150,11 @@ export function GlowMenu({ className }: { className?: string }) {
   }, []);
 
   // Filter items:
-  // 1. Must be visible in admin page visibility settings
+  // 1. Must be visible in page visibility settings
   // 2. If requireAdminAuth is true, only show if admin is logged in!
   const navItems = allNavItems.filter((item) => {
     if (item.requireAdminAuth && !isAdminLoggedIn) return false;
-    return visibility[item.id] !== false;
+    return visibility[item.id] === true;
   });
 
   const activeIdx = navItems.findIndex((item) => {
