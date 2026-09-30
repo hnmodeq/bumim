@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BrandLoader } from "@/components/ui/brand-loader";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -217,31 +217,9 @@ export default function ServicesPage() {
           </p>
         </div>
 
-        {/* Loading Skeleton State */}
+        {/* Loading Brand State */}
         {loading ? (
-          <div className="space-y-6">
-            <div className="flex justify-center gap-2">
-              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
-              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
-              <Skeleton className="h-10 w-32 rounded-full bg-white/[0.05]" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[1, 2, 3].map((i) => (
-                <FrostedCard key={i} className="p-6 space-y-4">
-                  <Skeleton className="h-6 w-1/2 bg-white/[0.05]" />
-                  <Skeleton className="h-14 w-full rounded-2xl bg-white/[0.05]" />
-                  <Separator className="bg-white/[0.06]" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full bg-white/[0.05]" />
-                    <Skeleton className="h-4 w-4/5 bg-white/[0.05]" />
-                    <Skeleton className="h-4 w-3/4 bg-white/[0.05]" />
-                    <Skeleton className="h-4 w-5/6 bg-white/[0.05]" />
-                  </div>
-                  <Skeleton className="h-11 w-full rounded-xl bg-white/[0.05]" />
-                </FrostedCard>
-              ))}
-            </div>
-          </div>
+          <BrandLoader show={true} />
         ) : (
           <>
             {/* Service Frosted Switcher Tabs */}

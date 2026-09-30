@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { GlowMenu } from "@/components/ui/glow-menu";
@@ -36,6 +36,180 @@ import {
 const EDITOR_STORAGE_KEY = "bumim_editor_profile";
 const INVOICE_ITEMS_STORAGE_KEY = "bumim_direct_invoice_items";
 
+const videoCountOptions = Array.from({ length: 20 }, (_, i) => ({
+  label: `${toPersianNumber(i + 1)} ویدیو`,
+  val: i + 1,
+}));
+
+function QuantityWheelPicker({
+  selectedIdx,
+  onSelect,
+}: {
+  selectedIdx: number;
+  onSelect: (i: number) => void;
+}) {
+  const ITEM_PX = 32;
+  const isDraggingRef = useRef(false);
+  const startYRef = useRef(0);
+  const startSelectedRef = useRef(selectedIdx);
+  const lastWheelTimeRef = useRef(0);
+  const wheelAccumRef = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const velocityRef = useRef(0);
+  const lastYRef = useRef(0);
+  const lastTimeRef = useRef(0);
+
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const rafRef = useRef<number | null>(null);
+
+  if (!isDraggingRef.current) {
+    startSelectedRef.current = selectedIdx;
+  }
+
+  const clampIdx = useCallback(
+    (i: number) => Math.min(Math.max(i, 0), videoCountOptions.length - 1),
+    []
+  );
+
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      let delta = e.deltaY;
+      const now = performance.now();
+      wheelAccumRef.current += delta;
+
+      if (Math.abs(wheelAccumRef.current) < 35) return;
+      if (now - lastWheelTimeRef.current < 120) return;
+
+      const step = wheelAccumRef.current > 0 ? 1 : -1;
+      wheelAccumRef.current = 0;
+      lastWheelTimeRef.current = now;
+
+      const next = clampIdx(selectedIdx + step);
+      if (next !== selectedIdx) onSelect(next);
+    },
+    [clampIdx, onSelect, selectedIdx]
+  );
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      isDraggingRef.current = true;
+      setIsDragging(true);
+      startYRef.current = e.clientY;
+      startSelectedRef.current = selectedIdx;
+      dragOffsetRef.current = 0;
+      setDragOffset(0);
+      velocityRef.current = 0;
+      lastYRef.current = e.clientY;
+      lastTimeRef.current = performance.now();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    },
+    [selectedIdx]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDraggingRef.current) return;
+      const dy = e.clientY - startYRef.current;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastTimeRef.current);
+      velocityRef.current = (e.clientY - lastYRef.current) / dt;
+      lastYRef.current = e.clientY;
+      lastTimeRef.current = now;
+
+      const maxOvershoot = ITEM_PX * 2;
+      const minOffset = -(videoCountOptions.length - 1 - startSelectedRef.current) * ITEM_PX - maxOvershoot;
+      const maxOffset = startSelectedRef.current * ITEM_PX + maxOvershoot;
+      const clampedDy = Math.min(Math.max(dy, minOffset), maxOffset);
+
+      dragOffsetRef.current = clampedDy;
+      setDragOffset(clampedDy);
+    },
+    [startSelectedRef]
+  );
+
+  const handlePointerUp = useCallback(() => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+
+    const projectedOffset = dragOffsetRef.current + velocityRef.current * 100;
+    const stepsMoved = -Math.round(projectedOffset / ITEM_PX);
+    const targetIdx = clampIdx(startSelectedRef.current + stepsMoved);
+
+    setDragOffset(0);
+    dragOffsetRef.current = 0;
+    onSelect(targetIdx);
+  }, [clampIdx, onSelect]);
+
+  return (
+    <div
+      role="listbox"
+      aria-label="تعداد ویدیو"
+      tabIndex={0}
+      onWheel={handleWheel}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      className="relative w-full h-[110px] select-none outline-none cursor-grab active:cursor-grabbing bg-white/[0.02] border border-white/[0.08] touch-none overscroll-contain overflow-hidden rounded-xl"
+    >
+      <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[30px] bg-white/[0.08] border border-white/20 rounded-lg pointer-events-none z-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]" />
+      <div className="absolute inset-x-0 top-0 h-[28px] bg-gradient-to-b from-[#0c0d12] via-black/40 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-[28px] bg-gradient-to-t from-[#0c0d12] via-black/40 to-transparent pointer-events-none z-10" />
+
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute left-0 right-0"
+          style={{
+            top: "50%",
+            transform: `translateY(calc(-15px - ${selectedIdx * ITEM_PX}px + ${dragOffset}px))`,
+            transition: isDragging ? "none" : "transform 350ms cubic-bezier(0.32, 0.72, 0, 1)",
+          }}
+        >
+          {videoCountOptions.map((opt, idx) => {
+            const liveIdx = selectedIdx - dragOffset / ITEM_PX;
+            const liveDist = idx - liveIdx;
+            const isSelected = Math.abs(liveDist) < 0.5;
+            const abs = isDragging ? Math.round(Math.abs(liveDist)) : Math.abs(idx - selectedIdx);
+
+            let opacity = 1;
+            if (abs === 0) opacity = 1;
+            else if (abs === 1) opacity = 0.65;
+            else opacity = 0.2;
+
+            return (
+              <button
+                key={opt.label}
+                type="button"
+                onClick={() => onSelect(idx)}
+                className="w-full flex items-center justify-center text-center select-none cursor-pointer"
+                style={{
+                  height: `${ITEM_PX}px`,
+                  opacity,
+                }}
+              >
+                <span
+                  className={`block px-2 text-center tracking-tight leading-none whitespace-nowrap ${
+                    isSelected
+                      ? "text-xs md:text-sm font-black text-primary font-mono drop-shadow-[0_0_8px_rgba(255,223,0,0.5)]"
+                      : "text-[11px] font-bold text-zinc-400 font-mono"
+                  }`}
+                >
+                  {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function InvoicePage() {
   // Invoice items list
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
@@ -43,7 +217,7 @@ export default function InvoicePage() {
 
   // New item form fields
   const [itemTitle, setItemTitle] = useState("");
-  const [itemQuantity, setItemQuantity] = useState("1");
+  const [countIdx, setCountIdx] = useState(0); // 0 = 1 video
   const [itemPrice, setItemPrice] = useState("");
   const [itemServices, setItemServices] = useState("");
 
@@ -140,14 +314,14 @@ export default function InvoicePage() {
       return;
     }
 
-    const qty = Math.max(1, parseInt(itemQuantity.replace(/[^0-9]/g, "") || "1"));
+    const qty = videoCountOptions[countIdx].val;
     const total = cleanPrice * qty;
 
     const newItem: InvoiceItem = {
       id: "item-" + Date.now(),
       typeLabel: itemTitle.trim(),
       durationLabel: "",
-      countLabel: `${qty} ویدیو`,
+      countLabel: videoCountOptions[countIdx].label,
       services: itemServices.trim() ? [{ label: itemServices.trim(), percent: 0 }] : [],
       subtotal: total,
       totalPercent: 0,
@@ -160,7 +334,7 @@ export default function InvoicePage() {
     setItemTitle("");
     setItemPrice("");
     setItemServices("");
-    setItemQuantity("1");
+    setCountIdx(0);
     toast.success("ردیف پروژه با موفقیت به پیش‌فاکتور اضافه شد.");
   };
 
@@ -690,14 +864,14 @@ export default function InvoicePage() {
             </div>
           </div>
 
-          {/* 1. Add Project Form Directly Here */}
+          {/* 1. Add Project Form with Tactile Wheel Picker */}
           <form onSubmit={handleAddItem} className="p-4 md:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-4">
             <div className="text-xs font-black text-white flex items-center gap-2">
               <Plus className="w-4 h-4 text-primary" />
               <span>افزودن ردیف پروژه / خدمت به پیش‌فاکتور</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
               <div className="md:col-span-5 space-y-1">
                 <label className="text-[11px] font-bold text-zinc-400">شرح یا عنوان پروژه</label>
                 <Input
@@ -707,9 +881,19 @@ export default function InvoicePage() {
                   placeholder="مثال: تدوین ریلز اینستاگرام (ریتمیک)"
                   className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500"
                 />
+
+                <div className="pt-2 space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-400">خدمات یا توضیحات اختیاری همراه</label>
+                  <Input
+                    value={itemServices}
+                    onChange={(e) => setItemServices(e.target.value)}
+                    placeholder="مثال: اصلاح رنگ، زیرنویس، افکت صوتی..."
+                    className="h-9 text-xs bg-white/[0.03] border-white/[0.08] rounded-xl text-white placeholder:text-zinc-600"
+                  />
+                </div>
               </div>
 
-              <div className="md:col-span-3 space-y-1">
+              <div className="md:col-span-4 space-y-1">
                 <label className="text-[11px] font-bold text-zinc-400">مبلغ پروژه (تومان)</label>
                 <Input
                   required
@@ -720,40 +904,29 @@ export default function InvoicePage() {
                   placeholder="مثال: 2,500,000"
                   className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white placeholder:text-zinc-500 font-mono text-left"
                 />
+
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    className="w-full h-9 text-xs font-bold gap-1 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)] cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>افزودن این ردیف</span>
+                  </Button>
+                </div>
               </div>
 
-              <div className="md:col-span-2 space-y-1">
-                <label className="text-[11px] font-bold text-zinc-400">تعداد ویدیو</label>
-                <Input
-                  type="number"
-                  min="1"
-                  dir="ltr"
-                  value={itemQuantity}
-                  onChange={(e) => setItemQuantity(e.target.value)}
-                  placeholder="1"
-                  className="h-10 text-xs bg-white/[0.04] border-white/[0.1] rounded-xl text-white font-mono text-center"
+              {/* 3D Tactile Wheel Picker for Video Count */}
+              <div className="md:col-span-3 space-y-1">
+                <label className="text-[11px] font-bold text-zinc-400 flex items-center justify-between">
+                  <span>تعداد ویدیو (غلطک اسکرول):</span>
+                  <span className="font-mono text-primary font-bold text-xs">{videoCountOptions[countIdx].val}</span>
+                </label>
+                <QuantityWheelPicker
+                  selectedIdx={countIdx}
+                  onSelect={setCountIdx}
                 />
               </div>
-
-              <div className="md:col-span-2 flex items-end">
-                <Button
-                  type="submit"
-                  className="w-full h-10 text-xs font-bold gap-1 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)] cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>افزودن</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-zinc-400">خدمات یا توضیحات اختیاری همراه این ردیف</label>
-              <Input
-                value={itemServices}
-                onChange={(e) => setItemServices(e.target.value)}
-                placeholder="مثال: اصلاح رنگ، زیرنویس انیمیت‌شده، موزیک و افکت صوتی..."
-                className="h-9 text-xs bg-white/[0.03] border-white/[0.08] rounded-xl text-white placeholder:text-zinc-600"
-              />
             </div>
           </form>
 
@@ -837,7 +1010,7 @@ export default function InvoicePage() {
             <div className="p-6 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] text-center space-y-2">
               <FileSpreadsheet className="w-8 h-8 text-zinc-500 mx-auto" />
               <div className="text-xs text-zinc-400">
-                هنوز ردیفی اضافه نشده است. از فرم بالا عنوان و قیمت پروژه را بنویسید و روی دکمه «افزودن» کلیک کنید.
+                هنوز ردیفی اضافه نشده است. از فرم بالا عنوان، قیمت و تعداد را مشخص کرده و روی «افزودن این ردیف» کلیک کنید.
               </div>
             </div>
           )}
