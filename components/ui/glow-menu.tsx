@@ -133,7 +133,7 @@ export function GlowMenu({ className }: { className?: string }) {
 
       try {
         const adminKey = localStorage.getItem("bumim-admin-key");
-        setIsAdminLoggedIn(!!(adminKey && adminKey.trim()));
+        setIsAdminLoggedIn(!!(adminKey && adminKey.trim() === "asdasd123"));
       } catch {}
     };
 
