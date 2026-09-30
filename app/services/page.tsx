@@ -1,34 +1,59 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { defaultServices, featureNames, TELEGRAM_SUPPORT_USERNAME, type Service, type Package } from "../lib/pricing";
+import { defaultServices, featureNames, type Service, type Package } from "../lib/pricing";
 
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   Sparkles,
   Check,
   Minus,
   Layers,
+  SendHorizontal,
+  User,
+  Phone,
+  MessageSquare,
+  FileText,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  X,
 } from "lucide-react";
-
-function TelegramIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M12 0C5.3706 0 0 5.3706 0 12c0 6.6294 5.3706 12 12 12s12-5.3706 12-12c0-6.6294-5.3706-12-12-12zm5.8945 8.2217l-1.97 9.2803c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.054 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.538-.196 1.006.128.832.918z" />
-    </svg>
-  );
-}
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>(defaultServices);
   const [activeId, setActiveId] = useState<string>(defaultServices[0].id);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Modal Order State
+  const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
+  const [selectedPkg, setSelectedPkg] = useState<{ serviceName: string; pkg: Package } | null>(null);
+
+  // Form Fields
+  const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [telegramOrId, setTelegramOrId] = useState<string>("");
+  const [note, setNote] = useState<string>("");
+
+  // Submission Status
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/services")
@@ -49,9 +74,51 @@ export default function ServicesPage() {
 
   const active = services.find((s) => s.id === activeId) || services[0];
 
-  const getTelegramUrl = (serviceName: string, pkg: Package) => {
-    const text = `سلام، وقت بخیر 👋\nدرخواست سفارش ادیت ویدیو دارم:\n\n📌 سرویس: ${serviceName}\n⭐ پکیج: ${pkg.name}\n💰 تعرفه: ${pkg.price} ${pkg.per}\n\nلطفاً راهنمایی بفرمایید.`;
-    return `https://t.me/${TELEGRAM_SUPPORT_USERNAME}?text=${encodeURIComponent(text)}`;
+  const handleOpenOrder = (pkg: Package) => {
+    setSelectedPkg({ serviceName: active.name, pkg });
+    setSubmitStatus("idle");
+    setErrorMessage("");
+    setOrderModalOpen(true);
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !phone.trim()) {
+      setErrorMessage("لطفاً نام و شماره تماس خود را وارد کنید.");
+      return;
+    }
+
+    setSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          telegramOrId: telegramOrId.trim(),
+          note: note.trim(),
+          serviceName: selectedPkg?.serviceName,
+          packageName: selectedPkg?.pkg.name,
+          packagePrice: selectedPkg?.pkg.price ? `${selectedPkg.pkg.price} ${selectedPkg.pkg.per}` : "",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        setSubmitStatus("success");
+      } else {
+        setSubmitStatus("error");
+        setErrorMessage(data.error || "خطایی در ثبت سفارش رخ داد.");
+      }
+    } catch {
+      setSubmitStatus("error");
+      setErrorMessage("ارتباط با سرور برقرار نشد. لطفاً مجدداً تلاش کنید.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -151,7 +218,6 @@ export default function ServicesPage() {
                   motion: "rgba(236, 72, 153, 0.25)",
                 };
                 const cardGlow = glowGradients[pkg.id] || "rgba(255, 255, 255, 0.15)";
-                const telegramLink = getTelegramUrl(active.name, pkg);
 
                 return (
                   <FrostedCard
@@ -236,21 +302,20 @@ export default function ServicesPage() {
                     </div>
 
                     <div className="pt-6">
-                      <a
-                        href={telegramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => handleOpenOrder(pkg)}
                         className={cn(
                           buttonVariants({ variant: pkg.popular ? "default" : "secondary" }),
-                          "w-full font-bold text-xs h-11 gap-2 rounded-xl transition-all duration-300",
+                          "w-full font-bold text-xs h-11 gap-2 rounded-xl transition-all duration-300 cursor-pointer",
                           pkg.popular
                             ? "shadow-[0_0_24px_rgba(255,223,0,0.35)] hover:shadow-[0_0_36px_rgba(255,223,0,0.55)] hover:scale-[1.02]"
                             : "bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.15] hover:border-white/25 hover:scale-[1.02]"
                         )}
                       >
-                        <TelegramIcon className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
-                        <span>سفارش در تلگرام</span>
-                      </a>
+                        <SendHorizontal className="w-4 h-4 text-primary" />
+                        <span>ثبت درخواست این پکیج</span>
+                      </button>
                     </div>
                   </FrostedCard>
                 );
@@ -259,6 +324,155 @@ export default function ServicesPage() {
           </>
         )}
       </div>
+
+      {/* Frosted Order Modal Dialog */}
+      <Dialog open={orderModalOpen} onOpenChange={setOrderModalOpen}>
+        <DialogContent className="sm:max-w-md bg-[#0c0d12]/95 backdrop-blur-3xl border border-white/[0.15] text-white shadow-[0_24px_70px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.15)] rounded-3xl p-6">
+          <DialogHeader className="space-y-1.5 text-right">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>سفارش سریع</span>
+              </div>
+              {selectedPkg && (
+                <Badge variant="outline" className="border-white/20 text-zinc-300 bg-white/5 text-xs">
+                  {selectedPkg.serviceName}
+                </Badge>
+              )}
+            </div>
+            <DialogTitle className="text-xl font-black text-white pt-2">
+              ثبت درخواست ادیت ویدیو
+            </DialogTitle>
+            <DialogDescription className="text-xs text-zinc-400">
+              نام و شماره تماس خود را وارد کنید تا جزئیات پکیج مستقیماً ارسال شود و با شما تماس بگیریم.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Selected Package Capsule Summary */}
+          {selectedPkg && (
+            <div className="my-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="text-xs text-zinc-400">پکیج انتخابی:</div>
+                <div className="text-sm font-black text-white">{selectedPkg.pkg.name}</div>
+              </div>
+              <div className="text-left font-mono">
+                <div className="text-sm font-black text-primary">{selectedPkg.pkg.price}</div>
+                <div className="text-[10px] text-zinc-400">{selectedPkg.pkg.per}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Success Screen */}
+          {submitStatus === "success" ? (
+            <div className="py-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="text-lg font-black text-white">درخواست شما با موفقیت ثبت شد!</h4>
+                <p className="text-xs text-zinc-400 leading-relaxed px-4">
+                  مشخصات پکیج انتخابی به همراه شماره تماس شما دریافت شد. در اسرع وقت جهت هماهنگی و بررسی جزئیات پروژه با شما تماس خواهیم گرفت.
+                </p>
+              </div>
+              <Button
+                type="button"
+                onClick={() => setOrderModalOpen(false)}
+                className="w-full h-11 rounded-xl font-bold bg-white/[0.1] hover:bg-white/[0.15] text-white border border-white/20"
+              >
+                بستن پنجره
+              </Button>
+            </div>
+          ) : (
+            /* Order Form */
+            <form onSubmit={handleSubmitOrder} className="space-y-4 mt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-primary" />
+                  <span>نام و نام خانوادگی</span>
+                  <span className="text-red-400">*</span>
+                </label>
+                <Input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="مثال: علی رضایی"
+                  className="h-11 rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 focus-visible:ring-primary/40 focus-visible:border-primary"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-primary" />
+                  <span>شماره موبایل جهت هماهنگی</span>
+                  <span className="text-red-400">*</span>
+                </label>
+                <Input
+                  required
+                  type="tel"
+                  dir="ltr"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="09123456789"
+                  className="h-11 rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 text-left font-mono focus-visible:ring-primary/40 focus-visible:border-primary"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                  <span>آیدی تلگرام یا ایتا (اختیاری)</span>
+                </label>
+                <Input
+                  dir="ltr"
+                  value={telegramOrId}
+                  onChange={(e) => setTelegramOrId(e.target.value)}
+                  placeholder="@username"
+                  className="h-11 rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 text-left font-mono focus-visible:ring-primary/40 focus-visible:border-primary"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-primary" />
+                  <span>توضیحات کوتاه یا لینک پروژه (اختیاری)</span>
+                </label>
+                <Textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="مثلاً تعداد راش‌ها، سبک تدوین یا زمان‌بندی مد نظرتان..."
+                  rows={2}
+                  className="rounded-xl bg-white/[0.04] border-white/[0.1] text-white placeholder:text-zinc-500 focus-visible:ring-primary/40 focus-visible:border-primary text-xs resize-none"
+                />
+              </div>
+
+              {errorMessage && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full h-11 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_24px_rgba(255,223,0,0.35)] transition-all cursor-pointer"
+              >
+                {submitting ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>در حال ثبت و ارسال درخواست...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <SendHorizontal className="w-4 h-4" />
+                    <span>ثبت درخواست و تماس با من</span>
+                  </div>
+                )}
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
