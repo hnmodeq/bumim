@@ -75,38 +75,88 @@ export type Service = {
   percent: number;
 };
 
-export function hashPercent(id: string) {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) {
-    h = (h * 33 + id.charCodeAt(i)) >>> 0;
-  }
-  h = (h ^ (h >>> 16)) >>> 0;
-  return 6 + (h % 13);
-}
-
 export const basicServices: Service[] = [
-  { id: "rough_cut", label: "راف کات", percent: hashPercent("rough_cut") },
-  { id: "logo", label: "درج لوگو", percent: hashPercent("logo") },
-  { id: "music", label: "موزیک", percent: hashPercent("music") },
-  { id: "subtitle", label: "زیرنویس", percent: hashPercent("subtitle") },
-  { id: "transition", label: "ترنزیشن", percent: hashPercent("transition") },
-  { id: "intro_outro", label: "اینترو / آترو", percent: hashPercent("intro_outro") },
+  { id: "rough_cut", label: "راف کات", percent: 10 },
+  { id: "logo", label: "درج لوگو", percent: 5 },
+  { id: "music", label: "موزیک", percent: 10 },
+  { id: "subtitle", label: "زیرنویس", percent: 15 },
+  { id: "transition", label: "ترنزیشن", percent: 8 },
+  { id: "intro_outro", label: "اینترو / آترو", percent: 8 },
 ];
 
 export const advancedServices: Service[] = [
-  { id: "sfx", label: "افکت صوتی", percent: hashPercent("sfx") },
-  { id: "vfx", label: "افکت تصویری", percent: hashPercent("vfx") },
-  { id: "motion_light", label: "موشن گرافیک سبک", percent: hashPercent("motion_light") },
-  { id: "motion_heavy", label: "موشن گرافیک سنگین", percent: hashPercent("motion_heavy") },
-  { id: "rotoscope", label: "روتوسکپی", percent: hashPercent("rotoscope") },
-  { id: "color", label: "اصلاح رنگ", percent: hashPercent("color") },
-  { id: "typo", label: "تایپوگرافی", percent: hashPercent("typo") },
-  { id: "overlay", label: "اورلی", percent: hashPercent("overlay") },
-  { id: "mastering", label: "مسترینگ صدا", percent: hashPercent("mastering") },
+  { id: "color", label: "اصلاح رنگ", percent: 20 },
+  { id: "sfx", label: "افکت صوتی", percent: 12 },
+  { id: "vfx", label: "افکت تصویری", percent: 18 },
+  { id: "motion_light", label: "موشن گرافیک سبک", percent: 20 },
+  { id: "motion_heavy", label: "موشن گرافیک سنگین", percent: 35 },
+  { id: "rotoscope", label: "روتوسکپی", percent: 25 },
+  { id: "typo", label: "تایپوگرافی", percent: 15 },
+  { id: "overlay", label: "اورلی", percent: 10 },
+  { id: "mastering", label: "مسترینگ صدا", percent: 15 },
 ];
 
 export type TurnaroundSpeed = "standard" | "fast" | "rush";
 export type EditorLevel = "junior" | "mid" | "senior";
+
+export type CalculatorConfig = {
+  typeOptions: PickerOption[];
+  basicServices: Service[];
+  advancedServices: Service[];
+  speedMultipliers: {
+    standard: number;
+    fast: number;
+    rush: number;
+  };
+  levelMultipliers: {
+    junior: number;
+    mid: number;
+    senior: number;
+  };
+};
+
+export const defaultCalculatorConfig: CalculatorConfig = {
+  typeOptions: [
+    { label: "ریلز اینستاگرامی", base: 888_000 },
+    { label: "ویدیو بلند یوتوبی", base: 1_068_000 },
+    { label: "ویدیوی موزیکال", base: 1_266_000 },
+    { label: "تیزر تبلیغاتی", base: 1_166_667 },
+    { label: "موشن گرافیک ۲ بعدی", base: 1_498_000 },
+    { label: "موشن گرافیک ۲.۵ بعدی", base: 1_928_000 },
+    { label: "دوره آموزشی", base: 1_718_000 },
+  ],
+  basicServices: [
+    { id: "rough_cut", label: "راف کات", percent: 10 },
+    { id: "logo", label: "درج لوگو", percent: 5 },
+    { id: "music", label: "موزیک", percent: 10 },
+    { id: "subtitle", label: "زیرنویس", percent: 15 },
+    { id: "transition", label: "ترنزیشن", percent: 8 },
+    { id: "intro_outro", label: "اینترو / آترو", percent: 8 },
+  ],
+  advancedServices: [
+    { id: "color", label: "اصلاح رنگ", percent: 20 },
+    { id: "sfx", label: "افکت صوتی", percent: 12 },
+    { id: "vfx", label: "افکت تصویری", percent: 18 },
+    { id: "motion_light", label: "موشن گرافیک سبک", percent: 20 },
+    { id: "motion_heavy", label: "موشن گرافیک سنگین", percent: 35 },
+    { id: "rotoscope", label: "روتوسکپی", percent: 25 },
+    { id: "typo", label: "تایپوگرافی", percent: 15 },
+    { id: "overlay", label: "اورلی", percent: 10 },
+    { id: "mastering", label: "مسترینگ صدا", percent: 15 },
+  ],
+  speedMultipliers: {
+    standard: 1.0,
+    fast: 1.25,
+    rush: 1.5,
+  },
+  levelMultipliers: {
+    junior: 0.8,
+    mid: 1.0,
+    senior: 1.35,
+  },
+};
+
+export const CALCULATOR_CONFIG_STORAGE_KEY = "bumim_calculator_config";
 
 export type InvoiceItem = {
   id: string;

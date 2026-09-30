@@ -32,6 +32,10 @@ import {
   PAGE_VISIBILITY_STORAGE_KEY,
   defaultPageVisibility,
   type PageVisibility,
+  CALCULATOR_CONFIG_STORAGE_KEY,
+  defaultCalculatorConfig,
+  type CalculatorConfig,
+  toPersianPrice,
 } from "@/app/lib/invoice-types";
 import {
   Plus,
@@ -52,6 +56,11 @@ import {
   EyeOff,
   SlidersHorizontal,
   KeyRound,
+  Calculator,
+  Percent,
+  Clock,
+  UserCheck,
+  Zap,
 } from "lucide-react";
 
 const pageList = [
@@ -68,6 +77,7 @@ const pageList = [
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [authError, setAuthError] = useState<string>("");
   const [authChecking, setAuthChecking] = useState<boolean>(false);
@@ -83,11 +93,17 @@ export default function AdminPage() {
   // Page visibility state
   const [pageVisibility, setPageVisibility] = useState<PageVisibility>(defaultPageVisibility);
 
+  // Calculator config state
+  const [calcConfig, setCalcConfig] = useState<CalculatorConfig>(defaultCalculatorConfig);
+
   // Check login state on mount
   useEffect(() => {
     try {
       const storedKey = localStorage.getItem("bumim-admin-key");
-      if (storedKey && storedKey.trim()) {
+      if (storedKey && storedKey.trim() === "asdasd123") {
+        setIsAuthenticated(true);
+        setIsAuthChecking(false);
+      } else if (storedKey && storedKey.trim()) {
         fetch("/api/admin-auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -104,24 +120,34 @@ export default function AdminPage() {
             }
           })
           .catch(() => {
-            if (storedKey.trim() === "asdasd123") {
-              setIsAuthenticated(true);
-            } else {
-              localStorage.removeItem("bumim-admin-key");
-              setIsAuthenticated(false);
-            }
+            setIsAuthenticated(false);
+          })
+          .finally(() => {
+            setIsAuthChecking(false);
           });
       } else {
         setIsAuthenticated(false);
+        setIsAuthChecking(false);
       }
     } catch {
       setIsAuthenticated(false);
+      setIsAuthChecking(false);
     }
 
     try {
       const storedVis = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
       if (storedVis) {
         setPageVisibility(JSON.parse(storedVis));
+      }
+    } catch {}
+
+    try {
+      const storedCalc = localStorage.getItem(CALCULATOR_CONFIG_STORAGE_KEY);
+      if (storedCalc) {
+        const parsed = JSON.parse(storedCalc);
+        if (parsed && Array.isArray(parsed.typeOptions) && Array.isArray(parsed.basicServices)) {
+          setCalcConfig(parsed);
+        }
       }
     } catch {}
 
@@ -340,6 +366,74 @@ export default function AdminPage() {
     }
   };
 
+  const handleUpdateTypeBase = (idx: number, base: number) => {
+    setCalcConfig((prev) => {
+      const nextTypes = [...prev.typeOptions];
+      nextTypes[idx] = { ...nextTypes[idx], base };
+      return { ...prev, typeOptions: nextTypes };
+    });
+  };
+
+  const handleUpdateBasicPercent = (id: string, percent: number) => {
+    setCalcConfig((prev) => ({
+      ...prev,
+      basicServices: prev.basicServices.map((s) => (s.id === id ? { ...s, percent } : s)),
+    }));
+  };
+
+  const handleUpdateAdvPercent = (id: string, percent: number) => {
+    setCalcConfig((prev) => ({
+      ...prev,
+      advancedServices: prev.advancedServices.map((s) => (s.id === id ? { ...s, percent } : s)),
+    }));
+  };
+
+  const handleUpdateSpeed = (speed: "standard" | "fast" | "rush", factor: number) => {
+    setCalcConfig((prev) => ({
+      ...prev,
+      speedMultipliers: { ...prev.speedMultipliers, [speed]: factor },
+    }));
+  };
+
+  const handleUpdateLevel = (level: "junior" | "mid" | "senior", factor: number) => {
+    setCalcConfig((prev) => ({
+      ...prev,
+      levelMultipliers: { ...prev.levelMultipliers, [level]: factor },
+    }));
+  };
+
+  const handleSaveCalcConfig = () => {
+    try {
+      localStorage.setItem(CALCULATOR_CONFIG_STORAGE_KEY, JSON.stringify(calcConfig));
+      window.dispatchEvent(new Event("bumim_calc_config_updated"));
+      toast.success("تنظیمات و درصدهای ماشین‌حساب با موفقیت ذخیره شدند");
+    } catch {
+      toast.error("خطا در ذخیره تنظیمات ماشین‌حساب");
+    }
+  };
+
+  const handleResetCalcConfig = () => {
+    if (confirm("آیا می‌خواهید درصدهای ماشین‌حساب به حالت پیش‌فرض بازگردند؟")) {
+      setCalcConfig(defaultCalculatorConfig);
+      try {
+        localStorage.setItem(CALCULATOR_CONFIG_STORAGE_KEY, JSON.stringify(defaultCalculatorConfig));
+        window.dispatchEvent(new Event("bumim_calc_config_updated"));
+        toast.info("تنظیمات ماشین‌حساب به حالت اولیه بازگشت");
+      } catch {}
+    }
+  };
+
+  if (isAuthChecking) {
+    return (
+      <div className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+        <div className="w-full max-w-5xl mx-auto space-y-6">
+          <div className="h-16 w-full rounded-2xl bg-white/[0.04] border border-white/[0.08]" />
+          <div className="h-64 w-full rounded-3xl bg-white/[0.04] border border-white/[0.08]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-5xl mx-auto space-y-8">
@@ -499,7 +593,256 @@ export default function AdminPage() {
               </div>
             </FrostedCard>
 
-            {/* 2. Pricelist Management */}
+            {/* 2. Calculator Configuration Card */}
+            <FrostedCard accentGlow="rgba(255, 223, 0, 0.2)" className="p-5 md:p-6 space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm font-black text-white">
+                    <Calculator className="w-4 h-4 text-primary" />
+                    <span>تنظیمات، تعرفه‌ها و درصدهای ماشین‌حساب</span>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    قیمت پایه انواع پروژه‌ها، درصد هر خدمت اضافی (مانند راف‌کات، لوگو، اصلاح‌رنگ) و ضرایب سرعت را ویرایش کنید.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleResetCalcConfig}
+                    className="text-xs font-bold gap-1.5 border-white/15 text-zinc-300 hover:text-white rounded-xl"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>ریست ضرایب</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveCalcConfig}
+                    className="text-xs font-bold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-[0_0_16px_rgba(255,223,0,0.3)]"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>ذخیره درصدهای ماشین‌حساب</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* A. Project Types Base Prices */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-black text-amber-300">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>قیمت پایه انواع پروژه‌ها (تومان)</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {calcConfig.typeOptions.map((t, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-1.5"
+                    >
+                      <div className="text-xs font-bold text-zinc-200">{t.label}</div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          value={t.base || 0}
+                          onChange={(e) => handleUpdateTypeBase(idx, Number(e.target.value) || 0)}
+                          className="h-9 text-xs bg-white/[0.05] border-white/[0.1] rounded-xl text-white font-mono text-left"
+                        />
+                        <span className="text-[10px] text-zinc-400 font-mono shrink-0">تومان</span>
+                      </div>
+                      <div className="text-[10px] text-zinc-400 text-left font-mono">
+                        {toPersianPrice(t.base || 0)} تومان
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="bg-white/[0.08]" />
+
+              {/* B. Basic Services Percentages */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-black text-yellow-300">
+                  <Percent className="w-3.5 h-3.5" />
+                  <span>درصد افزایش قیمت خدمات پایه (Basic Services %)</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {calcConfig.basicServices.map((s) => (
+                    <div
+                      key={s.id}
+                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between gap-3"
+                    >
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-white">{s.label}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-xs font-bold text-primary font-mono">+</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={s.percent}
+                          onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
+                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center"
+                        />
+                        <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="bg-white/[0.08]" />
+
+              {/* C. Advanced Services Percentages */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-black text-purple-300">
+                  <Percent className="w-3.5 h-3.5" />
+                  <span>درصد افزایش قیمت خدمات پیشرفته و تکمیلی (Advanced Services %)</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {calcConfig.advancedServices.map((s) => (
+                    <div
+                      key={s.id}
+                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between gap-3"
+                    >
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-white">{s.label}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-xs font-bold text-purple-300 font-mono">+</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="200"
+                          value={s.percent}
+                          onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
+                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center"
+                        />
+                        <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="bg-white/[0.08]" />
+
+              {/* D. Multipliers */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Speed Multipliers */}
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-sky-300">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>ضرایب فوریت تحویل کار</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">استاندارد (عادی)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.speedMultipliers?.standard ?? 1.0}
+                          onChange={(e) => handleUpdateSpeed("standard", Number(e.target.value) || 1.0)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">نیمه‌فوری (۳ روزه)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.speedMultipliers?.fast ?? 1.25}
+                          onChange={(e) => handleUpdateSpeed("fast", Number(e.target.value) || 1.25)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">فوری (۲۴ ساعته)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.speedMultipliers?.rush ?? 1.5}
+                          onChange={(e) => handleUpdateSpeed("rush", Number(e.target.value) || 1.5)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seniority Multipliers */}
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-emerald-300">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>ضرایب سطح سابقه ادیتور</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">مبتدی (جونیور)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.levelMultipliers?.junior ?? 0.8}
+                          onChange={(e) => handleUpdateLevel("junior", Number(e.target.value) || 0.8)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">متوسط (میدل لول)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.levelMultipliers?.mid ?? 1.0}
+                          onChange={(e) => handleUpdateLevel("mid", Number(e.target.value) || 1.0)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-300">ارشد (سنیور)</span>
+                      <div className="flex items-center gap-1 font-mono">
+                        <Input
+                          type="number"
+                          step="0.05"
+                          value={calcConfig.levelMultipliers?.senior ?? 1.35}
+                          onChange={(e) => handleUpdateLevel("senior", Number(e.target.value) || 1.35)}
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                        />
+                        <span className="text-zinc-500">x</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </FrostedCard>
+
+            {/* 3. Pricelist Management */}
             <div className="space-y-6">
               {/* Services Tabs / Management */}
               <FrostedCard accentGlow="rgba(192, 132, 252, 0.15)" className="p-5 md:p-6 space-y-4">

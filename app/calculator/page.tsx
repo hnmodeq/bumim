@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import {
-  typeOptions,
   durationOptions,
   countOptions,
   countMultiplier,
-  basicServices,
-  advancedServices,
+  defaultCalculatorConfig,
+  CALCULATOR_CONFIG_STORAGE_KEY,
+  type CalculatorConfig,
   type PickerOption,
   type Service,
   type TurnaroundSpeed,
@@ -281,6 +281,8 @@ function SectionDivider({ label }: { label: string }) {
 }
 
 export default function CalculatorPage() {
+  const [calcConfig, setCalcConfig] = useState<CalculatorConfig>(defaultCalculatorConfig);
+
   // Wheels state
   const [typeIdx, setTypeIdx] = useState(0);
   const [durationIdx, setDurationIdx] = useState(3); // 45s
@@ -300,22 +302,46 @@ export default function CalculatorPage() {
   const [turnaround, setTurnaround] = useState<TurnaroundSpeed>("standard");
   const [editorLevel, setEditorLevel] = useState<EditorLevel>("mid");
 
+  // Load custom calculator config from storage on mount
+  useEffect(() => {
+    const loadConfig = () => {
+      try {
+        const stored = localStorage.getItem(CALCULATOR_CONFIG_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && Array.isArray(parsed.typeOptions) && Array.isArray(parsed.basicServices)) {
+            setCalcConfig(parsed);
+          }
+        }
+      } catch {}
+    };
+
+    loadConfig();
+
+    window.addEventListener("storage", loadConfig);
+    window.addEventListener("bumim_calc_config_updated", loadConfig);
+    return () => {
+      window.removeEventListener("storage", loadConfig);
+      window.removeEventListener("bumim_calc_config_updated", loadConfig);
+    };
+  }, []);
+
   const selectedServices = useMemo(() => {
     const list: { label: string; percent: number }[] = [];
-    basicServices.forEach((s) => {
+    calcConfig.basicServices.forEach((s) => {
       if (basicChecked[s.id]) list.push({ label: s.label, percent: s.percent });
     });
-    advancedServices.forEach((s) => {
+    calcConfig.advancedServices.forEach((s) => {
       if (advChecked[s.id]) list.push({ label: s.label, percent: s.percent });
     });
     return list;
-  }, [basicChecked, advChecked]);
+  }, [calcConfig, basicChecked, advChecked]);
 
   // Price Calculation formula with speed and seniority
   const price = useMemo(() => {
-    const type = typeOptions[typeIdx];
-    const dur = durationOptions[durationIdx];
-    const cnt = countOptions[countIdx];
+    const type = calcConfig.typeOptions[typeIdx] || calcConfig.typeOptions[0] || { base: 888_000 };
+    const dur = durationOptions[durationIdx] || durationOptions[0];
+    const cnt = countOptions[countIdx] || countOptions[0];
 
     const base = (type.base || 0) * (dur.factor || 1) * (cnt.factor || 1);
     const mult = countMultiplier[cnt.label] ?? 1.0;
@@ -324,15 +350,21 @@ export default function CalculatorPage() {
     const totalPercent = selectedServices.reduce((sum, s) => sum + s.percent, 0);
     const withServices = subtotal * (1 + totalPercent / 100);
 
-    // Speed multiplier
-    let speedMult = 1.0;
-    if (turnaround === "fast") speedMult = 1.25;
-    if (turnaround === "rush") speedMult = 1.5;
+    // Speed multiplier from config
+    const speedMult =
+      turnaround === "fast"
+        ? calcConfig.speedMultipliers?.fast ?? 1.25
+        : turnaround === "rush"
+        ? calcConfig.speedMultipliers?.rush ?? 1.5
+        : calcConfig.speedMultipliers?.standard ?? 1.0;
 
-    // Seniority multiplier
-    let levelMult = 1.0;
-    if (editorLevel === "junior") levelMult = 0.8;
-    if (editorLevel === "senior") levelMult = 1.35;
+    // Seniority multiplier from config
+    const levelMult =
+      editorLevel === "junior"
+        ? calcConfig.levelMultipliers?.junior ?? 0.8
+        : editorLevel === "senior"
+        ? calcConfig.levelMultipliers?.senior ?? 1.35
+        : calcConfig.levelMultipliers?.mid ?? 1.0;
 
     const total = withServices * speedMult * levelMult;
 
@@ -343,7 +375,7 @@ export default function CalculatorPage() {
       levelMult,
       total: Math.round(total),
     };
-  }, [typeIdx, durationIdx, countIdx, selectedServices, turnaround, editorLevel]);
+  }, [calcConfig, typeIdx, durationIdx, countIdx, selectedServices, turnaround, editorLevel]);
 
   const formattedPrice = useMemo(() => toPersianPrice(price.total), [price.total]);
 
@@ -372,7 +404,7 @@ export default function CalculatorPage() {
             <div className="flex flex-col items-center">
               <span className="text-[10px] md:text-xs font-black text-zinc-400 mb-1">نوع پروژه</span>
               <WheelPicker
-                options={typeOptions}
+                options={calcConfig.typeOptions}
                 selected={typeIdx}
                 onSelect={setTypeIdx}
                 ariaLabel="نوع پروژه"
@@ -402,7 +434,7 @@ export default function CalculatorPage() {
           <div className="space-y-2">
             <SectionDivider label="خدمات پایه" />
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {basicServices.map((s) => (
+              {calcConfig.basicServices.map((s) => (
                 <ServiceItem
                   key={s.id}
                   service={s}
@@ -417,7 +449,7 @@ export default function CalculatorPage() {
           <div className="space-y-2">
             <SectionDivider label="خدمات پیشرفته و تکمیلی" />
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {advancedServices.map((s) => (
+              {calcConfig.advancedServices.map((s) => (
                 <ServiceItem
                   key={s.id}
                   service={s}
