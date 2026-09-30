@@ -339,11 +339,14 @@ export default function CalculatorPage() {
 
   // Price Calculation formula with speed and seniority
   const price = useMemo(() => {
-    const type = calcConfig.typeOptions[typeIdx] || calcConfig.typeOptions[0] || { base: 888_000 };
+    const type = calcConfig.typeOptions[typeIdx] || calcConfig.typeOptions[0] || { dollarRate: 8.88, base: 888_000 };
     const dur = durationOptions[durationIdx] || durationOptions[0];
     const cnt = countOptions[countIdx] || countOptions[0];
 
-    const base = (type.base || 0) * (dur.factor || 1) * (cnt.factor || 1);
+    const dollarPrice = calcConfig.dollarPrice || 100_000;
+    const typeBase = type.dollarRate ? type.dollarRate * dollarPrice : (type.base || 888_000);
+
+    const base = typeBase * (dur.factor || 1) * (cnt.factor || 1);
     const mult = countMultiplier[cnt.label] ?? 1.0;
     const subtotal = base * mult;
 

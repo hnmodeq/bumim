@@ -61,6 +61,8 @@ import {
   Clock,
   UserCheck,
   Zap,
+  DollarSign,
+  RefreshCw,
 } from "lucide-react";
 
 const pageList = [
@@ -366,10 +368,60 @@ export default function AdminPage() {
     }
   };
 
-  const handleUpdateTypeBase = (idx: number, base: number) => {
+  const [isFetchingDollar, setIsFetchingDollar] = useState<boolean>(false);
+
+  const handleFetchDollarRate = async () => {
+    setIsFetchingDollar(true);
+    try {
+      const res = await fetch("/api/dollar-rate");
+      const data = await res.json();
+      if (data.ok && data.rate) {
+        setCalcConfig((prev) => {
+          const nextPrice = data.rate;
+          const nextTypes = prev.typeOptions.map((t) => ({
+            ...t,
+            base: Math.round((t.dollarRate || 8.88) * nextPrice),
+          }));
+          return {
+            ...prev,
+            dollarPrice: nextPrice,
+            typeOptions: nextTypes,
+          };
+        });
+        toast.success(`نرخ زنده دلار دریافت شد: ${toPersianPrice(data.rate)} تومان (منبع: ${data.source})`);
+      } else {
+        toast.error("خطا در دریافت نرخ آنلاین دلار");
+      }
+    } catch {
+      toast.error("خطا در برقراری ارتباط با سرور نرخ ارز");
+    } finally {
+      setIsFetchingDollar(false);
+    }
+  };
+
+  const handleUpdateDollarPrice = (price: number) => {
+    setCalcConfig((prev) => {
+      const nextTypes = prev.typeOptions.map((t) => ({
+        ...t,
+        base: Math.round((t.dollarRate || 8.88) * price),
+      }));
+      return {
+        ...prev,
+        dollarPrice: price,
+        typeOptions: nextTypes,
+      };
+    });
+  };
+
+  const handleUpdateTypeDollarRate = (idx: number, dollarRate: number) => {
     setCalcConfig((prev) => {
       const nextTypes = [...prev.typeOptions];
-      nextTypes[idx] = { ...nextTypes[idx], base };
+      const dollarPrice = prev.dollarPrice || 100_000;
+      nextTypes[idx] = {
+        ...nextTypes[idx],
+        dollarRate,
+        base: Math.round(dollarRate * dollarPrice),
+      };
       return { ...prev, typeOptions: nextTypes };
     });
   };
@@ -627,34 +679,92 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* A. Project Types Base Prices */}
+              {/* Dollar Exchange Rate Controller */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/20 space-y-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="text-sm font-black text-white flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-primary" />
+                      <span>نرخ تبدیل دلار / تتر به تومان (USD Exchange Rate)</span>
+                    </div>
+                    <p className="text-xs text-zinc-400">
+                      کلیه ضرایب و نرخ‌های دلاری انواع پروژه‌ها بر اساس این قیمت به تومان تبدیل می‌شوند.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={isFetchingDollar}
+                      onClick={handleFetchDollarRate}
+                      className="text-xs font-bold gap-1.5 border-amber-500/30 text-amber-300 hover:bg-amber-500/10 rounded-xl cursor-pointer"
+                    >
+                      <RefreshCw className={cn("w-3.5 h-3.5", isFetchingDollar && "animate-spin")} />
+                      <span>{isFetchingDollar ? "در حال دریافت نرخ..." : "دریافت آنلاین نرخ روز (API)"}</span>
+                    </Button>
+
+                    <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.12] rounded-xl px-3 py-1.5">
+                      <Input
+                        type="number"
+                        value={calcConfig.dollarPrice || 100_000}
+                        onChange={(e) => handleUpdateDollarPrice(Number(e.target.value) || 100_000)}
+                        className="w-28 h-7 text-xs bg-transparent border-0 text-white font-mono font-black text-left p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="text-xs font-bold text-primary shrink-0">تومان</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* A. Project Types Dollar Rates */}
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-amber-300">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>قیمت پایه انواع پروژه‌ها (تومان)</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-black text-amber-300">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>ضرایب و نرخ‌های دلاری انواع پروژه‌ها (Project Rates in USD $)</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 font-mono">
+                    فرمول: نرخ دلاری × نرخ روز دلار = قیمت نهایی تومان
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {calcConfig.typeOptions.map((t, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-1.5"
-                    >
-                      <div className="text-xs font-bold text-zinc-200">{t.label}</div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          value={t.base || 0}
-                          onChange={(e) => handleUpdateTypeBase(idx, Number(e.target.value) || 0)}
-                          className="h-9 text-xs bg-white/[0.05] border-white/[0.1] rounded-xl text-white font-mono text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                        <span className="text-[10px] text-zinc-400 font-mono shrink-0">تومان</span>
+                  {calcConfig.typeOptions.map((t, idx) => {
+                    const dollarRate = t.dollarRate ?? (t.base ? Number((t.base / (calcConfig.dollarPrice || 100_000)).toFixed(2)) : 8.88);
+                    const calculatedToman = Math.round(dollarRate * (calcConfig.dollarPrice || 100_000));
+
+                    return (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2 hover:border-white/20 transition-all"
+                      >
+                        <div className="text-xs font-bold text-zinc-200">{t.label}</div>
+
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.1] rounded-xl px-2.5 py-1">
+                            <span className="text-xs font-bold text-amber-400 font-mono">$</span>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={dollarRate}
+                              onChange={(e) => handleUpdateTypeDollarRate(idx, Number(e.target.value) || 0)}
+                              className="w-16 h-7 text-xs bg-transparent border-0 text-white font-mono font-bold text-center p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="text-[10px] text-zinc-400 font-mono">دلار</span>
+                          </div>
+
+                          <div className="text-left font-mono">
+                            <div className="text-xs font-black text-primary">
+                              {toPersianPrice(calculatedToman)}
+                            </div>
+                            <div className="text-[9px] text-zinc-500">تومان</div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-[10px] text-zinc-400 text-left font-mono">
-                        {toPersianPrice(t.base || 0)} تومان
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

@@ -1,13 +1,13 @@
-export type PickerOption = { label: string; factor?: number; base?: number };
+export type PickerOption = { label: string; factor?: number; base?: number; dollarRate?: number };
 
 export const typeOptions: PickerOption[] = [
-  { label: "ریلز اینستاگرامی", base: 888_000 },
-  { label: "ویدیو بلند یوتوبی", base: 1_068_000 },
-  { label: "ویدیوی موزیکال", base: 1_266_000 },
-  { label: "تیزر تبلیغاتی", base: 1_166_667 },
-  { label: "موشن گرافیک ۲ بعدی", base: 1_498_000 },
-  { label: "موشن گرافیک ۲.۵ بعدی", base: 1_928_000 },
-  { label: "دوره آموزشی", base: 1_718_000 },
+  { label: "ریلز اینستاگرامی", dollarRate: 8.88, base: 888_000 },
+  { label: "ویدیو بلند یوتوبی", dollarRate: 10.68, base: 1_068_000 },
+  { label: "ویدیوی موزیکال", dollarRate: 12.66, base: 1_266_000 },
+  { label: "تیزر تبلیغاتی", dollarRate: 11.67, base: 1_166_667 },
+  { label: "موشن گرافیک ۲ بعدی", dollarRate: 14.98, base: 1_498_000 },
+  { label: "موشن گرافیک ۲.۵ بعدی", dollarRate: 19.28, base: 1_928_000 },
+  { label: "دوره آموزشی", dollarRate: 17.18, base: 1_718_000 },
 ];
 
 export const durationOptions: PickerOption[] = [
@@ -100,6 +100,8 @@ export type TurnaroundSpeed = "standard" | "fast" | "rush";
 export type EditorLevel = "junior" | "mid" | "senior";
 
 export type CalculatorConfig = {
+  dollarPrice: number; // e.g. 100000 (Toman)
+  autoFetchDollar?: boolean;
   typeOptions: PickerOption[];
   basicServices: Service[];
   advancedServices: Service[];
@@ -116,14 +118,16 @@ export type CalculatorConfig = {
 };
 
 export const defaultCalculatorConfig: CalculatorConfig = {
+  dollarPrice: 100_000,
+  autoFetchDollar: false,
   typeOptions: [
-    { label: "ریلز اینستاگرامی", base: 888_000 },
-    { label: "ویدیو بلند یوتوبی", base: 1_068_000 },
-    { label: "ویدیوی موزیکال", base: 1_266_000 },
-    { label: "تیزر تبلیغاتی", base: 1_166_667 },
-    { label: "موشن گرافیک ۲ بعدی", base: 1_498_000 },
-    { label: "موشن گرافیک ۲.۵ بعدی", base: 1_928_000 },
-    { label: "دوره آموزشی", base: 1_718_000 },
+    { label: "ریلز اینستاگرامی", dollarRate: 8.88, base: 888_000 },
+    { label: "ویدیو بلند یوتوبی", dollarRate: 10.68, base: 1_068_000 },
+    { label: "ویدیوی موزیکال", dollarRate: 12.66, base: 1_266_000 },
+    { label: "تیزر تبلیغاتی", dollarRate: 11.67, base: 1_166_667 },
+    { label: "موشن گرافیک ۲ بعدی", dollarRate: 14.98, base: 1_498_000 },
+    { label: "موشن گرافیک ۲.۵ بعدی", dollarRate: 19.28, base: 1_928_000 },
+    { label: "دوره آموزشی", dollarRate: 17.18, base: 1_718_000 },
   ],
   basicServices: [
     { id: "rough_cut", label: "راف کات", percent: 10 },
