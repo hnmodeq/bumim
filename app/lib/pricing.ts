@@ -35,6 +35,8 @@ export const colorOptions = [
   "from-[#ef4444] to-[#ec4899]",
 ];
 
+export const TELEGRAM_SUPPORT_USERNAME = "bumimsupport";
+
 export const defaultServices: Service[] = [
   {
     id: "short",

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { defaultServices, featureNames, type Service, type Package } from "../lib/pricing";
+import { defaultServices, featureNames, TELEGRAM_SUPPORT_USERNAME, type Service, type Package } from "../lib/pricing";
 
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
@@ -15,9 +14,16 @@ import {
   Sparkles,
   Check,
   Minus,
-  Calculator,
   Layers,
 } from "lucide-react";
+
+function TelegramIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12 0C5.3706 0 0 5.3706 0 12c0 6.6294 5.3706 12 12 12s12-5.3706 12-12c0-6.6294-5.3706-12-12-12zm5.8945 8.2217l-1.97 9.2803c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.054 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.538-.196 1.006.128.832.918z" />
+    </svg>
+  );
+}
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>(defaultServices);
@@ -42,6 +48,11 @@ export default function ServicesPage() {
   }, []);
 
   const active = services.find((s) => s.id === activeId) || services[0];
+
+  const getTelegramUrl = (serviceName: string, pkg: Package) => {
+    const text = `سلام، وقت بخیر 👋\nدرخواست سفارش ادیت ویدیو دارم:\n\n📌 سرویس: ${serviceName}\n⭐ پکیج: ${pkg.name}\n💰 تعرفه: ${pkg.price} ${pkg.per}\n\nلطفاً راهنمایی بفرمایید.`;
+    return `https://t.me/${TELEGRAM_SUPPORT_USERNAME}?text=${encodeURIComponent(text)}`;
+  };
 
   return (
     <main className="min-h-screen bg-[#060608] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
@@ -140,6 +151,7 @@ export default function ServicesPage() {
                   motion: "rgba(236, 72, 153, 0.25)",
                 };
                 const cardGlow = glowGradients[pkg.id] || "rgba(255, 255, 255, 0.15)";
+                const telegramLink = getTelegramUrl(active.name, pkg);
 
                 return (
                   <FrostedCard
@@ -224,19 +236,21 @@ export default function ServicesPage() {
                     </div>
 
                     <div className="pt-6">
-                      <Link
-                        href="/invoice"
+                      <a
+                        href={telegramLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className={cn(
                           buttonVariants({ variant: pkg.popular ? "default" : "secondary" }),
-                          "w-full font-bold text-xs h-11 gap-2 rounded-xl",
+                          "w-full font-bold text-xs h-11 gap-2 rounded-xl transition-all duration-300",
                           pkg.popular
-                            ? "shadow-[0_0_24px_rgba(255,223,0,0.35)] hover:shadow-[0_0_36px_rgba(255,223,0,0.55)]"
-                            : "bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.15]"
+                            ? "shadow-[0_0_24px_rgba(255,223,0,0.35)] hover:shadow-[0_0_36px_rgba(255,223,0,0.55)] hover:scale-[1.02]"
+                            : "bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.15] hover:border-white/25 hover:scale-[1.02]"
                         )}
                       >
-                        <Calculator className="w-4 h-4" />
-                        <span>صدور پیش‌فاکتور با این نرخ</span>
-                      </Link>
+                        <TelegramIcon className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                        <span>سفارش در تلگرام</span>
+                      </a>
                     </div>
                   </FrostedCard>
                 );
