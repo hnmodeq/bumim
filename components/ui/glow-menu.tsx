@@ -122,7 +122,6 @@ const allNavItems: NavItem[] = [
 
 export function GlowMenu({ className }: { className?: string }) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState<boolean>(false);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [visibility, setVisibility] = useState<PageVisibility>(defaultPageVisibility);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
@@ -138,7 +137,6 @@ export function GlowMenu({ className }: { className?: string }) {
         const adminKey = localStorage.getItem("bumim-admin-key");
         setIsAdminLoggedIn(!!(adminKey && adminKey.trim()));
       } catch {}
-      setMounted(true);
     };
 
     checkState();
@@ -173,8 +171,7 @@ export function GlowMenu({ className }: { className?: string }) {
   return (
     <nav
       className={cn(
-        "relative flex items-center justify-center select-none z-40 max-w-full transition-opacity duration-200",
-        mounted ? "opacity-100" : "opacity-0",
+        "relative flex items-center justify-center select-none z-50 max-w-full",
         className
       )}
       aria-label="منوی اصلی"

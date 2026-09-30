@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BrandLoader } from "@/components/ui/brand-loader";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -208,35 +208,41 @@ export default function ServicesPage() {
           </p>
         </div>
 
-        {/* Loading Brand State */}
-        {loading ? (
-          <BrandLoader show={true} />
-        ) : (
-          <>
-            {/* Service Frosted Switcher Tabs */}
-            <div className="flex flex-col items-center">
-              <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-white/[0.03] border border-white/[0.12] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]">
-                {services.map((s) => {
-                  const isActive = activeId === s.id;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setActiveId(s.id)}
-                      className={cn(
-                        "relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
-                        isActive
-                          ? "bg-white/[0.14] text-white shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.3)] border border-white/25 font-black"
-                          : "text-zinc-400 hover:text-white hover:bg-white/[0.05]"
-                      )}
-                    >
-                      <Layers className={cn("w-3.5 h-3.5 transition-transform", isActive ? "text-primary scale-110" : "opacity-60")} />
-                      <span>{s.name}</span>
-                    </button>
-                  );
-                })}
+        {/* Service Content */}
+        <div className="relative space-y-8">
+          {loading && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-3xl animate-in fade-in duration-200">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.08] border border-white/[0.15] text-xs font-bold text-white shadow-xl backdrop-blur-xl">
+                <Sparkles className="w-4 h-4 text-primary animate-spin" />
+                <span>به‌روزرسانی تعرفه‌ها...</span>
               </div>
             </div>
+          )}
+
+          {/* Service Frosted Switcher Tabs */}
+          <div className="flex flex-col items-center">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full bg-white/[0.03] border border-white/[0.12] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)]">
+              {services.map((s) => {
+                const isActive = activeId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setActiveId(s.id)}
+                    className={cn(
+                      "relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer",
+                      isActive
+                        ? "bg-white/[0.14] text-white shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.3)] border border-white/25 font-black"
+                        : "text-zinc-400 hover:text-white hover:bg-white/[0.05]"
+                    )}
+                  >
+                    <Layers className={cn("w-3.5 h-3.5 transition-transform", isActive ? "text-primary scale-110" : "opacity-60")} />
+                    <span>{s.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
             {/* Package Frosted Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -359,8 +365,7 @@ export default function ServicesPage() {
                 );
               })}
             </div>
-          </>
-        )}
+        </div>
       </div>
 
       {/* Frosted Order Modal Dialog */}

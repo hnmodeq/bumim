@@ -44,7 +44,7 @@ export function BrandLoader({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060608] transition-opacity duration-300 select-none",
+        "fixed inset-0 top-[72px] z-40 flex flex-col items-center justify-center bg-[#060608]/75 backdrop-blur-2xl transition-opacity duration-300 select-none",
         fading ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
       aria-label="در حال بارگذاری..."
