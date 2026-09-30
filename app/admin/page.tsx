@@ -36,6 +36,7 @@ import {
   defaultCalculatorConfig,
   type CalculatorConfig,
   toPersianPrice,
+  toPersianNumber,
   formatPersianDateTime,
   getRelativeTimeFa,
 } from "@/app/lib/invoice-types";
@@ -65,6 +66,7 @@ import {
   Zap,
   DollarSign,
   RefreshCw,
+  Check,
 } from "lucide-react";
 
 const pageList = [
@@ -99,6 +101,18 @@ export default function AdminPage() {
 
   // Calculator config state
   const [calcConfig, setCalcConfig] = useState<CalculatorConfig>(defaultCalculatorConfig);
+
+  // Live Calculator Simulator State
+  const [simLevel, setSimLevel] = useState<"junior" | "mid" | "senior">("mid");
+  const [simSpeed, setSimSpeed] = useState<"standard" | "fast" | "rush">("standard");
+  const [simSelectedBasic, setSimSelectedBasic] = useState<Record<string, boolean>>({
+    rough_cut: true,
+    logo: true,
+    music: true,
+  });
+  const [simSelectedAdv, setSimSelectedAdv] = useState<Record<string, boolean>>({
+    color: true,
+  });
 
   // Check login state on mount
   useEffect(() => {
@@ -783,36 +797,78 @@ export default function AdminPage() {
 
               {/* B. Basic Services Percentages */}
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-yellow-300">
-                  <Percent className="w-3.5 h-3.5" />
-                  <span>درصد افزایش قیمت خدمات پایه (Basic Services %)</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-black text-yellow-300">
+                    <Percent className="w-3.5 h-3.5" />
+                    <span>درصد و مبالغ افزایش قیمت خدمات پایه (Basic Services %)</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 font-mono">
+                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس درصد
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {calcConfig.basicServices.map((s) => (
-                    <div
-                      key={s.id}
-                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between gap-3"
-                    >
-                      <div className="space-y-0.5">
-                        <div className="text-xs font-bold text-white">{s.label}</div>
-                        <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
-                      </div>
+                  {calcConfig.basicServices.map((s) => {
+                    const dollarPrice = calcConfig.dollarPrice || 100_000;
+                    const reelBase = (calcConfig.typeOptions[0]?.dollarRate || 8.88) * dollarPrice;
+                    const ytBase = (calcConfig.typeOptions[1]?.dollarRate || 10.68) * dollarPrice;
+                    const teaserBase = (calcConfig.typeOptions[3]?.dollarRate || 11.67) * dollarPrice;
+                    const musicBase = (calcConfig.typeOptions[2]?.dollarRate || 12.66) * dollarPrice;
 
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-xs font-bold text-primary font-mono">+</span>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={s.percent}
-                          onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
-                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                        <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                    const extraReel = Math.round(reelBase * (s.percent / 100));
+                    const extraYt = Math.round(ytBase * (s.percent / 100));
+                    const extraTeaser = Math.round(teaserBase * (s.percent / 100));
+                    const extraMusic = Math.round(musicBase * (s.percent / 100));
+
+                    return (
+                      <div
+                        key={s.id}
+                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2 hover:border-white/20 transition-all"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="space-y-0.5">
+                            <div className="text-xs font-bold text-white">{s.label}</div>
+                            <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-xs font-bold text-primary font-mono">+</span>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={s.percent}
+                              onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
+                              className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                          </div>
+                        </div>
+
+                        {/* Live Extra Amount Preview for Different Project Types */}
+                        <div className="pt-2 border-t border-white/[0.05] space-y-1">
+                          <div className="text-[10px] text-zinc-400 font-bold flex items-center justify-between">
+                            <span>افزایش قیمت برای ریلز:</span>
+                            <span className="text-emerald-400 font-mono font-bold">+{toPersianPrice(extraReel)} ت</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1 pt-0.5 text-[9px] font-mono text-zinc-400">
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">یوتوب</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraYt)}</div>
+                            </div>
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">تیزر</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraTeaser)}</div>
+                            </div>
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">موزیکال</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraMusic)}</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -820,36 +876,78 @@ export default function AdminPage() {
 
               {/* C. Advanced Services Percentages */}
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-purple-300">
-                  <Percent className="w-3.5 h-3.5" />
-                  <span>درصد افزایش قیمت خدمات پیشرفته و تکمیلی (Advanced Services %)</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-black text-purple-300">
+                    <Percent className="w-3.5 h-3.5" />
+                    <span>درصد و مبالغ افزایش قیمت خدمات پیشرفته (Advanced Services %)</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 font-mono">
+                    پیش‌نمایش زنده مبلغ اضافه شده بر اساس درصد
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {calcConfig.advancedServices.map((s) => (
-                    <div
-                      key={s.id}
-                      className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between gap-3"
-                    >
-                      <div className="space-y-0.5">
-                        <div className="text-xs font-bold text-white">{s.label}</div>
-                        <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
-                      </div>
+                  {calcConfig.advancedServices.map((s) => {
+                    const dollarPrice = calcConfig.dollarPrice || 100_000;
+                    const reelBase = (calcConfig.typeOptions[0]?.dollarRate || 8.88) * dollarPrice;
+                    const ytBase = (calcConfig.typeOptions[1]?.dollarRate || 10.68) * dollarPrice;
+                    const teaserBase = (calcConfig.typeOptions[3]?.dollarRate || 11.67) * dollarPrice;
+                    const musicBase = (calcConfig.typeOptions[2]?.dollarRate || 12.66) * dollarPrice;
 
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-xs font-bold text-purple-300 font-mono">+</span>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="200"
-                          value={s.percent}
-                          onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
-                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                        <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                    const extraReel = Math.round(reelBase * (s.percent / 100));
+                    const extraYt = Math.round(ytBase * (s.percent / 100));
+                    const extraTeaser = Math.round(teaserBase * (s.percent / 100));
+                    const extraMusic = Math.round(musicBase * (s.percent / 100));
+
+                    return (
+                      <div
+                        key={s.id}
+                        className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2 hover:border-white/20 transition-all"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="space-y-0.5">
+                            <div className="text-xs font-bold text-white">{s.label}</div>
+                            <div className="text-[10px] text-zinc-400 font-mono">شناسه: {s.id}</div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-xs font-bold text-purple-300 font-mono">+</span>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="200"
+                              value={s.percent}
+                              onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
+                              className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
+                          </div>
+                        </div>
+
+                        {/* Live Extra Amount Preview for Different Project Types */}
+                        <div className="pt-2 border-t border-white/[0.05] space-y-1">
+                          <div className="text-[10px] text-zinc-400 font-bold flex items-center justify-between">
+                            <span>افزایش قیمت برای ریلز:</span>
+                            <span className="text-purple-300 font-mono font-bold">+{toPersianPrice(extraReel)} ت</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1 pt-0.5 text-[9px] font-mono text-zinc-400">
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">یوتوب</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraYt)}</div>
+                            </div>
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">تیزر</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraTeaser)}</div>
+                            </div>
+                            <div className="bg-white/[0.02] p-1 rounded-lg text-center">
+                              <div className="text-zinc-500">موزیکال</div>
+                              <div className="text-zinc-200 font-bold">+{toPersianPrice(extraMusic)}</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -959,6 +1057,230 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <Separator className="bg-white/[0.08]" />
+
+              {/* E. Live Final Price Summary & Simulation */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300">
+                      <Calculator className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-black text-white flex items-center gap-2">
+                        <span>پیش‌نمایش زنده و اعتبارسنجی قیمت نهایی پروژه</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                          Live Summary
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-zinc-400">
+                        تست خروجی قیمت‌ها بر اساس ضرایب انتخابی، سطح ادیتور و فوریت تحویل کار
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Simulator Quick Toggles */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Level Toggle */}
+                    <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
+                      {(["junior", "mid", "senior"] as const).map((lvl) => (
+                        <button
+                          key={lvl}
+                          type="button"
+                          onClick={() => setSimLevel(lvl)}
+                          className={cn(
+                            "px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer",
+                            simLevel === lvl
+                              ? "bg-white/[0.15] text-white shadow-sm"
+                              : "text-zinc-400 hover:text-zinc-200"
+                          )}
+                        >
+                          {lvl === "junior" ? "جونیور" : lvl === "mid" ? "متوسط" : "سنیور"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Speed Toggle */}
+                    <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
+                      {(["standard", "fast", "rush"] as const).map((spd) => (
+                        <button
+                          key={spd}
+                          type="button"
+                          onClick={() => setSimSpeed(spd)}
+                          className={cn(
+                            "px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer",
+                            simSpeed === spd
+                              ? "bg-primary/20 text-primary border border-primary/30"
+                              : "text-zinc-400 hover:text-zinc-200"
+                          )}
+                        >
+                          {spd === "standard" ? "عادی" : spd === "fast" ? "نیمه‌فوری" : "فوری"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Selection Filter Pills for Simulation */}
+                <div className="space-y-2 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="text-[11px] font-bold text-zinc-300 flex items-center justify-between">
+                    <span>خدمات فعال در شبیه‌سازی:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allBasic: Record<string, boolean> = {};
+                        calcConfig.basicServices.forEach((s) => (allBasic[s.id] = true));
+                        setSimSelectedBasic(allBasic);
+                        const allAdv: Record<string, boolean> = {};
+                        calcConfig.advancedServices.forEach((s) => (allAdv[s.id] = true));
+                        setSimSelectedAdv(allAdv);
+                      }}
+                      className="text-[10px] text-primary hover:underline cursor-pointer"
+                    >
+                      انتخاب همه خدمات
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {calcConfig.basicServices.map((s) => {
+                      const isSel = !!simSelectedBasic[s.id];
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() =>
+                            setSimSelectedBasic((prev) => ({ ...prev, [s.id]: !prev[s.id] }))
+                          }
+                          className={cn(
+                            "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer",
+                            isSel
+                              ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-300"
+                              : "bg-white/[0.02] border-white/[0.08] text-zinc-400"
+                          )}
+                        >
+                          {isSel && <Check className="w-3 h-3 text-yellow-300" />}
+                          <span>{s.label}</span>
+                          <span className="font-mono text-[9px] opacity-75">+{s.percent}٪</span>
+                        </button>
+                      );
+                    })}
+
+                    {calcConfig.advancedServices.map((s) => {
+                      const isSel = !!simSelectedAdv[s.id];
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() =>
+                            setSimSelectedAdv((prev) => ({ ...prev, [s.id]: !prev[s.id] }))
+                          }
+                          className={cn(
+                            "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer",
+                            isSel
+                              ? "bg-purple-500/15 border-purple-500/30 text-purple-300"
+                              : "bg-white/[0.02] border-white/[0.08] text-zinc-400"
+                          )}
+                        >
+                          {isSel && <Check className="w-3 h-3 text-purple-300" />}
+                          <span>{s.label}</span>
+                          <span className="font-mono text-[9px] opacity-75">+{s.percent}٪</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Final Calculation Cards for Each Project Type */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {calcConfig.typeOptions.map((typeOpt, idx) => {
+                    const dollarPrice = calcConfig.dollarPrice || 100_000;
+                    const basePrice = (typeOpt.dollarRate || 8.88) * dollarPrice;
+
+                    const basicPercentSum = calcConfig.basicServices
+                      .filter((s) => simSelectedBasic[s.id])
+                      .reduce((sum, s) => sum + s.percent, 0);
+
+                    const advPercentSum = calcConfig.advancedServices
+                      .filter((s) => simSelectedAdv[s.id])
+                      .reduce((sum, s) => sum + s.percent, 0);
+
+                    const totalPercent = basicPercentSum + advPercentSum;
+                    const extraServicesAmount = Math.round(basePrice * (totalPercent / 100));
+                    const rawWithServices = basePrice + extraServicesAmount;
+
+                    const speedMult =
+                      simSpeed === "fast"
+                        ? calcConfig.speedMultipliers?.fast ?? 1.25
+                        : simSpeed === "rush"
+                        ? calcConfig.speedMultipliers?.rush ?? 1.5
+                        : calcConfig.speedMultipliers?.standard ?? 1.0;
+
+                    const levelMult =
+                      simLevel === "junior"
+                        ? calcConfig.levelMultipliers?.junior ?? 0.8
+                        : simLevel === "senior"
+                        ? calcConfig.levelMultipliers?.senior ?? 1.35
+                        : calcConfig.levelMultipliers?.mid ?? 1.0;
+
+                    const finalPrice = Math.round(rawWithServices * speedMult * levelMult);
+
+                    return (
+                      <div
+                        key={typeOpt.label || idx}
+                        className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.12] space-y-3 relative overflow-hidden group hover:border-white/25 transition-all shadow-lg"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-black text-white">{typeOpt.label}</span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-primary border border-white/10 font-bold">
+                            ${typeOpt.dollarRate}
+                          </span>
+                        </div>
+
+                        {/* Breakdown lines */}
+                        <div className="space-y-1.5 text-[11px] pt-1">
+                          <div className="flex items-center justify-between text-zinc-400">
+                            <span>پایه (۱ ویدیو، ۴۵ ثانیه):</span>
+                            <span className="text-zinc-200 font-mono font-bold">
+                              {toPersianPrice(Math.round(basePrice))} ت
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-yellow-400/90">
+                            <span>خدمات پایه (+{toPersianNumber(basicPercentSum)}٪):</span>
+                            <span className="font-mono">
+                              +{toPersianPrice(Math.round(basePrice * (basicPercentSum / 100)))} ت
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-purple-400/90">
+                            <span>خدمات پیشرفته (+{toPersianNumber(advPercentSum)}٪):</span>
+                            <span className="font-mono">
+                              +{toPersianPrice(Math.round(basePrice * (advPercentSum / 100)))} ت
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-zinc-400 text-[10px] pt-1 border-t border-white/[0.05]">
+                            <span>ضرایب (سرعت × سابقه):</span>
+                            <span className="text-sky-300 font-mono">
+                              {toPersianNumber(speedMult)}x × {toPersianNumber(levelMult)}x
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Total Final Price Box */}
+                        <div className="p-2.5 rounded-xl bg-white/[0.06] border border-white/15 space-y-0.5 text-center">
+                          <div className="text-[10px] text-zinc-400 font-bold">قیمت نهایی محاسبه‌شده</div>
+                          <div className="text-base font-black text-emerald-400 font-mono">
+                            {toPersianPrice(finalPrice)}{" "}
+                            <span className="text-[10px] font-normal text-zinc-300">تومان</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </FrostedCard>
