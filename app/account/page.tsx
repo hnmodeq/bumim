@@ -48,7 +48,7 @@ export default function AccountPage() {
   };
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+    <div className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-3xl mx-auto space-y-8">
         <div className="text-center space-y-3 max-w-xl mx-auto">
           <div className="inline-flex items-center gap-2">
@@ -143,6 +143,6 @@ export default function AccountPage() {
           </form>
         </FrostedCard>
       </div>
-    </main>
+    </div>
   );
 }

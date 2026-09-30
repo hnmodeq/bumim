@@ -55,20 +55,20 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-[#060608] text-foreground antialiased selection:bg-primary selection:text-primary-foreground relative overflow-x-hidden">
         {/* Universal Persistent Background Ambient Gradient Mesh */}
-        <div className="fixed -top-40 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0" />
-        <div className="fixed top-1/3 -left-40 w-[550px] h-[550px] bg-gradient-to-tr from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0" />
-        <div className="fixed -bottom-40 right-1/3 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/10 via-teal-500/5 to-transparent rounded-full blur-[150px] pointer-events-none z-0" />
+        <div className="fixed -top-40 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0 transform-gpu" />
+        <div className="fixed top-1/3 -left-40 w-[550px] h-[550px] bg-gradient-to-tr from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0 transform-gpu" />
+        <div className="fixed -bottom-40 right-1/3 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/10 via-teal-500/5 to-transparent rounded-full blur-[150px] pointer-events-none z-0 transform-gpu" />
 
         <TooltipProvider delay={150}>
           {/* Universal Persistent Header Navigation Dock */}
-          <header className="sticky top-4 w-full max-w-5xl mx-auto flex items-center justify-center px-4 z-40 pb-2">
+          <header className="sticky top-3 md:top-4 w-full max-w-5xl mx-auto flex items-center justify-center px-4 z-50 pb-2 transform-gpu">
             <GlowMenu />
           </header>
 
-          {/* Page Content */}
-          <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col">
+          {/* Page Content Container */}
+          <main className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col">
             {children}
-          </div>
+          </main>
 
           <Toaster
             position="bottom-center"

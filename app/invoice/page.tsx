@@ -788,7 +788,7 @@ export default function InvoicePage() {
   ]);
 
   return (
-    <main className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+    <div className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -1059,6 +1059,6 @@ export default function InvoicePage() {
           </div>
         </FrostedCard>
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Home as HomeIcon,
   Calculator as CalcIcon,
@@ -122,7 +121,6 @@ const allNavItems: NavItem[] = [
 
 export function GlowMenu({ className }: { className?: string }) {
   const pathname = usePathname();
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [visibility, setVisibility] = useState<PageVisibility>(defaultPageVisibility);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
 
@@ -165,88 +163,51 @@ export function GlowMenu({ className }: { className?: string }) {
     return false;
   });
 
-  const currentHoveredOrActive =
-    hoveredIdx !== null ? navItems[hoveredIdx] : navItems[activeIdx >= 0 ? activeIdx : 0];
+  const currentActive = navItems[activeIdx >= 0 ? activeIdx : 0];
 
   return (
     <nav
       className={cn(
-        "relative flex items-center justify-center select-none z-50 max-w-full",
+        "relative flex items-center justify-center select-none z-50 max-w-full transform-gpu",
         className
       )}
       aria-label="منوی اصلی"
     >
-      {/* Outer Glow Halo underneath */}
-      <AnimatePresence>
-        {currentHoveredOrActive && (
-          <motion.div
-            key={currentHoveredOrActive.href}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 0.5, scale: 1.15 }}
-            exit={{ opacity: 0, scale: 0.85 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="absolute -inset-1 rounded-full blur-2xl pointer-events-none transition-colors duration-500 hidden md:block"
-            style={{
-              background: `radial-gradient(circle, ${currentHoveredOrActive.glowColor} 0%, transparent 70%)`,
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Outer Continuous Glow Halo underneath - zero flicker */}
+      <div
+        className="absolute -inset-1.5 rounded-full blur-2xl pointer-events-none transition-all duration-500 hidden md:block opacity-60"
+        style={{
+          background: `radial-gradient(circle, ${currentActive?.glowColor || "rgba(255, 223, 0, 0.4)"} 0%, transparent 70%)`,
+        }}
+      />
 
       {/* Main Frosted Glass Pill Dock */}
-      <div className="relative flex items-center gap-1 p-1.5 rounded-full bg-zinc-950/60 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)] max-w-full overflow-x-auto no-scrollbar scroll-smooth">
+      <div className="relative flex items-center gap-1 p-1.5 rounded-full bg-zinc-950/70 backdrop-blur-2xl border border-white/[0.14] shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)] max-w-full overflow-x-auto no-scrollbar scroll-smooth">
         {/* Menu Items */}
         <div className="flex items-center gap-0.5">
           {navItems.map((item, idx) => {
             const isActive = activeIdx === idx;
-            const isHovered = hoveredIdx === idx;
             const Icon = item.icon;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
+                scroll={false}
+                prefetch={true}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap",
+                  "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap border",
                   isActive
-                    ? "text-white font-black"
-                    : "text-zinc-400 hover:text-zinc-100"
+                    ? "bg-white/[0.14] text-white font-black border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_16px_rgba(255,255,255,0.15)]"
+                    : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] border-transparent"
                 )}
               >
-                {/* Active Sliding Frosted Glow Pill */}
-                {isActive && (
-                  <motion.div
-                    layoutId="glow-menu-active-pill"
-                    className="absolute inset-0 rounded-full bg-white/[0.12] border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_20px_rgba(255,255,255,0.15)]"
-                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  >
-                    <div
-                      className="absolute inset-0 rounded-full opacity-35"
-                      style={{
-                        background: `radial-gradient(circle at 50% 0%, ${item.color}, transparent 80%)`,
-                      }}
-                    />
-                  </motion.div>
-                )}
-
-                {/* Hover Aura */}
-                {isHovered && !isActive && (
-                  <motion.div
-                    layoutId="glow-menu-hover-pill"
-                    className="absolute inset-0 rounded-full bg-white/[0.06] border border-white/15"
-                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  />
-                )}
-
                 {/* Content */}
                 <span className="relative z-10 flex items-center gap-1.5">
                   <Icon
                     className={cn(
                       "w-3.5 h-3.5 transition-transform duration-200",
-                      isActive ? "scale-110" : "",
-                      isHovered ? "-translate-y-0.5" : ""
+                      isActive ? "scale-110 text-primary" : "opacity-80"
                     )}
                     style={{
                       color: isActive ? item.color : undefined,
@@ -276,3 +237,4 @@ export function GlowMenu({ className }: { className?: string }) {
     </nav>
   );
 }
+

@@ -2,7 +2,7 @@
 
 export default function Home() {
   return (
-    <main className="flex-1 flex flex-col justify-between p-4 md:p-8 relative selection:bg-primary/20">
+    <div className="flex-1 flex flex-col justify-between p-4 md:p-8 relative selection:bg-primary/20">
       {/* Center Message */}
       <section className="w-full max-w-2xl mx-auto my-auto py-12 text-center space-y-4">
         <div className="p-8 md:p-12 rounded-3xl bg-white/[0.03] border border-white/[0.1] backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] space-y-3">
@@ -22,6 +22,6 @@ export default function Home() {
       <footer className="w-full max-w-5xl mx-auto pt-6 text-center text-xs text-zinc-500">
         <span>بومیم (bumim)</span> • <span className="font-mono text-zinc-400">bumims.ir</span>
       </footer>
-    </main>
+    </div>
   );
 }

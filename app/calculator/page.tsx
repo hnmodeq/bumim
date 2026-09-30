@@ -348,7 +348,7 @@ export default function CalculatorPage() {
   const formattedPrice = useMemo(() => toPersianPrice(price.total), [price.total]);
 
   return (
-    <main className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+    <div className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-4xl mx-auto space-y-5">
         {/* Main Calculator Frosted Card */}
         <FrostedCard accentGlow="rgba(255, 223, 0, 0.2)" className="p-5 md:p-8 space-y-6">
@@ -527,6 +527,6 @@ export default function CalculatorPage() {
           </div>
         </FrostedCard>
       </div>
-    </main>
+    </div>
   );
 }

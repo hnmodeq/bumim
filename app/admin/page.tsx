@@ -283,7 +283,7 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+    <div className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-5xl mx-auto space-y-8">
         {!isAuthenticated ? (
           /* Login Screen */
@@ -713,6 +713,6 @@ export default function AdminPage() {
           </>
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -182,7 +182,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+    <div className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
       <div className="w-full max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
@@ -602,6 +602,6 @@ export default function ServicesPage() {
           )}
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }

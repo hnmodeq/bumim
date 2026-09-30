@@ -122,15 +122,30 @@
   font-family: var(--font-vazir), system-ui, -apple-system, sans-serif;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   overflow-x: hidden;
+}
+
+/* Fixed Hardware-Accelerated Ambient Gradient Background (Zero composite repaint lag) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background-image:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.15), transparent),
     radial-gradient(ellipse 60% 40% at 80% 70%, rgba(255, 223, 0, 0.05), transparent),
     radial-gradient(ellipse 50% 50% at 20% 80%, rgba(17, 255, 186, 0.04), transparent);
-  background-attachment: fixed;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Frosted glass utilities */
