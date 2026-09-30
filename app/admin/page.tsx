@@ -646,7 +646,7 @@ export default function AdminPage() {
                           type="number"
                           value={t.base || 0}
                           onChange={(e) => handleUpdateTypeBase(idx, Number(e.target.value) || 0)}
-                          className="h-9 text-xs bg-white/[0.05] border-white/[0.1] rounded-xl text-white font-mono text-left"
+                          className="h-9 text-xs bg-white/[0.05] border-white/[0.1] rounded-xl text-white font-mono text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-[10px] text-zinc-400 font-mono shrink-0">تومان</span>
                       </div>
@@ -686,7 +686,7 @@ export default function AdminPage() {
                           max="100"
                           value={s.percent}
                           onChange={(e) => handleUpdateBasicPercent(s.id, Number(e.target.value) || 0)}
-                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center"
+                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
                       </div>
@@ -723,7 +723,7 @@ export default function AdminPage() {
                           max="200"
                           value={s.percent}
                           onChange={(e) => handleUpdateAdvPercent(s.id, Number(e.target.value) || 0)}
-                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center"
+                          className="w-16 h-8 text-xs bg-white/[0.06] border-white/[0.12] rounded-xl text-white font-mono text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-xs font-bold text-zinc-400 font-mono">٪</span>
                       </div>
@@ -752,7 +752,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.speedMultipliers?.standard ?? 1.0}
                           onChange={(e) => handleUpdateSpeed("standard", Number(e.target.value) || 1.0)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
@@ -766,7 +766,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.speedMultipliers?.fast ?? 1.25}
                           onChange={(e) => handleUpdateSpeed("fast", Number(e.target.value) || 1.25)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
@@ -780,7 +780,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.speedMultipliers?.rush ?? 1.5}
                           onChange={(e) => handleUpdateSpeed("rush", Number(e.target.value) || 1.5)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
@@ -804,7 +804,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.levelMultipliers?.junior ?? 0.8}
                           onChange={(e) => handleUpdateLevel("junior", Number(e.target.value) || 0.8)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
@@ -818,7 +818,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.levelMultipliers?.mid ?? 1.0}
                           onChange={(e) => handleUpdateLevel("mid", Number(e.target.value) || 1.0)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
@@ -832,7 +832,7 @@ export default function AdminPage() {
                           step="0.05"
                           value={calcConfig.levelMultipliers?.senior ?? 1.35}
                           onChange={(e) => handleUpdateLevel("senior", Number(e.target.value) || 1.35)}
-                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center"
+                          className="w-20 h-7 text-xs bg-white/[0.05] border-white/[0.1] rounded-lg text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-zinc-500">x</span>
                       </div>
