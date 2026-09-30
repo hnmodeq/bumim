@@ -105,12 +105,17 @@ export const advancedServices: Service[] = [
   { id: "mastering", label: "مسترینگ صدا", percent: hashPercent("mastering") },
 ];
 
+export type TurnaroundSpeed = "standard" | "fast" | "rush";
+export type EditorLevel = "junior" | "mid" | "senior";
+
 export type InvoiceItem = {
   id: string;
   typeLabel: string;
   durationLabel: string;
   countLabel: string;
   services: { label: string; percent: number }[];
+  speedLabel?: string;
+  levelLabel?: string;
   subtotal: number;
   totalPercent: number;
   total: number;
@@ -129,3 +134,19 @@ export function toPersianPrice(num: number) {
 }
 
 export const INVOICE_STORAGE_KEY = "bumim_invoice_items";
+export const PAGE_VISIBILITY_STORAGE_KEY = "bumim_page_visibility";
+
+export type PageVisibility = Record<string, boolean>;
+
+export const defaultPageVisibility: PageVisibility = {
+  home: true,
+  calculator: true,
+  invoice: true,
+  services: true,
+  samples: true,
+  portfolio: true,
+  jobs: true,
+  hire: true,
+  account: true,
+  admin: true,
+};

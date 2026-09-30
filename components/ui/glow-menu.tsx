@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,12 +15,17 @@ import {
   Users,
   User,
   Settings,
-  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import {
+  PAGE_VISIBILITY_STORAGE_KEY,
+  defaultPageVisibility,
+  type PageVisibility,
+} from "@/app/lib/invoice-types";
 
 export type NavItem = {
+  id: string;
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
@@ -29,8 +34,9 @@ export type NavItem = {
   badge?: string;
 };
 
-const navItems: NavItem[] = [
+const allNavItems: NavItem[] = [
   {
+    id: "home",
     name: "خانه",
     href: "/",
     icon: HomeIcon,
@@ -38,6 +44,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(255, 255, 255, 0.4)",
   },
   {
+    id: "calculator",
     name: "ماشین حساب",
     href: "/calculator",
     icon: CalcIcon,
@@ -46,6 +53,7 @@ const navItems: NavItem[] = [
     badge: "جدید",
   },
   {
+    id: "invoice",
     name: "پیش‌فاکتور",
     href: "/invoice",
     icon: FileSpreadsheet,
@@ -53,6 +61,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(255, 223, 0, 0.5)",
   },
   {
+    id: "services",
     name: "تعرفه‌ها",
     href: "/services",
     icon: Layers,
@@ -60,6 +69,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(192, 132, 252, 0.5)",
   },
   {
+    id: "samples",
     name: "نمونه‌کارها",
     href: "/samples",
     icon: Film,
@@ -67,6 +77,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(244, 63, 94, 0.5)",
   },
   {
+    id: "portfolio",
     name: "پرتفولیو",
     href: "/portfolio",
     icon: UserCheck,
@@ -74,6 +85,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(168, 85, 247, 0.5)",
   },
   {
+    id: "jobs",
     name: "پروژه‌ها",
     href: "/jobs",
     icon: Briefcase,
@@ -81,6 +93,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(56, 189, 248, 0.5)",
   },
   {
+    id: "hire",
     name: "درخواست ادیتور",
     href: "/hire",
     icon: Users,
@@ -88,6 +101,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(16, 185, 129, 0.5)",
   },
   {
+    id: "account",
     name: "حساب کاربری",
     href: "/account",
     icon: User,
@@ -95,6 +109,7 @@ const navItems: NavItem[] = [
     glowColor: "rgba(226, 232, 240, 0.4)",
   },
   {
+    id: "admin",
     name: "مدیریت",
     href: "/admin",
     icon: Settings,
@@ -106,6 +121,35 @@ const navItems: NavItem[] = [
 export function GlowMenu({ className }: { className?: string }) {
   const pathname = usePathname();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [visibility, setVisibility] = useState<PageVisibility>(defaultPageVisibility);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
+      if (stored) {
+        setVisibility(JSON.parse(stored));
+      }
+    } catch {
+      // ignore
+    }
+
+    const handleStorageChange = () => {
+      try {
+        const stored = localStorage.getItem(PAGE_VISIBILITY_STORAGE_KEY);
+        if (stored) setVisibility(JSON.parse(stored));
+      } catch {}
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("bumim_visibility_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("bumim_visibility_updated", handleStorageChange);
+    };
+  }, []);
+
+  // Filter items based on admin visibility settings
+  const navItems = allNavItems.filter((item) => visibility[item.id] !== false);
 
   const activeIdx = navItems.findIndex((item) => {
     if (item.href === "/" && pathname === "/") return true;
@@ -143,19 +187,6 @@ export function GlowMenu({ className }: { className?: string }) {
 
       {/* Main Frosted Glass Pill Dock */}
       <div className="relative flex items-center gap-1 p-1.5 rounded-full bg-zinc-950/60 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)] max-w-full overflow-x-auto no-scrollbar scroll-smooth">
-        {/* Brand Icon on start */}
-        <Link
-          href="/"
-          className="flex items-center gap-1.5 ps-2.5 pe-2 py-1 rounded-full text-foreground hover:text-primary transition-colors group shrink-0"
-        >
-          <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-[0_0_12px_rgba(255,223,0,0.3)]">
-            <Video className="w-3.5 h-3.5" />
-          </div>
-          <span className="text-xs font-black tracking-tight text-white hidden sm:inline">بومیم</span>
-        </Link>
-
-        <div className="h-4 w-[1px] bg-white/10 mx-0.5 shrink-0" />
-
         {/* Menu Items */}
         <div className="flex items-center gap-0.5">
           {navItems.map((item, idx) => {
@@ -170,7 +201,7 @@ export function GlowMenu({ className }: { className?: string }) {
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap",
+                  "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap",
                   isActive
                     ? "text-white font-black"
                     : "text-zinc-400 hover:text-zinc-100"

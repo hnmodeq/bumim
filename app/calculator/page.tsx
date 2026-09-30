@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -22,18 +22,19 @@ import {
   type PickerOption,
   type Service,
   type InvoiceItem,
+  type TurnaroundSpeed,
+  type EditorLevel,
   toPersianNumber,
   toPersianPrice,
   INVOICE_STORAGE_KEY,
 } from "@/app/lib/invoice-types";
 import {
-  Calculator as CalcIcon,
   Sparkles,
   Plus,
-  FileSpreadsheet,
   ArrowLeft,
   CheckCircle2,
-  Trash2,
+  Zap,
+  TrendingUp,
 } from "lucide-react";
 
 function WheelPicker({
@@ -295,6 +296,10 @@ export default function CalculatorPage() {
     color: true,
   });
 
+  // Speed & Seniority state
+  const [turnaround, setTurnaround] = useState<TurnaroundSpeed>("standard");
+  const [editorLevel, setEditorLevel] = useState<EditorLevel>("mid");
+
   // Stored invoice items count
   const [storedCount, setStoredCount] = useState<number>(0);
 
@@ -321,7 +326,7 @@ export default function CalculatorPage() {
     return list;
   }, [basicChecked, advChecked]);
 
-  // Price Calculation formula
+  // Price Calculation formula with speed and seniority
   const price = useMemo(() => {
     const type = typeOptions[typeIdx];
     const dur = durationOptions[durationIdx];
@@ -332,16 +337,42 @@ export default function CalculatorPage() {
     const subtotal = base * mult;
 
     const totalPercent = selectedServices.reduce((sum, s) => sum + s.percent, 0);
-    const total = subtotal * (1 + totalPercent / 100);
+    const withServices = subtotal * (1 + totalPercent / 100);
+
+    // Speed multiplier
+    let speedMult = 1.0;
+    if (turnaround === "fast") speedMult = 1.25;
+    if (turnaround === "rush") speedMult = 1.5;
+
+    // Seniority multiplier
+    let levelMult = 1.0;
+    if (editorLevel === "junior") levelMult = 0.8;
+    if (editorLevel === "senior") levelMult = 1.35;
+
+    const total = withServices * speedMult * levelMult;
 
     return {
       subtotal: Math.round(subtotal),
       totalPercent,
+      speedMult,
+      levelMult,
       total: Math.round(total),
     };
-  }, [typeIdx, durationIdx, countIdx, selectedServices]);
+  }, [typeIdx, durationIdx, countIdx, selectedServices, turnaround, editorLevel]);
 
   const formattedPrice = useMemo(() => toPersianPrice(price.total), [price.total]);
+
+  const speedLabels: Record<TurnaroundSpeed, string> = {
+    standard: "عادی (۳ تا ۵ روز)",
+    fast: "سریع (۴۸ ساعت)",
+    rush: "فوری VIP (۲۴ ساعت)",
+  };
+
+  const levelLabels: Record<EditorLevel, string> = {
+    junior: "جونیور (پایه)",
+    mid: "میدلول (مسلط)",
+    senior: "سنیور (حرفه‌ای)",
+  };
 
   const handleAddToInvoice = () => {
     const newItem: InvoiceItem = {
@@ -350,6 +381,8 @@ export default function CalculatorPage() {
       durationLabel: durationOptions[durationIdx].label,
       countLabel: countOptions[countIdx].label,
       services: selectedServices,
+      speedLabel: speedLabels[turnaround],
+      levelLabel: levelLabels[editorLevel],
       subtotal: price.subtotal,
       totalPercent: price.totalPercent,
       total: price.total,
@@ -393,7 +426,7 @@ export default function CalculatorPage() {
               چقدر دستمزد بگیرم؟
             </h1>
             <p className="text-xs text-zinc-400">
-              نوع پروژه، مدت زمان راش و تعداد ویدیو را انتخاب کنید تا دستمزد دقیق برآورد شود
+              نوع پروژه، مدت زمان راش، تعداد ویدیو و شرایط تحویل را انتخاب کنید تا دستمزد منصفانه محاسبه شود
             </p>
           </div>
 
@@ -455,6 +488,90 @@ export default function CalculatorPage() {
                   onToggle={() => setAdvChecked((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
                 />
               ))}
+            </div>
+          </div>
+
+          {/* Speed & Seniority Modifiers */}
+          <div className="space-y-3 pt-2">
+            <SectionDivider label="سطح سابقه ادیتور و فوریت تحویل" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Turnaround Speed */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-zinc-300 flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span>سرعت تحویل کار:</span>
+                  </span>
+                  {price.speedMult > 1 && (
+                    <span className="text-[10px] font-mono text-amber-300 font-bold">
+                      +{Math.round((price.speedMult - 1) * 100)}%
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  {(
+                    [
+                      { id: "standard", label: "عادی", sub: "۳ تا ۵ روز" },
+                      { id: "fast", label: "سریع", sub: "۴۸ ساعت" },
+                      { id: "rush", label: "فوری VIP", sub: "۲۴ ساعت" },
+                    ] as const
+                  ).map((spd) => (
+                    <button
+                      key={spd.id}
+                      type="button"
+                      onClick={() => setTurnaround(spd.id)}
+                      className={cn(
+                        "py-1.5 px-1 rounded-lg text-center text-xs font-bold transition-all cursor-pointer",
+                        turnaround === spd.id
+                          ? "bg-white/[0.15] text-white border border-white/25 shadow-sm font-black"
+                          : "text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      <div>{spd.label}</div>
+                      <div className="text-[9px] text-zinc-500 mt-0.5">{spd.sub}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Editor Seniority */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-zinc-300 flex items-center gap-1.5">
+                    <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
+                    <span>سطح تسلط و سابقه تدوینگر:</span>
+                  </span>
+                  {price.levelMult !== 1 && (
+                    <span className="text-[10px] font-mono text-purple-300 font-bold">
+                      {price.levelMult > 1 ? `+${Math.round((price.levelMult - 1) * 100)}%` : "-20%"}
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  {(
+                    [
+                      { id: "junior", label: "جونیور", sub: "پایه" },
+                      { id: "mid", label: "میدلول", sub: "مسلط" },
+                      { id: "senior", label: "سنیور", sub: "حرفه‌ای" },
+                    ] as const
+                  ).map((lvl) => (
+                    <button
+                      key={lvl.id}
+                      type="button"
+                      onClick={() => setEditorLevel(lvl.id)}
+                      className={cn(
+                        "py-1.5 px-1 rounded-lg text-center text-xs font-bold transition-all cursor-pointer",
+                        editorLevel === lvl.id
+                          ? "bg-white/[0.15] text-white border border-white/25 shadow-sm font-black"
+                          : "text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      <div>{lvl.label}</div>
+                      <div className="text-[9px] text-zinc-500 mt-0.5">{lvl.sub}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
