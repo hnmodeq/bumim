@@ -10,7 +10,7 @@ import {
   type Service,
 } from "../lib/pricing";
 
-import { GlowMenu } from "@/components/ui/glow-menu";
+
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -283,17 +283,8 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#060608] text-foreground px-4 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
-      {/* Background ambient iridescent orbs */}
-      <div className="absolute top-10 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-emerald-600/15 via-teal-600/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-gradient-to-tl from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-
-      {/* Floating Glow Menu Dock */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
-        <GlowMenu />
-      </header>
-
-      <div className="w-full max-w-5xl mx-auto relative z-10 space-y-8">
+    <main className="flex-1 px-4 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+      <div className="w-full max-w-5xl mx-auto space-y-8">
         {!isAuthenticated ? (
           /* Login Screen */
           <div className="max-w-md mx-auto my-12 animate-in fade-in zoom-in-95 duration-200">

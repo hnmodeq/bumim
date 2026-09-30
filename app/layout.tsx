@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { GlowMenu } from "@/components/ui/glow-menu";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -52,9 +53,23 @@ export default function RootLayout({
       )}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
+      <body className="min-h-screen bg-[#060608] text-foreground antialiased selection:bg-primary selection:text-primary-foreground relative overflow-x-hidden">
+        {/* Universal Persistent Background Ambient Gradient Mesh */}
+        <div className="fixed -top-40 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0" />
+        <div className="fixed top-1/3 -left-40 w-[550px] h-[550px] bg-gradient-to-tr from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-[140px] pointer-events-none z-0" />
+        <div className="fixed -bottom-40 right-1/3 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/10 via-teal-500/5 to-transparent rounded-full blur-[150px] pointer-events-none z-0" />
+
         <TooltipProvider delay={150}>
-          {children}
+          {/* Universal Persistent Header Navigation Dock */}
+          <header className="sticky top-4 w-full max-w-5xl mx-auto flex items-center justify-center px-4 z-40 pb-2">
+            <GlowMenu />
+          </header>
+
+          {/* Page Content */}
+          <div className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col">
+            {children}
+          </div>
+
           <Toaster
             position="bottom-center"
             richColors

@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import {
   type InvoiceItem,
   toPersianNumber,
@@ -26,7 +24,6 @@ import {
   Plus,
   Trash2,
   FileDown,
-  Upload,
   User,
   Building2,
   Receipt,
@@ -224,11 +221,9 @@ export default function InvoicePage() {
   // Seller info (Auto-fill for video editor)
   const [sellerName, setSellerName] = useState("");
   const [sellerPhone, setSellerPhone] = useState("");
-  const [sellerLogo, setSellerLogo] = useState<string | null>(null);
 
   // Buyer info
   const [buyerName, setBuyerName] = useState("");
-  const [buyerCompany, setBuyerCompany] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
 
   // Invoice meta
@@ -362,17 +357,6 @@ export default function InvoicePage() {
     return invoiceItems.reduce((sum, it) => sum + it.subtotal, 0);
   }, [invoiceItems]);
 
-  const handleLogoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setSellerLogo(reader.result as string);
-      toast.success("لوگو با موفقیت بارگذاری شد");
-    };
-    reader.readAsDataURL(f);
-  }, []);
-
   // PDF Export
   const handleExportPDF = useCallback(async () => {
     if (isExporting) return;
@@ -439,30 +423,20 @@ export default function InvoicePage() {
       pdf.setFillColor("#0a0a0a");
       pdf.rect(0, 0, pdfW, 78, "F");
 
-      // Seller logo
-      let logoAdded = false;
-      if (sellerLogo) {
-        try {
-          pdf.addImage(sellerLogo, "PNG", margin, 18, 42, 42, undefined, "FAST");
-          logoAdded = true;
-        } catch {}
+      pdf.setFillColor("#ffdf00");
+      const x = margin;
+      const y0 = 18;
+      try {
+        // @ts-ignore
+        pdf.roundedRect(x, y0, 42, 42, 10, 10, "F");
+      } catch {
+        pdf.rect(x, y0, 42, 42, "F");
       }
-      if (!logoAdded) {
-        pdf.setFillColor("#ffdf00");
-        const x = margin;
-        const y = 18;
-        try {
-          // @ts-ignore
-          pdf.roundedRect(x, y, 42, 42, 10, 10, "F");
-        } catch {
-          pdf.rect(x, y, 42, 42, "F");
-        }
-        pdf.setFont("Vazirmatn", "bold");
-        pdf.setFontSize(18);
-        pdf.setTextColor("#0a0a0a");
-        const initial = (sellerName || "ب").charAt(0);
-        pdf.text(initial, x + 21, y + 27, { align: "center" });
-      }
+      pdf.setFont("Vazirmatn", "bold");
+      pdf.setFontSize(18);
+      pdf.setTextColor("#0a0a0a");
+      const initial = (sellerName || "ب").charAt(0);
+      pdf.text(initial, x + 21, y0 + 27, { align: "center" });
 
       const sellerX = margin + 52;
       pdf.setFont("Vazirmatn", "bold");
@@ -490,7 +464,7 @@ export default function InvoicePage() {
       pdf.text("صورتحساب خدمات ادیت ویدیو", pdfW - margin, 46, { align: "right" } as any);
 
       let y = 90;
-      const boxH = 56;
+      const boxH = 50;
       const boxW = (pdfW - margin * 2 - 10) / 2;
       const boxR = 10;
       const sellerBoxX = pdfW - margin - boxW;
@@ -527,11 +501,11 @@ export default function InvoicePage() {
       pdf.setTextColor("#0a0a0a");
       pdf.setFont("Vazirmatn", "bold");
       pdf.setFontSize(9);
-      pdf.text(sellerName || "نام ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 32, { align: "right" } as any);
+      pdf.text(sellerName || "نام ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 28, { align: "right" } as any);
       pdf.setFont("Vazirmatn", "normal");
       pdf.setFontSize(7.5);
       pdf.setTextColor("#666");
-      pdf.text(sellerPhone || "تلفن تماس ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 46, { align: "right" } as any);
+      pdf.text(sellerPhone || "تلفن تماس ویدیو ادیتور ثبت نشده", sellerBoxX + boxW - 10, y + 40, { align: "right" } as any);
 
       // Buyer badge
       pdf.setFillColor("#11c69a");
@@ -548,17 +522,11 @@ export default function InvoicePage() {
       pdf.text("خریدار", bBadgeX + 24, badgeY + 9.5, { align: "center" } as any);
       pdf.setTextColor("#0a0a0a");
       pdf.setFontSize(9);
-      pdf.text(buyerName || "نام مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 30, { align: "right" } as any);
-      if (buyerCompany) {
-        pdf.setFont("Vazirmatn", "normal");
-        pdf.setFontSize(7.5);
-        pdf.setTextColor("#333");
-        pdf.text(buyerCompany, buyerBoxX + boxW - 10, y + 41, { align: "right" } as any);
-      }
+      pdf.text(buyerName || "نام مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 28, { align: "right" } as any);
       pdf.setFont("Vazirmatn", "normal");
-      pdf.setFontSize(7);
+      pdf.setFontSize(7.5);
       pdf.setTextColor("#666");
-      pdf.text(buyerPhone || "تلفن تماس مشتری ثبت نشده", buyerBoxX + boxW - 10, y + (buyerCompany ? 50 : 44), { align: "right" } as any);
+      pdf.text(buyerPhone || "تلفن تماس مشتری ثبت نشده", buyerBoxX + boxW - 10, y + 40, { align: "right" } as any);
 
       y += boxH + 18;
 
@@ -794,7 +762,7 @@ export default function InvoicePage() {
       pdf.setTextColor("#999");
       pdf.text("bumims.ir", pdfW / 2, footerY + 14, { align: "center" } as any);
 
-      const customerName = buyerName || buyerCompany || "مشتری";
+      const customerName = buyerName || "مشتری";
       const safeCustomer = customerName.replace(/[\/*?:"<>|]/g, "");
       const fileName = `پیش فاکتور برای ${safeCustomer} - ${invoiceNumber}.pdf`;
       pdf.save(fileName);
@@ -813,26 +781,15 @@ export default function InvoicePage() {
     sellerName,
     sellerPhone,
     buyerName,
-    buyerCompany,
     buyerPhone,
-    sellerLogo,
     invoiceItems,
     invoiceTotal,
     invoiceSubtotal,
   ]);
 
   return (
-    <main className="min-h-screen bg-[#060608] text-foreground px-3 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
-      {/* Background ambient iridescent orbs */}
-      <div className="absolute top-10 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 left-1/4 w-[600px] h-[600px] bg-gradient-to-tl from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-
-      {/* Floating Glow Menu Dock */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
-        <GlowMenu />
-      </header>
-
-      <div className="w-full max-w-4xl mx-auto space-y-6 relative z-10">
+    <main className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+      <div className="w-full max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center gap-1.5 mx-auto">
@@ -1015,7 +972,7 @@ export default function InvoicePage() {
             </div>
           )}
 
-          {/* 3. Seller & Buyer Info Cards */}
+          {/* 3. Seller & Buyer Info Cards (Cleaned up as requested) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
             {/* Seller (Video Editor - Auto-fill enabled) */}
             <div className="rounded-3xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-xl p-4 md:p-5 space-y-3 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.15)]">
@@ -1045,21 +1002,9 @@ export default function InvoicePage() {
                   className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-left font-mono text-white"
                 />
               </div>
-              <div className="flex items-center gap-2 pt-1">
-                <label className="cursor-pointer">
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                  <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[0.08] border border-white/[0.12] text-xs font-bold hover:bg-white/[0.15] transition-colors text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>آپلود لوگوی اختصاصی</span>
-                  </div>
-                </label>
-                <span className="text-[11px] text-zinc-400 truncate">
-                  {sellerLogo ? "✓ لوگو انتخاب شد" : "اختیاری (نمایش در PDF)"}
-                </span>
-              </div>
             </div>
 
-            {/* Buyer (Client) */}
+            {/* Buyer (Client - Simplified) */}
             <div className="rounded-3xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-xl p-4 md:p-5 space-y-3 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.15)]">
               <div className="text-xs font-black text-emerald-400 flex items-center gap-1.5 pb-1">
                 <Building2 className="w-3.5 h-3.5" />
@@ -1071,15 +1016,6 @@ export default function InvoicePage() {
                   value={buyerName}
                   onChange={(e) => setBuyerName(e.target.value)}
                   placeholder="مثال: رضا محمدی"
-                  className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-white"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-zinc-400">نام شرکت / پیج / برند (اختیاری)</label>
-                <Input
-                  value={buyerCompany}
-                  onChange={(e) => setBuyerCompany(e.target.value)}
-                  placeholder="مثال: آکادمی رشد"
                   className="text-xs bg-white/[0.035] border-white/[0.1] rounded-xl h-10 text-white"
                 />
               </div>

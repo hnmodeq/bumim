@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useRef, useCallback } from "react";
-import { GlowMenu } from "@/components/ui/glow-menu";
 import { FrostedCard } from "@/components/ui/frosted-card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -349,17 +348,8 @@ export default function CalculatorPage() {
   const formattedPrice = useMemo(() => toPersianPrice(price.total), [price.total]);
 
   return (
-    <main className="min-h-screen bg-[#060608] text-foreground px-3 md:px-6 py-6 md:py-10 relative overflow-hidden selection:bg-primary/20">
-      {/* Background ambient iridescent orbs */}
-      <div className="absolute top-10 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-400/15 via-yellow-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 left-1/4 w-[600px] h-[600px] bg-gradient-to-tl from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-[140px] pointer-events-none" />
-
-      {/* Floating Glow Menu Dock */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-center pb-8 z-20">
-        <GlowMenu />
-      </header>
-
-      <div className="w-full max-w-4xl mx-auto space-y-5 relative z-10">
+    <main className="flex-1 px-3 md:px-6 py-4 md:py-8 relative selection:bg-primary/20">
+      <div className="w-full max-w-4xl mx-auto space-y-5">
         {/* Main Calculator Frosted Card */}
         <FrostedCard accentGlow="rgba(255, 223, 0, 0.2)" className="p-5 md:p-8 space-y-6">
           <div className="text-center space-y-2">
@@ -522,7 +512,7 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          {/* Clean Live Price Summary Bar (Without any Add to Invoice button) */}
+          {/* Clean Live Price Summary Bar */}
           <div className="p-4 md:p-5 rounded-3xl bg-white/[0.04] border border-primary/40 shadow-[0_8px_32px_rgba(255,223,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.2)] flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-xl">
             <div className="text-center sm:text-right">
               <div className="text-xs text-zinc-400 font-medium">مبلغ برآورد این پروژه:</div>
